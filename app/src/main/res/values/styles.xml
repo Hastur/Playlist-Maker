@@ -4,19 +4,20 @@
     <style name="BaseVerticalLinearLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/background_main</item>
+        <item name="android:background">@color/background</item>
         <item name="android:orientation">vertical</item>
         <item name="android:paddingLeft">@dimen/indent_16</item>
         <item name="android:paddingRight">@dimen/indent_16</item>
     </style>
 
     <style name="ScreenTitle">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">14dp</item>
-        <item name="android:layout_marginBottom">@dimen/indent_16</item>
+        <item name="android:layout_marginBottom">@dimen/indent_24</item>
+        <item name="android:paddingTop">@dimen/indent_14</item>
+        <item name="android:paddingBottom">@dimen/indent_16</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/title_text</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:textSize">@dimen/title_text</item>
     </style>
@@ -29,13 +30,31 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/main_menu_item</item>
         <item name="android:textFontWeight">500</item>
         <item name="android:textSize">@dimen/title_text</item>
         <item name="cornerRadius">@dimen/indent_16</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">@dimen/indent_8</item>
-        <item name="iconTint">@color/black</item>
+        <item name="iconTint">@color/main_menu_item</item>
+    </style>
+
+    <style name="MenuItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/indent_21</item>
+        <item name="android:paddingBottom">@dimen/indent_21</item>
+        <item name="android:textColor">@color/menu_item_text</item>
+        <item name="android:textSize">@dimen/menu_item_text</item>
+        <item name="drawableTint">@color/menu_item_icon</item>
+    </style>
+
+    <style name="Switch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="colorControlActivated">@color/blue</item>
+        <item name="colorSwitchThumbNormal">@color/menu_item_icon</item>
+        <item name="android:colorForeground">#E6E8EB</item>
     </style>
 
 </resources>
