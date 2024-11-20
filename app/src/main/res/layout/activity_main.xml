@@ -10,12 +10,14 @@
         android:textColor="@color/white" />
 
     <Button
+        android:id="@+id/button_search"
         style="@style/CategoryButton"
         android:layout_marginBottom="@dimen/indent_4"
         android:text="@string/search"
         app:icon="@drawable/ic_search" />
 
     <Button
+        android:id="@+id/button_library"
         style="@style/CategoryButton"
         android:layout_marginTop="@dimen/indent_4"
         android:layout_marginBottom="@dimen/indent_4"
@@ -23,6 +25,7 @@
         app:icon="@drawable/ic_library" />
 
     <Button
+        android:id="@+id/button_settings"
         style="@style/CategoryButton"
         android:layout_marginTop="@dimen/indent_4"
         android:layout_marginBottom="@dimen/indent_24"
