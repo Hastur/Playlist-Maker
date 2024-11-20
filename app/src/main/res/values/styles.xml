@@ -52,6 +52,9 @@
     <style name="Switch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingEnd">-3dp</item>
+        <item name="android:scaleX">0.8</item>
+        <item name="android:scaleY">0.8</item>
         <item name="colorControlActivated">@color/blue</item>
         <item name="colorSwitchThumbNormal">@color/menu_item_icon</item>
         <item name="android:colorForeground">#E6E8EB</item>
