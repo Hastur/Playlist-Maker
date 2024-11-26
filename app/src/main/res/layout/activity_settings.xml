@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/BaseVerticalLinearLayout">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_settings"
+        style="@style/Toolbar"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/settings" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/MenuItem"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/dark_theme"
+            android:textColor="@color/menu_item_text" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            style="@style/Switch"
+            android:theme="@style/Switch" />
+    </LinearLayout>
+
+    <TextView
+        style="@style/MenuItem"
+        android:text="@string/share"
+        app:drawableRightCompat="@drawable/ic_share" />
+
+    <TextView
+        style="@style/MenuItem"
+        android:text="@string/support"
+        app:drawableRightCompat="@drawable/ic_support" />
+
+    <TextView
+        style="@style/MenuItem"
+        android:text="@string/user_agreement"
+        app:drawableRightCompat="@drawable/ic_arrow_next" />
+</LinearLayout>
