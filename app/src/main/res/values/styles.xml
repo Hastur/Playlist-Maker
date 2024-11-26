@@ -8,14 +8,21 @@
         <item name="android:orientation">vertical</item>
         <item name="android:paddingLeft">@dimen/indent_16</item>
         <item name="android:paddingRight">@dimen/indent_16</item>
+        <item name="android:clipToPadding">false</item>
     </style>
 
-    <style name="ScreenTitle">
+    <style name="Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">-16dp</item>
+        <item name="android:layout_marginEnd">-16dp</item>
         <item name="android:layout_marginBottom">@dimen/indent_24</item>
-        <item name="android:paddingTop">@dimen/indent_14</item>
-        <item name="android:paddingBottom">@dimen/indent_16</item>
+        <item name="navigationIcon">@drawable/ic_arrow_back</item>
+        <item name="navigationIconTint">@color/title_text</item>
+        <item name="titleTextAppearance">@style/TitleText</item>
+    </style>
+
+    <style name="TitleText">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">@color/title_text</item>
         <item name="android:textFontWeight">500</item>
