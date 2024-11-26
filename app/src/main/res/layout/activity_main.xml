@@ -5,11 +5,10 @@
     style="@style/BaseVerticalLinearLayout"
     android:background="@color/background_main">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_main"
         style="@style/Toolbar"
         app:title="@string/app_name"
-        app:titleTextAppearance="@style/TitleText"
         app:titleTextColor="@color/white"
         tools:navigationIcon="null" />
 
