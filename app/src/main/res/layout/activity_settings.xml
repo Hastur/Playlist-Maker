@@ -6,25 +6,11 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_settings"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/ic_arrow_back"
         app:title="@string/settings" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            style="@style/MenuItem"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:text="@string/dark_theme"
-            android:textColor="@color/menu_item_text" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            style="@style/Switch"
-            android:theme="@style/Switch" />
-    </LinearLayout>
+    <androidx.appcompat.widget.SwitchCompat
+        style="@style/Switch"
+        android:text="@string/dark_theme" />
 
     <TextView
         style="@style/MenuItem"

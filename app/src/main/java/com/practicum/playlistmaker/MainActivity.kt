@@ -13,10 +13,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar_main)
-        val searchButton = findViewById<Button>(R.id.button_search)
-        val libraryButton = findViewById<Button>(R.id.button_library)
-        val settingsButton = findViewById<Button>(R.id.button_settings)
-
         toolbar.setNavigationIcon(null)
 
         val buttonClickListener = object : View.OnClickListener {
@@ -25,13 +21,16 @@ class MainActivity : AppCompatActivity() {
                 startActivity(searchIntent)
             }
         }
+        val searchButton = findViewById<Button>(R.id.button_search)
         searchButton.setOnClickListener(buttonClickListener)
 
+        val libraryButton = findViewById<Button>(R.id.button_library)
         libraryButton.setOnClickListener {
             val libraryIntent = Intent(this, LibraryActivity::class.java)
             startActivity(libraryIntent)
         }
 
+        val settingsButton = findViewById<Button>(R.id.button_settings)
         settingsButton.setOnClickListener {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)

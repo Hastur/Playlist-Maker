@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -12,8 +11,7 @@ class SearchActivity : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar_search)
         toolbar.setNavigationOnClickListener {
-            val backPressIntent = Intent(this, MainActivity::class.java)
-            startActivity(backPressIntent)
+            this.finish()
         }
     }
 }
