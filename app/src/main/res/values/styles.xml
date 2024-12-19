@@ -23,13 +23,14 @@
         <item name="android:textSize">@dimen/title_text</item>
     </style>
 
-    <style name="CategoryButton">
+    <style name="MainCategoryButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:layout_marginLeft">@dimen/indent_16</item>
         <item name="android:layout_marginRight">@dimen/indent_16</item>
+        <item name="android:layout_marginBottom">@dimen/indent_16</item>
         <item name="android:insetLeft">0dp</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetRight">0dp</item>
@@ -72,7 +73,7 @@
     <style name="SwitchColors">
         <item name="colorControlActivated">@color/blue</item>
         <item name="colorSwitchThumbNormal">@color/menu_item_icon</item>
-        <item name="android:colorForeground">#E6E8EB</item>
+        <item name="android:colorForeground">@color/switch_inactive_track</item>
     </style>
 
 </resources>

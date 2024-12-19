@@ -18,8 +18,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar_search)
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar_search).setNavigationOnClickListener {
             this.finish()
         }
     }

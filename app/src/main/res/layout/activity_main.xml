@@ -15,23 +15,19 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_search"
-        style="@style/CategoryButton"
-        android:layout_marginBottom="@dimen/indent_8"
+        style="@style/MainCategoryButton"
         android:text="@string/search"
         app:icon="@drawable/ic_search" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_library"
-        style="@style/CategoryButton"
-        android:layout_marginTop="@dimen/indent_8"
-        android:layout_marginBottom="@dimen/indent_8"
+        style="@style/MainCategoryButton"
         android:text="@string/library"
         app:icon="@drawable/ic_library" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_settings"
-        style="@style/CategoryButton"
-        android:layout_marginTop="@dimen/indent_8"
+        style="@style/MainCategoryButton"
         android:layout_marginBottom="@dimen/indent_24"
         android:text="@string/settings"
         app:icon="@drawable/ic_settings" />

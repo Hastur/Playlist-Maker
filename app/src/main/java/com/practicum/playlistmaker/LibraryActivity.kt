@@ -18,8 +18,7 @@ class LibraryActivity : AppCompatActivity() {
             insets
         }
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar_library)
-        toolbar.setNavigationOnClickListener {
+        findViewById<Toolbar>(R.id.toolbar_library).setNavigationOnClickListener {
             this.finish()
         }
     }

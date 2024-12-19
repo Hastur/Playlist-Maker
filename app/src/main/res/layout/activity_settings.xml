@@ -10,6 +10,7 @@
         app:title="@string/settings" />
 
     <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/nightModeSwitch"
         style="@style/Switch"
         android:text="@string/dark_theme" />
 
