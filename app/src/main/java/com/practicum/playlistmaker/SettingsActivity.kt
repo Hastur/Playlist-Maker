@@ -1,7 +1,9 @@
 package com.practicum.playlistmaker
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -31,6 +33,14 @@ class SettingsActivity : AppCompatActivity() {
         nightModeSwitch.setOnClickListener {
             if (nightModeSwitch.isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
+        val share = findViewById<TextView>(R.id.share)
+        share.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_url))
+            shareIntent.type = "text/plain"
+            startActivity(shareIntent)
         }
     }
 }

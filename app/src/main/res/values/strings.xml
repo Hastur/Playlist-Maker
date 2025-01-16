@@ -4,7 +4,8 @@
     <string name="library">Медиатека</string>
     <string name="settings">Настройки</string>
     <string name="dark_theme">Тёмная тема</string>
-    <string name="share">Поделиться</string>
+    <string name="share">Поделиться приложением</string>
     <string name="support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="share_url" translatable="false">https://practicum.yandex.ru/android-developer/</string>
 </resources>
