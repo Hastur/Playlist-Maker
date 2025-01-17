@@ -10,24 +10,24 @@
         app:title="@string/settings" />
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/nightModeSwitch"
+        android:id="@+id/night_mode_switch"
         style="@style/Switch"
         android:text="@string/dark_theme" />
 
     <TextView
-        android:id="@+id/share"
+        android:id="@+id/settings_share"
         style="@style/MenuItem"
         android:text="@string/share"
         app:drawableRightCompat="@drawable/ic_share" />
 
     <TextView
-        android:id="@+id/support"
+        android:id="@+id/settings_support"
         style="@style/MenuItem"
         android:text="@string/support"
         app:drawableRightCompat="@drawable/ic_support" />
 
     <TextView
-        android:id="@+id/userAgreement"
+        android:id="@+id/settings_user_agreement"
         style="@style/MenuItem"
         android:text="@string/user_agreement"
         app:drawableRightCompat="@drawable/ic_arrow_next" />

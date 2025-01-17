@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -27,7 +28,7 @@ class SettingsActivity : AppCompatActivity() {
             this.finish()
         }
 
-        val nightModeSwitch = findViewById<SwitchCompat>(R.id.nightModeSwitch)
+        val nightModeSwitch = findViewById<SwitchCompat>(R.id.night_mode_switch)
         nightModeSwitch.isChecked =
             resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         nightModeSwitch.setOnClickListener {
@@ -35,12 +36,26 @@ class SettingsActivity : AppCompatActivity() {
             else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
 
-        val share = findViewById<TextView>(R.id.share)
-        share.setOnClickListener {
+        findViewById<TextView>(R.id.settings_share).setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_url))
             shareIntent.type = "text/plain"
             startActivity(shareIntent)
+        }
+
+        findViewById<TextView>(R.id.settings_support).setOnClickListener {
+            val sendMailIntent = Intent(Intent.ACTION_SENDTO)
+            sendMailIntent.data = Uri.parse("mailto:")
+            sendMailIntent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.send_mail_address))
+                .putExtra(Intent.EXTRA_SUBJECT, getString(R.string.send_mail_subject))
+                .putExtra(Intent.EXTRA_TEXT, getString(R.string.send_mail_text))
+            startActivity(sendMailIntent)
+        }
+
+        findViewById<TextView>(R.id.settings_user_agreement).setOnClickListener {
+            startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.user_agreement_offer)))
+            )
         }
     }
 }
