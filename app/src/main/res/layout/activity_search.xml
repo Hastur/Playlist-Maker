@@ -40,8 +40,8 @@
             android:hint="@string/search"
             android:inputType="text"
             android:maxLines="1"
-            android:textColorHint="@color/search_hint"
-            android:textCursorDrawable="@drawable/shape_search_cursor_color" />
+            android:textColor="@color/black"
+            android:textColorHint="@color/search_hint" />
 
         <ImageView
             android:id="@+id/search_clear"
