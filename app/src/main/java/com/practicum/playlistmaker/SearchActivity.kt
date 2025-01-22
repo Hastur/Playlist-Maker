@@ -3,6 +3,7 @@ package com.practicum.playlistmaker
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
@@ -27,11 +28,14 @@ class SearchActivity : AppCompatActivity() {
             this.finish()
         }
 
-        val input = findViewById<EditText>(R.id.search_input)
+        val searchField = findViewById<EditText>(R.id.search_input)
         val clearButton = findViewById<ImageView>(R.id.search_clear)
 
         clearButton.setOnClickListener {
-            input.setText("")
+            searchField.setText("")
+            val inputManager = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(searchField.windowToken, 0)
+            searchField.clearFocus()
         }
 
         val textWatcher = object : TextWatcher {
@@ -50,13 +54,13 @@ class SearchActivity : AppCompatActivity() {
                 p2: Int,
                 p3: Int
             ) {
-                clearButton.isVisible = !input.text.isNullOrEmpty()
+                clearButton.isVisible = !searchField.text.isNullOrEmpty()
             }
 
             override fun afterTextChanged(p0: Editable?) {
                 //empty
             }
         }
-        input.addTextChangedListener(textWatcher)
+        searchField.addTextChangedListener(textWatcher)
     }
 }
