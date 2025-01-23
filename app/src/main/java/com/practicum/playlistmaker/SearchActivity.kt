@@ -19,6 +19,8 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
     }
 
+    lateinit var searchField: EditText
+    lateinit var clearButton: ImageView
     var searchQuery: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +37,8 @@ class SearchActivity : AppCompatActivity() {
             this.finish()
         }
 
-        val searchField = findViewById<EditText>(R.id.search_input)
-        val clearButton = findViewById<ImageView>(R.id.search_clear)
+        searchField = findViewById<EditText>(R.id.search_input)
+        clearButton = findViewById<ImageView>(R.id.search_clear)
 
         clearButton.setOnClickListener {
             searchField.setText("")
@@ -68,6 +70,6 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        findViewById<EditText>(R.id.search_input).setText(savedInstanceState.getString(SEARCH_TEXT))
+        searchField.setText(savedInstanceState.getString(SEARCH_TEXT))
     }
 }
