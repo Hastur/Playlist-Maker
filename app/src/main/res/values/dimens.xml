@@ -5,8 +5,11 @@
 
     <dimen name="indent_4">4dp</dimen>
     <dimen name="indent_8">8dp</dimen>
+    <dimen name="indent_12">12dp</dimen>
     <dimen name="indent_14">14dp</dimen>
     <dimen name="indent_16">16dp</dimen>
     <dimen name="indent_21">21dp</dimen>
     <dimen name="indent_24">24dp</dimen>
+    <dimen name="indent_30">30dp</dimen>
+    <dimen name="indent_36">36dp</dimen>
 </resources>
