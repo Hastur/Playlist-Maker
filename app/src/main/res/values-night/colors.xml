@@ -3,8 +3,9 @@
     <color name="background_main">@color/darkest_grey</color>
     <color name="background">@color/darkest_grey</color>
     <color name="title_text">@color/white</color>
-    <color name="menu_item_text">@color/white</color>
+    <color name="regular_text">@color/white</color>
     <color name="menu_item_icon">@color/white</color>
     <color name="search_background">@color/white</color>
     <color name="search_hint">@color/darkest_grey</color>
+    <color name="artist_name">@color/white</color>
 </resources>
