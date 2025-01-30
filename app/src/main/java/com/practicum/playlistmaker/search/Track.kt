@@ -8,7 +8,7 @@ data class Track(
 )
 
 data class TrackList(
-    val tracks: ArrayList<Track> = arrayListOf(
+    val tracks: List<Track> = listOf(
         Track(
             "Smells Like Teen Spirit",
             "Nirvana",

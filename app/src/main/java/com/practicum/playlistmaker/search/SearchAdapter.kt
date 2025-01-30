@@ -4,7 +4,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -34,10 +33,10 @@ class SearchAdapter(private val trackList: TrackList) :
             ).toInt()
             Glide.with(searchItem)
                 .load(model.artworkUrl100)
-                .placeholder(R.drawable.ic_library)
+                .placeholder(R.drawable.ic_track_placeholder)
                 .fitCenter()
                 .transform(RoundedCorners(cornerRadiusToPx))
-                .into(searchItem.findViewById<ImageView>(R.id.track_cover))
+                .into(searchItem.findViewById(R.id.track_cover))
 
             searchItem.findViewById<TextView>(R.id.song_name).text = model.trackName
             searchItem.findViewById<TextView>(R.id.artist_name).text = model.artistName
