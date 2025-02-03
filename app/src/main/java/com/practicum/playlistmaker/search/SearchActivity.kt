@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.search
 
 import android.os.Bundle
 import android.text.Editable
@@ -12,6 +12,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.R
 
 class SearchActivity : AppCompatActivity() {
 
@@ -61,6 +64,10 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         searchField.addTextChangedListener(textWatcher)
+
+        val trackList = findViewById<RecyclerView>(R.id.track_list)
+        trackList.layoutManager = LinearLayoutManager(this)
+        trackList.adapter = SearchAdapter(TrackList())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

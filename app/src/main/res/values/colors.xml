@@ -11,9 +11,10 @@
     <color name="background">@color/white</color>
     <color name="title_text">@color/darkest_grey</color>
     <color name="main_menu_item">@color/darkest_grey</color>
-    <color name="menu_item_text">@color/black</color>
+    <color name="regular_text">@color/black</color>
     <color name="menu_item_icon">@color/grey</color>
     <color name="switch_inactive_track">@color/light_grey</color>
     <color name="search_background">@color/light_grey</color>
     <color name="search_hint">@color/grey</color>
+    <color name="artist_name">@color/grey</color>
 </resources>
