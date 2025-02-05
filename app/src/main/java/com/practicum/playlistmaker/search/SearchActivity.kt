@@ -36,6 +36,7 @@ class SearchActivity : AppCompatActivity() {
     lateinit var searchField: EditText
     lateinit var clearButton: ImageView
     lateinit var rwTrackList: RecyclerView
+    lateinit var emptyScreen: LinearLayout
     var searchQuery: String? = null
     val tracks = mutableListOf<Track>()
     val adapter = SearchAdapter()
@@ -61,15 +62,15 @@ class SearchActivity : AppCompatActivity() {
             this.finish()
         }
 
-        searchField = findViewById<EditText>(R.id.search_input)
-        clearButton = findViewById<ImageView>(R.id.search_clear)
+        searchField = findViewById(R.id.search_input)
+        clearButton = findViewById(R.id.search_clear)
+        emptyScreen = findViewById(R.id.empty_screen)
 
         clearButton.setOnClickListener {
             searchField.setText("")
             val inputManager = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(searchField.windowToken, 0)
             searchField.clearFocus()
-            rwTrackList.isVisible = false
         }
 
         val textWatcher = object : TextWatcher {
@@ -83,11 +84,16 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(p0: Editable?) {
                 searchQuery = searchField.text.toString()
+
+                if (searchQuery.isNullOrEmpty()) {
+                    rwTrackList.isVisible = false
+                    emptyScreen.isVisible = false
+                }
             }
         }
         searchField.addTextChangedListener(textWatcher)
 
-        rwTrackList = findViewById<RecyclerView>(R.id.track_list)
+        rwTrackList = findViewById(R.id.track_list)
         rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter.trackList = tracks
         rwTrackList.adapter = adapter
@@ -95,7 +101,6 @@ class SearchActivity : AppCompatActivity() {
         searchField.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 loadData()
-                true
             }
             false
         }
@@ -149,11 +154,11 @@ class SearchActivity : AppCompatActivity() {
     private fun toggleEmptyScreen(type: MessageTypes?, error: String?) {
         val shouldShow = type != null
 
-        findViewById<LinearLayout>(R.id.empty_screen).isVisible = shouldShow
+        emptyScreen.isVisible = shouldShow
         rwTrackList.isVisible = !shouldShow
 
         if (shouldShow) {
-            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type.imageId)
+            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type?.imageId!!)
             findViewById<TextView>(R.id.empty_screen_text).setText(type.messageId)
 
             val buttonRetry = findViewById<MaterialButton>(R.id.empty_screen_button)
