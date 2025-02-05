@@ -69,6 +69,7 @@ class SearchActivity : AppCompatActivity() {
             val inputManager = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(searchField.windowToken, 0)
             searchField.clearFocus()
+            rwTrackList.isVisible = false
         }
 
         val textWatcher = object : TextWatcher {
