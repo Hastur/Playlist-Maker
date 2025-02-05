@@ -9,19 +9,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class SearchAdapter(private val trackList: TrackList) :
+class SearchAdapter() :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
+
+    var trackList = listOf<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = SearchViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
     )
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        holder.bind(trackList.tracks[position])
+        holder.bind(trackList[position])
     }
 
-    override fun getItemCount() = trackList.tracks.size
+    override fun getItemCount() = trackList.size
 
     class SearchViewHolder(private val searchItem: View) : RecyclerView.ViewHolder(searchItem) {
 
@@ -39,8 +43,13 @@ class SearchAdapter(private val trackList: TrackList) :
                 .into(searchItem.findViewById(R.id.track_cover))
 
             searchItem.findViewById<TextView>(R.id.song_name).text = model.trackName
-            searchItem.findViewById<TextView>(R.id.artist_name).text = model.artistName
-            searchItem.findViewById<TextView>(R.id.track_time).text = model.trackTime
+            val artistName = searchItem.findViewById<TextView>(R.id.artist_name)
+            artistName.text = model.artistName
+            artistName.requestLayout()
+            searchItem.findViewById<TextView>(R.id.track_time).text = SimpleDateFormat(
+                "mm:ss",
+                Locale.getDefault()
+            ).format(model.trackTimeMillis)
         }
     }
 }
