@@ -29,6 +29,7 @@
             android:drawablePadding="@dimen/indent_8"
             android:drawableTint="@color/search_hint"
             android:hint="@string/search"
+            android:imeOptions="actionDone"
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="@dimen/indent_14"
@@ -55,4 +56,44 @@
         android:layout_height="match_parent"
         tools:listitem="@layout/item_track" />
 
+    <LinearLayout
+        android:id="@+id/empty_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/indent_24"
+        android:paddingTop="@dimen/indent_86"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/empty_screen_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            tools:src="@drawable/ic_no_internet" />
+
+        <TextView
+            android:id="@+id/empty_screen_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/text_16"
+            android:fontFamily="@font/ys_display_medium"
+            android:textAlignment="center"
+            android:textColor="@color/nothing_found"
+            android:textSize="@dimen/text_19"
+            tools:text="@string/search_no_internet" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/empty_screen_button"
+            style="@style/ButtonBase"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/indent_36"
+            android:layout_marginTop="@dimen/indent_24"
+            android:backgroundTint="@color/nothing_found"
+            android:text="@string/search_retry"
+            android:textSize="@dimen/text_14"
+            android:visibility="gone"
+            app:cornerRadius="@dimen/indent_36" />
+    </LinearLayout>
 </LinearLayout>
