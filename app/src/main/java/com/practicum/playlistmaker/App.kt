@@ -13,7 +13,7 @@ class App : Application() {
     }
 
     var darkTheme = false
-    lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate() {
         super.onCreate()

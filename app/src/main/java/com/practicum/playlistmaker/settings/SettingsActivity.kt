@@ -30,7 +30,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val nightModeSwitch = findViewById<SwitchCompat>(R.id.night_mode_switch)
         nightModeSwitch.isChecked = (applicationContext as App).darkTheme
-        nightModeSwitch.setOnCheckedChangeListener { switch, checked ->
+        nightModeSwitch.setOnCheckedChangeListener { _, checked ->
             (applicationContext as App).switchTheme(checked)
         }
 

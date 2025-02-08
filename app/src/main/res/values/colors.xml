@@ -17,5 +17,4 @@
     <color name="search_background">@color/light_grey</color>
     <color name="search_hint">@color/grey</color>
     <color name="artist_name">@color/grey</color>
-    <color name="nothing_found">@color/darkest_grey</color>
 </resources>

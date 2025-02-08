@@ -31,15 +31,17 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
     }
 
     lateinit var searchField: EditText
     lateinit var clearButton: ImageView
     lateinit var rwTrackList: RecyclerView
+    lateinit var historyContainer: LinearLayout
     lateinit var emptyScreen: LinearLayout
     var searchQuery: String? = null
     val tracks = mutableListOf<Track>()
-    val adapter = SearchAdapter()
+    lateinit var adapter: SearchAdapter
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -64,6 +66,7 @@ class SearchActivity : AppCompatActivity() {
 
         searchField = findViewById(R.id.search_input)
         clearButton = findViewById(R.id.search_clear)
+        historyContainer = findViewById(R.id.history_container)
         emptyScreen = findViewById(R.id.empty_screen)
 
         clearButton.setOnClickListener {
@@ -72,6 +75,16 @@ class SearchActivity : AppCompatActivity() {
             inputManager.hideSoftInputFromWindow(searchField.windowToken, 0)
             searchField.clearFocus()
         }
+
+        val searchHistory =
+            SearchHistory(
+                getSharedPreferences(SHARED_PREFERENCE_SEARCH_HISTORY, MODE_PRIVATE),
+                applicationContext
+            )
+        val rwTracksHistory = findViewById<RecyclerView>(R.id.track_history_list)
+        rwTracksHistory.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        rwTracksHistory.adapter = searchHistory.historyAdapter
 
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -89,12 +102,16 @@ class SearchActivity : AppCompatActivity() {
                     rwTrackList.isVisible = false
                     emptyScreen.isVisible = false
                 }
+
+                historyContainer.isVisible =
+                    searchField.hasFocus() && searchQuery.isNullOrEmpty() && searchHistory.trackList.isNotEmpty()
             }
         }
         searchField.addTextChangedListener(textWatcher)
 
         rwTrackList = findViewById(R.id.track_list)
         rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        adapter = SearchAdapter(searchHistory)
         adapter.trackList = tracks
         rwTrackList.adapter = adapter
 
@@ -103,6 +120,17 @@ class SearchActivity : AppCompatActivity() {
                 loadData()
             }
             false
+        }
+
+        searchField.setOnFocusChangeListener { _, hasFocus ->
+            searchHistory.getTracks()
+            historyContainer.isVisible =
+                hasFocus && searchQuery.isNullOrEmpty() && searchHistory.trackList.isNotEmpty()
+        }
+
+        findViewById<MaterialButton>(R.id.track_history_clear).setOnClickListener {
+            searchHistory.clearHistory()
+            historyContainer.isVisible = false
         }
     }
 
@@ -130,6 +158,7 @@ class SearchActivity : AppCompatActivity() {
                             if (response.body()?.results?.isNotEmpty() == true) {
                                 tracks.addAll(response.body()?.results ?: listOf())
                                 adapter.notifyDataSetChanged()
+                                rwTrackList.isVisible = true
                                 rwTrackList.layoutManager?.smoothScrollToPosition(
                                     rwTrackList, null, 0
                                 )
