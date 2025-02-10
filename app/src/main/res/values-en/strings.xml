@@ -12,4 +12,6 @@
     <string name="search_nothing_found">Nothing found</string>
     <string name="search_no_internet">Connection problem\n\nLoad failed. Check network connection</string>
     <string name="search_retry">Retry</string>
+    <string name="search_history">Search history</string>
+    <string name="clear_history">Clear history</string>
 </resources>

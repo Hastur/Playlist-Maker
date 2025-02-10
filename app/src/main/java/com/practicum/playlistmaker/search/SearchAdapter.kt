@@ -12,7 +12,7 @@ import com.practicum.playlistmaker.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class SearchAdapter() :
+class SearchAdapter(private val searchHistory: SearchHistory? = null) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     var trackList = listOf<Track>()
@@ -23,6 +23,11 @@ class SearchAdapter() :
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.bind(trackList[position])
+        if (searchHistory != null) {
+            holder.itemView.setOnClickListener {
+                searchHistory.addTrack(trackList[position])
+            }
+        }
     }
 
     override fun getItemCount() = trackList.size

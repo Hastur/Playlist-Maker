@@ -1,17 +1,16 @@
 package com.practicum.playlistmaker.settings
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -30,11 +29,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val nightModeSwitch = findViewById<SwitchCompat>(R.id.night_mode_switch)
-        nightModeSwitch.isChecked =
-            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-        nightModeSwitch.setOnClickListener {
-            if (nightModeSwitch.isChecked) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        nightModeSwitch.isChecked = (applicationContext as App).darkTheme
+        nightModeSwitch.setOnCheckedChangeListener { _, checked ->
+            (applicationContext as App).switchTheme(checked)
         }
 
         findViewById<TextView>(R.id.settings_share).setOnClickListener {
