@@ -18,6 +18,8 @@
     </style>
 
     <style name="TitleText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textColor">@color/title_text</item>
         <item name="android:textSize">@dimen/text_22</item>
@@ -25,7 +27,6 @@
 
     <style name="SubtitleText" parent="TitleText">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">@dimen/text_19</item>
     </style>
