@@ -80,13 +80,15 @@
         app:layout_constraintStart_toEndOf="@id/start_guideline"
         app:layout_constraintTop_toTopOf="@id/button_play" />
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_play"
+        style="@style/ButtonBase"
         android:layout_width="@dimen/play_button_size"
         android:layout_height="@dimen/play_button_size"
         android:layout_marginTop="@dimen/indent_30"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_play"
+        android:background="@drawable/ic_play"
+        app:backgroundTint="@color/button_play"
+        app:cornerRadius="@dimen/indent_86"
         app:layout_constraintBottom_toTopOf="@id/playing_time"
         app:layout_constraintEnd_toStartOf="@id/button_like"
         app:layout_constraintStart_toEndOf="@id/button_add_to_playlist"
