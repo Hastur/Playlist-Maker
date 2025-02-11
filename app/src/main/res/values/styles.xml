@@ -14,10 +14,10 @@
         <item name="android:layout_marginBottom">@dimen/indent_24</item>
         <item name="navigationIcon">@drawable/ic_arrow_back</item>
         <item name="navigationIconTint">@color/title_text</item>
-        <item name="titleTextAppearance">@style/TitleText</item>
+        <item name="titleTextAppearance">@style/TextBase</item>
     </style>
 
-    <style name="TitleText">
+    <style name="TextBase">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
@@ -25,7 +25,7 @@
         <item name="android:textSize">@dimen/text_22</item>
     </style>
 
-    <style name="SubtitleText" parent="TitleText">
+    <style name="SubtitleText" parent="TextBase">
         <item name="android:layout_width">match_parent</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">@dimen/text_19</item>
@@ -69,19 +69,47 @@
         <item name="cornerRadius">@dimen/indent_36</item>
     </style>
 
+    <style name="RoundButton" parent="ButtonBase">
+        <item name="android:layout_width">@dimen/round_button_size</item>
+        <item name="android:layout_height">@dimen/round_button_size</item>
+        <item name="android:backgroundTint">@color/round_button</item>
+        <item name="cornerRadius">@dimen/round_button_size</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/indent_0</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
     <style name="ButtonText">
         <item name="android:textColor">@color/blue</item>
     </style>
 
     <style name="RegularTextViewStyle">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/regular_text</item>
         <item name="android:textSize">@dimen/text_16</item>
     </style>
 
+    <style name="TextViewLabel" parent="RegularTextViewStyle">
+        <item name="android:paddingVertical">@dimen/indent_8</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">@dimen/text_13</item>
+    </style>
+
+    <style name="TextViewValue" parent="RegularTextViewStyle">
+        <item name="android:paddingStart">@dimen/indent_8</item>
+        <item name="android:paddingVertical">@dimen/indent_8</item>
+        <item name="android:textColor">@color/title_text</item>
+        <item name="android:textSize">@dimen/text_13</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="layout_constrainedWidth">true</item>
+        <item name="layout_constraintHorizontal_bias">1.0</item>
+    </style>
+
     <style name="MenuItem" parent="RegularTextViewStyle">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:paddingLeft">@dimen/indent_16</item>
         <item name="android:paddingTop">@dimen/indent_21</item>
         <item name="android:paddingRight">@dimen/indent_16</item>

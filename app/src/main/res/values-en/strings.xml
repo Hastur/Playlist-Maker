@@ -14,4 +14,9 @@
     <string name="search_retry">Retry</string>
     <string name="search_history">Search history</string>
     <string name="clear_history">Clear history</string>
+    <string name="track_time">Duration</string>
+    <string name="album">Album</string>
+    <string name="year">Year</string>
+    <string name="genre">Genre</string>
+    <string name="country">Country</string>
 </resources>
