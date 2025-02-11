@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.gson.Gson
 
 class App : Application() {
 
@@ -14,6 +15,8 @@ class App : Application() {
 
     var darkTheme = false
     private lateinit var sharedPreferences: SharedPreferences
+
+    private val gson = Gson()
 
     override fun onCreate() {
         super.onCreate()
@@ -30,4 +33,8 @@ class App : Application() {
         AppCompatDelegate.setDefaultNightMode(if (darkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
         sharedPreferences.edit().putBoolean(DARK_THEME, darkThemeEnabled).apply()
     }
+
+    fun <T> createFromJson(json: String, className: Class<T>) = gson.fromJson(json, className)
+
+    fun serializeToJson(obj: Any) = gson.toJson(obj)
 }

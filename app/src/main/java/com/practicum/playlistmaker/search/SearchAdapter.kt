@@ -12,7 +12,7 @@ import com.practicum.playlistmaker.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class SearchAdapter(private val searchHistory: SearchHistory? = null) :
+class SearchAdapter(private val clickListener: (Track) -> Unit) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     var trackList = listOf<Track>()
@@ -23,16 +23,12 @@ class SearchAdapter(private val searchHistory: SearchHistory? = null) :
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.bind(trackList[position])
-        if (searchHistory != null) {
-            holder.itemView.setOnClickListener {
-                searchHistory.addTrack(trackList[position])
-            }
-        }
     }
 
     override fun getItemCount() = trackList.size
 
-    class SearchViewHolder(private val searchItem: View) : RecyclerView.ViewHolder(searchItem) {
+    inner class SearchViewHolder(private val searchItem: View) :
+        RecyclerView.ViewHolder(searchItem) {
 
         fun bind(model: Track) {
             val cornerRadiusToPx = TypedValue.applyDimension(
@@ -55,6 +51,10 @@ class SearchAdapter(private val searchHistory: SearchHistory? = null) :
                 "mm:ss",
                 Locale.getDefault()
             ).format(model.trackTimeMillis)
+
+            searchItem.setOnClickListener {
+                clickListener(model)
+            }
         }
     }
 }

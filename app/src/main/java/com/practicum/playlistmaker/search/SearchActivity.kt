@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,7 +21,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.player.PlayerActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,6 +35,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
+        const val TRACK = "TRACK"
     }
 
     lateinit var searchField: EditText
@@ -111,7 +115,15 @@ class SearchActivity : AppCompatActivity() {
 
         rwTrackList = findViewById(R.id.track_list)
         rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        adapter = SearchAdapter(searchHistory)
+        adapter = SearchAdapter { track ->
+            searchHistory.addTrack(track)
+            startActivity(
+                Intent(this, PlayerActivity::class.java).putExtra(
+                    TRACK,
+                    (applicationContext as App).serializeToJson(track)
+                )
+            )
+        }
         adapter.trackList = tracks
         rwTrackList.adapter = adapter
 
@@ -187,7 +199,7 @@ class SearchActivity : AppCompatActivity() {
         rwTrackList.isVisible = !shouldShow
 
         if (shouldShow) {
-            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type?.imageId!!)
+            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type.imageId)
             findViewById<TextView>(R.id.empty_screen_text).setText(type.messageId)
 
             val buttonRetry = findViewById<MaterialButton>(R.id.empty_screen_button)
