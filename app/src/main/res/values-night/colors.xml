@@ -8,4 +8,6 @@
     <color name="search_background">@color/white</color>
     <color name="search_hint">@color/darkest_grey</color>
     <color name="artist_name">@color/white</color>
+    <color name="round_button">@color/white_25</color>
+    <color name="button_play">@color/white</color>
 </resources>

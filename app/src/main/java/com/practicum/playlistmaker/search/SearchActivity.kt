@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -21,6 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.Utils
+import com.practicum.playlistmaker.player.PlayerActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,12 +36,13 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
+        const val TRACK = "TRACK"
     }
 
     lateinit var searchField: EditText
     lateinit var clearButton: ImageView
     lateinit var rwTrackList: RecyclerView
-    lateinit var historyContainer: LinearLayout
+    lateinit var historyContainer: ScrollView
     lateinit var emptyScreen: LinearLayout
     var searchQuery: String? = null
     val tracks = mutableListOf<Track>()
@@ -111,7 +116,15 @@ class SearchActivity : AppCompatActivity() {
 
         rwTrackList = findViewById(R.id.track_list)
         rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        adapter = SearchAdapter(searchHistory)
+        adapter = SearchAdapter { track ->
+            searchHistory.addTrack(track)
+            startActivity(
+                Intent(this, PlayerActivity::class.java).putExtra(
+                    TRACK,
+                    Utils().serializeToJson(track)
+                )
+            )
+        }
         adapter.trackList = tracks
         rwTrackList.adapter = adapter
 
@@ -123,7 +136,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchField.setOnFocusChangeListener { _, hasFocus ->
-            searchHistory.getTracks()
+            if (hasFocus) searchHistory.getTracks()
             historyContainer.isVisible =
                 hasFocus && searchQuery.isNullOrEmpty() && searchHistory.trackList.isNotEmpty()
         }
@@ -187,7 +200,7 @@ class SearchActivity : AppCompatActivity() {
         rwTrackList.isVisible = !shouldShow
 
         if (shouldShow) {
-            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type?.imageId!!)
+            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type.imageId)
             findViewById<TextView>(R.id.empty_screen_text).setText(type.messageId)
 
             val buttonRetry = findViewById<MaterialButton>(R.id.empty_screen_button)

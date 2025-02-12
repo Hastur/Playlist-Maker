@@ -12,7 +12,7 @@ class App : Application() {
         const val DARK_THEME = "DARK_THEME"
     }
 
-    var darkTheme = false
+    private var darkTheme = false
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate() {
@@ -30,4 +30,6 @@ class App : Application() {
         AppCompatDelegate.setDefaultNightMode(if (darkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
         sharedPreferences.edit().putBoolean(DARK_THEME, darkThemeEnabled).apply()
     }
+
+    fun darkThemeEnabledCheck() = darkTheme
 }
