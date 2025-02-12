@@ -4,8 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.widget.Toast
-import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.player.PlayerActivity
 import com.practicum.playlistmaker.search.SearchActivity.Companion.TRACK
 
@@ -23,7 +22,7 @@ class SearchHistory(
         context.startActivity(
             Intent(context, PlayerActivity::class.java).putExtra(
                 TRACK,
-                (context as App).serializeToJson(track)
+                Utils().serializeToJson(track)
             )
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
@@ -32,8 +31,7 @@ class SearchHistory(
     fun getTracks() {
         val savedValue = sharedPreferences.getString(HISTORY_TRACK_LIST, null)
         if (savedValue != null) {
-            trackList = (context as App).createFromJson(savedValue, Array<Track>::class.java)
-                .toMutableList()
+            trackList = Utils().createFromJson(savedValue, Array<Track>::class.java).toMutableList()
             historyAdapter.trackList = trackList.asReversed()
         }
     }
@@ -46,10 +44,8 @@ class SearchHistory(
         trackList.add(track)
         historyAdapter.notifyDataSetChanged()
 
-        sharedPreferences.edit()
-            .putString(HISTORY_TRACK_LIST, (context as App).serializeToJson(trackList)).apply()
-
-        Toast.makeText(context, "Трек вошёл в историю", Toast.LENGTH_SHORT).show()
+        sharedPreferences.edit().putString(HISTORY_TRACK_LIST, Utils().serializeToJson(trackList))
+            .apply()
     }
 
     fun clearHistory() {
@@ -57,5 +53,4 @@ class SearchHistory(
 
         sharedPreferences.edit().remove(HISTORY_TRACK_LIST).apply()
     }
-
 }

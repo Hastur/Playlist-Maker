@@ -11,8 +11,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.search.SearchActivity.Companion.TRACK
 import com.practicum.playlistmaker.search.Track
 import java.text.SimpleDateFormat
@@ -33,9 +33,8 @@ class PlayerActivity : AppCompatActivity() {
             this.finish()
         }
 
-        val track = (applicationContext as App).createFromJson(
-            this.intent.getStringExtra(TRACK) ?: "", Track::class.java
-        )
+        val track =
+            Utils().createFromJson(this.intent.getStringExtra(TRACK) ?: "", Track::class.java)
 
         val cornerRadiusToPx =
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8F, resources.displayMetrics)

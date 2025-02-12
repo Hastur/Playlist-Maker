@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -21,8 +22,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.player.PlayerActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -41,7 +42,7 @@ class SearchActivity : AppCompatActivity() {
     lateinit var searchField: EditText
     lateinit var clearButton: ImageView
     lateinit var rwTrackList: RecyclerView
-    lateinit var historyContainer: LinearLayout
+    lateinit var historyContainer: ScrollView
     lateinit var emptyScreen: LinearLayout
     var searchQuery: String? = null
     val tracks = mutableListOf<Track>()
@@ -120,7 +121,7 @@ class SearchActivity : AppCompatActivity() {
             startActivity(
                 Intent(this, PlayerActivity::class.java).putExtra(
                     TRACK,
-                    (applicationContext as App).serializeToJson(track)
+                    Utils().serializeToJson(track)
                 )
             )
         }
@@ -135,7 +136,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchField.setOnFocusChangeListener { _, hasFocus ->
-            searchHistory.getTracks()
+            if (hasFocus) searchHistory.getTracks()
             historyContainer.isVisible =
                 hasFocus && searchQuery.isNullOrEmpty() && searchHistory.trackList.isNotEmpty()
         }
