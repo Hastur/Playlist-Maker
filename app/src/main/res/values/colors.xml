@@ -21,4 +21,5 @@
     <color name="artist_name">@color/grey</color>
     <color name="round_button">@color/darkest_grey_25</color>
     <color name="button_play">@color/darkest_grey</color>
+    <color name="icon_play">@color/white</color>
 </resources>

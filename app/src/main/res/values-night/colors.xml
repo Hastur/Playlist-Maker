@@ -10,4 +10,5 @@
     <color name="artist_name">@color/white</color>
     <color name="round_button">@color/white_25</color>
     <color name="button_play">@color/white</color>
+    <color name="icon_play">@color/darkest_grey</color>
 </resources>
