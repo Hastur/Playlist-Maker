@@ -38,7 +38,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
-        private const val INPUT_DEBOUNCE_DELAY = 2000L
+        private const val DEBOUNCE_DELAY = 2000L
         const val TRACK = "TRACK"
     }
 
@@ -93,7 +93,7 @@ class SearchActivity : AppCompatActivity() {
         rwTracksHistory.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         tracksHistoryAdapter = SearchAdapter { track ->
-            startActivity(
+            if (clickDebounce()) startActivity(
                 Intent(this, PlayerActivity::class.java).putExtra(
                     TRACK,
                     Utils().serializeToJson(track)
@@ -129,16 +129,17 @@ class SearchActivity : AppCompatActivity() {
         rwTrackList = findViewById(R.id.track_list)
         rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackListAdapter = SearchAdapter { track ->
+            if (clickDebounce()) {
+                tracksHistoryAdapter.trackList = searchHistory.addTrack(track)
+                tracksHistoryAdapter.notifyDataSetChanged()
 
-            tracksHistoryAdapter.trackList = searchHistory.addTrack(track)
-            tracksHistoryAdapter.notifyDataSetChanged()
-
-            startActivity(
-                Intent(this, PlayerActivity::class.java).putExtra(
-                    TRACK,
-                    Utils().serializeToJson(track)
+                startActivity(
+                    Intent(this, PlayerActivity::class.java).putExtra(
+                        TRACK,
+                        Utils().serializeToJson(track)
+                    )
                 )
-            )
+            }
         }
         trackListAdapter.trackList = tracks
         rwTrackList.adapter = trackListAdapter
@@ -163,7 +164,17 @@ class SearchActivity : AppCompatActivity() {
     private val searchRunnable = Runnable { loadData() }
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, INPUT_DEBOUNCE_DELAY)
+        handler.postDelayed(searchRunnable, DEBOUNCE_DELAY)
+    }
+
+    private var isClickAllowed = true
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, DEBOUNCE_DELAY)
+        }
+        return current
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
