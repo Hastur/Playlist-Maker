@@ -15,7 +15,7 @@ import java.util.Locale
 class SearchAdapter(private val clickListener: (Track) -> Unit) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
-    var trackList = listOf<Track>()
+    var trackList = mutableListOf<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = SearchViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_track, parent, false)
