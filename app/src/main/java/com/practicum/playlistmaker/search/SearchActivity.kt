@@ -3,9 +3,10 @@ package com.practicum.playlistmaker.search
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
@@ -22,6 +23,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.player.PlayerActivity
@@ -34,8 +36,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
+        private const val SEARCH_TEXT = "SEARCH_TEXT"
+        private const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
+        private const val INPUT_DEBOUNCE_DELAY = 2000L
         const val TRACK = "TRACK"
     }
 
@@ -98,6 +101,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 clearButton.isVisible = !searchField.text.isNullOrEmpty()
+                searchDebounce()
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -128,13 +132,6 @@ class SearchActivity : AppCompatActivity() {
         adapter.trackList = tracks
         rwTrackList.adapter = adapter
 
-        searchField.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loadData()
-            }
-            false
-        }
-
         searchField.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) searchHistory.getTracks()
             historyContainer.isVisible =
@@ -145,6 +142,13 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.clearHistory()
             historyContainer.isVisible = false
         }
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { loadData() }
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, INPUT_DEBOUNCE_DELAY)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -160,12 +164,20 @@ class SearchActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun loadData() {
         if (!searchQuery.isNullOrEmpty()) {
+
+            val progressBar = findViewById<CircularProgressIndicator>(R.id.progressBar)
+            progressBar.isVisible = true
+            rwTrackList.isVisible = false
+            historyContainer.isVisible = false
+            emptyScreen.isVisible = false
+
             searchService.searchTrack(searchQuery!!)
                 .enqueue(object : Callback<SearchResponse> {
                     override fun onResponse(
                         call: Call<SearchResponse?>,
                         response: Response<SearchResponse?>
                     ) {
+                        progressBar.isVisible = false
                         if (response.code() == 200) {
                             tracks.clear()
                             if (response.body()?.results?.isNotEmpty() == true) {
@@ -187,6 +199,7 @@ class SearchActivity : AppCompatActivity() {
                         call: Call<SearchResponse?>,
                         error: Throwable
                     ) {
+                        progressBar.isVisible = false
                         toggleEmptyScreen(MessageTypes.NoInternet, error.message.toString())
                     }
                 })

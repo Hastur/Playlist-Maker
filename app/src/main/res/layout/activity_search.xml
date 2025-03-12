@@ -50,13 +50,21 @@
 
     </FrameLayout>
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/progress_bar_size"
+        android:layout_height="@dimen/progress_bar_size"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/indent_124"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/track_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:listitem="@layout/item_track"
-        tools:visibility="gone" />
+        tools:listitem="@layout/item_track" />
 
     <ScrollView
         android:id="@+id/history_container"

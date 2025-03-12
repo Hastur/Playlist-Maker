@@ -9,7 +9,7 @@ data class Track(
     val trackTimeMillis: Long,
     val artworkUrl100: String,
     val collectionName: String?,
-    val releaseDate: Date,
+    val releaseDate: Date?,
     val primaryGenreName: String,
     val country: String
 ) {

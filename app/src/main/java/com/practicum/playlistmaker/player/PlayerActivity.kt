@@ -57,7 +57,11 @@ class PlayerActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.label_album).isVisible = false
             album.isVisible = false
         } else album.text = track.collectionName
-        findViewById<TextView>(R.id.value_year).text =
+        val releaseDate = findViewById<TextView>(R.id.value_year)
+        if (track.releaseDate == null) {
+            findViewById<TextView>(R.id.label_year).isVisible = false
+            releaseDate.isVisible = false
+        } else releaseDate.text =
             SimpleDateFormat("yyyy", Locale.getDefault()).format(track.releaseDate)
         findViewById<TextView>(R.id.value_genre).text = track.primaryGenreName
         findViewById<TextView>(R.id.value_country).text = track.country
