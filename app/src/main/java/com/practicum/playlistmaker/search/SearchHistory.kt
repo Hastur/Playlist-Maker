@@ -12,7 +12,7 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     private var trackList = mutableListOf<Track>()
 
-    fun getTracks(): MutableList<Track> {
+    fun getTracks(): List<Track> {
         val savedValue = sharedPreferences.getString(HISTORY_TRACK_LIST, null)
         if (savedValue != null) {
             trackList = Utils().createFromJson(savedValue, Array<Track>::class.java).toMutableList()
@@ -20,7 +20,7 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
         return trackList
     }
 
-    fun addTrack(track: Track): MutableList<Track> {
+    fun addTrack(track: Track): List<Track> {
         if (trackList.any { it.trackId == track.trackId }) {
             trackList.remove(trackList.first { it.trackId == track.trackId })
         }

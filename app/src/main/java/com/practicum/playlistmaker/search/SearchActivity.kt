@@ -51,7 +51,7 @@ class SearchActivity : AppCompatActivity() {
     private val tracks = mutableListOf<Track>()
     private lateinit var trackListAdapter: SearchAdapter
     private lateinit var tracksHistoryAdapter: SearchAdapter
-    private var tracksHistory = mutableListOf<Track>()
+    private var tracksHistory = listOf<Track>()
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -154,7 +154,7 @@ class SearchActivity : AppCompatActivity() {
 
         findViewById<MaterialButton>(R.id.track_history_clear).setOnClickListener {
             searchHistory.clearHistory()
-            tracksHistoryAdapter.trackList.clear()
+            tracksHistoryAdapter.trackList = listOf()
             tracksHistoryAdapter.notifyDataSetChanged()
             historyContainer.isVisible = false
         }
