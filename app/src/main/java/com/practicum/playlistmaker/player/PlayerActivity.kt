@@ -112,9 +112,7 @@ class PlayerActivity : AppCompatActivity() {
                 playerState = STATE_PREPARED
             }
             mediaPlayer.setOnCompletionListener {
-                playButton.setIconResource(R.drawable.ic_play)
-                trackTimer.setText(R.string.track_start_time)
-                playerState = STATE_PREPARED
+                stopPlayer()
             }
         } else playerState = STATE_UNAVAILABLE
     }
@@ -144,6 +142,14 @@ class PlayerActivity : AppCompatActivity() {
         playerState = STATE_PAUSED
     }
 
+    private fun stopPlayer() {
+        mediaPlayer.pause()
+        mediaPlayer.seekTo(0)
+        playButton.setIconResource(R.drawable.ic_play)
+        trackTimer.setText(R.string.track_start_time)
+        playerState = STATE_PREPARED
+    }
+
     private val handler = Handler(Looper.getMainLooper())
     private fun startPlayingTimer() {
         val playedMinutes = trackTimer.text.toString().substringBefore(":").toLong()
@@ -160,9 +166,13 @@ class PlayerActivity : AppCompatActivity() {
                 if (playerState == STATE_PLAYING) {
                     val nowPlayingTime = System.currentTimeMillis() - startTime
                     val displayedTime = (playedTime + nowPlayingTime) / DELAY
-                    trackTimer.text =
-                        String.format("%02d:%02d", displayedTime / 60, displayedTime % 60)
-                    handler.postDelayed(this, DELAY)
+                    if (displayedTime <= 30) {
+                        trackTimer.text =
+                            String.format("%02d:%02d", displayedTime / 60, displayedTime % 60)
+                        handler.postDelayed(this, DELAY)
+                    } else {
+                        stopPlayer()
+                    }
                 }
             }
         }
