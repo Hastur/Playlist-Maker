@@ -147,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
         searchField.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && searchQuery.isNullOrEmpty()) {
                 if (tracksHistory.isEmpty()) tracksHistory = searchHistory.getTracks()
-                tracksHistoryAdapter.trackList = tracksHistory
+                tracksHistoryAdapter.trackList = tracksHistory.asReversed()
                 historyContainer.isVisible = tracksHistory.isNotEmpty()
             } else historyContainer.isVisible = false
         }
