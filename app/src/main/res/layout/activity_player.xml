@@ -85,9 +85,11 @@
         android:layout_width="@dimen/play_button_size"
         android:layout_height="@dimen/play_button_size"
         android:layout_marginTop="@dimen/indent_30"
-        android:background="@drawable/ic_play"
-        app:backgroundTint="@color/button_play"
-        app:cornerRadius="@dimen/indent_86"
+        android:backgroundTint="@color/button_play"
+        app:cornerRadius="@dimen/play_button_size"
+        app:icon="@drawable/ic_play"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/indent_0"
         app:layout_constraintBottom_toTopOf="@id/playing_time"
         app:layout_constraintEnd_toStartOf="@id/button_like"
         app:layout_constraintStart_toEndOf="@id/button_add_to_playlist"
@@ -108,12 +110,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/indent_12"
+        android:text="@string/track_start_time"
         android:textSize="@dimen/text_14"
         app:layout_constraintBottom_toTopOf="@id/label_track_time"
         app:layout_constraintEnd_toStartOf="@id/end_guideline"
         app:layout_constraintStart_toEndOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/button_play"
-        tools:text="1:23" />
+        app:layout_constraintTop_toBottomOf="@id/button_play" />
 
     <!--Track time-->
     <TextView

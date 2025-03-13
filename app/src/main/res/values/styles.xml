@@ -56,7 +56,6 @@
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">@dimen/indent_8</item>
         <item name="iconTint">@color/main_menu_item</item>
-        <item name="android:textAppearance">@style/ButtonText</item>
     </style>
 
     <style name="RoundedCornersButton" parent="ButtonBase">
@@ -77,10 +76,6 @@
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">@dimen/indent_0</item>
         <item name="iconTint">@color/white</item>
-    </style>
-
-    <style name="ButtonText">
-        <item name="android:textColor">@color/blue</item>
     </style>
 
     <style name="RegularTextViewStyle">
