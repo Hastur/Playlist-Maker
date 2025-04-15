@@ -1,8 +1,9 @@
-package com.practicum.playlistmaker.search
+package com.practicum.playlistmaker.search_history
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import com.practicum.playlistmaker.Utils
+import com.practicum.playlistmaker.search.domain.models.Track
 
 @SuppressLint("NotifyDataSetChanged")
 class SearchHistory(private val sharedPreferences: SharedPreferences) {

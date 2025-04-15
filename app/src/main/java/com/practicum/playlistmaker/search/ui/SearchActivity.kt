@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search
+package com.practicum.playlistmaker.search.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -27,11 +27,10 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.player.PlayerActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.search.Creator
+import com.practicum.playlistmaker.search.domain.api.TrackInteractor
+import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.search_history.SearchHistory
 
 class SearchActivity : AppCompatActivity() {
 
@@ -53,12 +52,12 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var tracksHistoryAdapter: SearchAdapter
     private var tracksHistory = listOf<Track>()
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://itunes.apple.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val searchService = retrofit.create(SearchApi::class.java)
+    //private val retrofit = Retrofit.Builder()
+    //    .baseUrl("https://itunes.apple.com")
+    //    .addConverterFactory(GsonConverterFactory.create())
+    //    .build()
+//
+    //private val searchService = retrofit.create(SearchApi::class.java)
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -197,17 +196,14 @@ class SearchActivity : AppCompatActivity() {
             historyContainer.isVisible = false
             emptyScreen.isVisible = false
 
-            searchService.searchTrack(searchQuery!!)
-                .enqueue(object : Callback<SearchResponse> {
-                    override fun onResponse(
-                        call: Call<SearchResponse?>,
-                        response: Response<SearchResponse?>
-                    ) {
-                        progressBar.isVisible = false
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                tracks.addAll(response.body()?.results ?: listOf())
+            Creator.provideTrackInteractor()
+                .searchTrack(searchQuery ?: "", object : TrackInteractor.TrackConsumer {
+                    override fun consume(foundTracks: List<Track>) {
+                        runOnUiThread {
+                            progressBar.isVisible = false
+                            if (foundTracks.isNotEmpty()) {
+                                tracks.clear()
+                                tracks.addAll(foundTracks)
                                 trackListAdapter.notifyDataSetChanged()
                                 rwTrackList.isVisible = true
                                 rwTrackList.layoutManager?.smoothScrollToPosition(
@@ -215,18 +211,7 @@ class SearchActivity : AppCompatActivity() {
                                 )
                                 toggleEmptyScreen(null, null)
                             } else toggleEmptyScreen(MessageTypes.NothingFound, null)
-                        } else toggleEmptyScreen(
-                            MessageTypes.NoInternet,
-                            response.code().toString()
-                        )
-                    }
-
-                    override fun onFailure(
-                        call: Call<SearchResponse?>,
-                        error: Throwable
-                    ) {
-                        progressBar.isVisible = false
-                        toggleEmptyScreen(MessageTypes.NoInternet, error.message.toString())
+                        }
                     }
                 })
         }

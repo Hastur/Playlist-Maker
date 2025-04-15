@@ -19,8 +19,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.button.MaterialButton
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
-import com.practicum.playlistmaker.search.SearchActivity.Companion.TRACK
-import com.practicum.playlistmaker.search.Track
+import com.practicum.playlistmaker.search.ui.SearchActivity.Companion.TRACK
+import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
