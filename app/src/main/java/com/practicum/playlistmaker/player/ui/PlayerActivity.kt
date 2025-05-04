@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.player
+package com.practicum.playlistmaker.player.ui
 
 import android.annotation.SuppressLint
 import android.media.MediaPlayer
@@ -19,6 +19,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.button.MaterialButton
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
+import com.practicum.playlistmaker.search.Creator
 import com.practicum.playlistmaker.search.ui.SearchActivity.Companion.TRACK
 import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
@@ -35,8 +36,9 @@ class PlayerActivity : AppCompatActivity() {
         private const val DELAY = 1000L
     }
 
-    private var mediaPlayer = MediaPlayer()
-    private var playerState = STATE_DEFAULT
+    //private var mediaPlayer = MediaPlayer()
+    //private var playerState = STATE_DEFAULT
+    private val player = Creator.providePlayerInteractor()
     private lateinit var playButton: MaterialButton
     private lateinit var trackTimer: TextView
 

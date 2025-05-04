@@ -26,7 +26,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
-import com.practicum.playlistmaker.player.PlayerActivity
+import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.Creator
 import com.practicum.playlistmaker.search.domain.api.TrackInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
@@ -51,13 +51,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackListAdapter: SearchAdapter
     private lateinit var tracksHistoryAdapter: SearchAdapter
     private var tracksHistory = listOf<Track>()
-
-    //private val retrofit = Retrofit.Builder()
-    //    .baseUrl("https://itunes.apple.com")
-    //    .addConverterFactory(GsonConverterFactory.create())
-    //    .build()
-//
-    //private val searchService = retrofit.create(SearchApi::class.java)
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
