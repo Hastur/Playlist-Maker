@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker
 
-import android.content.SharedPreferences
+import android.content.Context
 import android.media.MediaPlayer
 import com.practicum.playlistmaker.player.data.PlayerRepositoryImpl
 import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
@@ -17,18 +17,19 @@ import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryReposi
 import com.practicum.playlistmaker.search_history.domain.impl.SearchHistoryInteractorImpl
 
 object Creator {
-    private fun getSearchRepository(): SearchRepository =
-        SearchRepositoryImpl(RetrofitNetworkClient())
+    private fun getSearchRepository(context: Context): SearchRepository =
+        SearchRepositoryImpl(RetrofitNetworkClient(context))
 
-    fun provideSearchInteractor(): SearchInteractor = SearchInteractorImpl(getSearchRepository())
+    fun provideSearchInteractor(context: Context): SearchInteractor =
+        SearchInteractorImpl(getSearchRepository(context))
 
     private fun getPlayerRepository(): PlayerRepository = PlayerRepositoryImpl(MediaPlayer())
 
     fun providePlayerInteractor(): PlayerInteractor = PlayerInteractorImpl(getPlayerRepository())
 
-    private fun getSearchHistoryRepository(sharedPreferences: SharedPreferences): SearchHistoryRepository =
-        SearchHistoryRepositoryImpl(sharedPreferences)
+    private fun getSearchHistoryRepository(context: Context): SearchHistoryRepository =
+        SearchHistoryRepositoryImpl(context)
 
-    fun provideSearchHistoryInteractor(sharedPreferences: SharedPreferences): SearchHistoryInteractor =
-        SearchHistoryInteractorImpl(getSearchHistoryRepository(sharedPreferences))
+    fun provideSearchHistoryInteractor(context: Context): SearchHistoryInteractor =
+        SearchHistoryInteractorImpl(getSearchHistoryRepository(context))
 }

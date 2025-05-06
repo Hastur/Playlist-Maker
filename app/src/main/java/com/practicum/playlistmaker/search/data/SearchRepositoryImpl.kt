@@ -6,23 +6,29 @@ import com.practicum.playlistmaker.search.domain.api.SearchRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 
 class SearchRepositoryImpl(private val networkClient: NetworkClient) : SearchRepository {
-    override fun searchTrack(searchText: String): List<Track> {
+    override fun searchTrack(searchText: String): List<Track>? {
         val response = networkClient.makeRequest(TrackSearchRequest(searchText))
-        return if (response.resultCode == 200) {
-            (response as TrackSearchResponse).results.map {
-                Track(
-                    it.trackId,
-                    it.trackName,
-                    it.artistName,
-                    it.trackTimeMillis,
-                    it.artworkUrl100,
-                    it.collectionName,
-                    it.releaseDate,
-                    it.primaryGenreName,
-                    it.country,
-                    it.previewUrl
-                )
+        return when (response.resultCode) {
+            200 -> {
+                (response as TrackSearchResponse).results.map {
+                    Track(
+                        it.trackId,
+                        it.trackName,
+                        it.artistName,
+                        it.trackTimeMillis,
+                        it.artworkUrl100,
+                        it.collectionName,
+                        it.releaseDate,
+                        it.primaryGenreName,
+                        it.country,
+                        it.previewUrl
+                    )
+                }
             }
-        } else emptyList()
+
+            -1 -> null
+
+            else -> emptyList()
+        }
     }
 }

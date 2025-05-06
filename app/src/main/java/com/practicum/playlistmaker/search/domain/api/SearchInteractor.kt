@@ -6,6 +6,6 @@ interface SearchInteractor {
     fun searchTrack(searchText: String, consumer: TrackConsumer)
 
     interface TrackConsumer {
-        fun consume(foundTracks: List<Track>)
+        fun consume(foundTracks: List<Track>?)
     }
 }

@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -35,7 +34,6 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val SEARCH_TEXT = "SEARCH_TEXT"
-        private const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
         private const val DEBOUNCE_DELAY = 2000L
         const val TRACK = "TRACK"
     }
@@ -78,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
             searchField.clearFocus()
         }
 
-        val searchHistory = Creator.provideSearchHistoryInteractor(getSharedPreferences(SHARED_PREFERENCE_SEARCH_HISTORY, MODE_PRIVATE))
+        val searchHistory = Creator.provideSearchHistoryInteractor(applicationContext)
         val rwTracksHistory = findViewById<RecyclerView>(R.id.track_history_list)
         rwTracksHistory.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -187,28 +185,30 @@ class SearchActivity : AppCompatActivity() {
             historyContainer.isVisible = false
             emptyScreen.isVisible = false
 
-            Creator.provideSearchInteractor()
+            Creator.provideSearchInteractor(applicationContext)
                 .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
-                    override fun consume(foundTracks: List<Track>) {
+                    override fun consume(foundTracks: List<Track>?) {
                         runOnUiThread {
                             progressBar.isVisible = false
-                            if (foundTracks.isNotEmpty()) {
-                                tracks.clear()
-                                tracks.addAll(foundTracks)
-                                trackListAdapter.notifyDataSetChanged()
-                                rwTrackList.isVisible = true
-                                rwTrackList.layoutManager?.smoothScrollToPosition(
-                                    rwTrackList, null, 0
-                                )
-                                toggleEmptyScreen(null, null)
-                            } else toggleEmptyScreen(MessageTypes.NothingFound, null)
+                            if (foundTracks != null) {
+                                if (foundTracks.isNotEmpty()) {
+                                    tracks.clear()
+                                    tracks.addAll(foundTracks)
+                                    trackListAdapter.notifyDataSetChanged()
+                                    rwTrackList.isVisible = true
+                                    rwTrackList.layoutManager?.smoothScrollToPosition(
+                                        rwTrackList, null, 0
+                                    )
+                                    toggleEmptyScreen(null)
+                                } else toggleEmptyScreen(MessageTypes.NothingFound)
+                            } else toggleEmptyScreen(MessageTypes.NoInternet)
                         }
                     }
                 })
         }
     }
 
-    private fun toggleEmptyScreen(type: MessageTypes?, error: String?) {
+    private fun toggleEmptyScreen(type: MessageTypes?) {
         val shouldShow = type != null
 
         emptyScreen.isVisible = shouldShow
@@ -223,8 +223,6 @@ class SearchActivity : AppCompatActivity() {
             buttonRetry.setOnClickListener {
                 loadData()
             }
-
-            if (error != null) Toast.makeText(applicationContext, error, Toast.LENGTH_LONG).show()
         }
     }
 
