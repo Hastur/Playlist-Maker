@@ -24,13 +24,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.player.ui.PlayerActivity
-import com.practicum.playlistmaker.search.Creator
-import com.practicum.playlistmaker.search.domain.api.TrackInteractor
+import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.search_history.SearchHistory
 
 class SearchActivity : AppCompatActivity() {
 
@@ -79,8 +78,7 @@ class SearchActivity : AppCompatActivity() {
             searchField.clearFocus()
         }
 
-        val searchHistory =
-            SearchHistory(getSharedPreferences(SHARED_PREFERENCE_SEARCH_HISTORY, MODE_PRIVATE))
+        val searchHistory = Creator.provideSearchHistoryInteractor(getSharedPreferences(SHARED_PREFERENCE_SEARCH_HISTORY, MODE_PRIVATE))
         val rwTracksHistory = findViewById<RecyclerView>(R.id.track_history_list)
         rwTracksHistory.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -189,8 +187,8 @@ class SearchActivity : AppCompatActivity() {
             historyContainer.isVisible = false
             emptyScreen.isVisible = false
 
-            Creator.provideTrackInteractor()
-                .searchTrack(searchQuery ?: "", object : TrackInteractor.TrackConsumer {
+            Creator.provideSearchInteractor()
+                .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
                     override fun consume(foundTracks: List<Track>) {
                         runOnUiThread {
                             progressBar.isVisible = false

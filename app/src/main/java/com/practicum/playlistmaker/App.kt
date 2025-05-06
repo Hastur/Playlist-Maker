@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 class App : Application() {
 
     companion object {
-        const val SHARED_PREFERENCE_DARK_THEME = "SHARED_PREFERENCE_DARK_THEME"
+        private const val SHARED_PREFERENCE_DARK_THEME = "SHARED_PREFERENCE_DARK_THEME"
         const val DARK_THEME = "DARK_THEME"
     }
 
