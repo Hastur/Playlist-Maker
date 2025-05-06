@@ -17,6 +17,7 @@ class PlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : PlayerReposit
         }
         mediaPlayer.setOnCompletionListener {
             onComplete()
+            stopPlayer()
         }
     }
 
@@ -45,7 +46,9 @@ class PlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : PlayerReposit
         state = PlayerStateDto.STATE_PREPARED
     }
 
-    override fun resetPlayer() {
-        mediaPlayer.reset()
+    override fun releasePlayer() {
+        mediaPlayer.release()
     }
+
+    override fun getPlayingTime(): Int = mediaPlayer.currentPosition
 }

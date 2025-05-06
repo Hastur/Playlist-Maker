@@ -8,5 +8,6 @@ interface PlayerRepository {
     fun startPlayer()
     fun pausePlayer()
     fun stopPlayer()
-    fun resetPlayer()
+    fun releasePlayer()
+    fun getPlayingTime(): Int
 }

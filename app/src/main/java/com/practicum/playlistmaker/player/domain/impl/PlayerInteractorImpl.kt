@@ -36,7 +36,9 @@ class PlayerInteractorImpl(private val repository: PlayerRepository) : PlayerInt
         onPause()
     }
 
-    override fun resetPlayer() {
-        repository.resetPlayer()
+    override fun releasePlayer() {
+        repository.releasePlayer()
     }
+
+    override fun getPlayingTime(): Int = repository.getPlayingTime()
 }
