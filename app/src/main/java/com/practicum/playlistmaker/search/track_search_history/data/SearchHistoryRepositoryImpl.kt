@@ -1,10 +1,10 @@
-package com.practicum.playlistmaker.search_history.data
+package com.practicum.playlistmaker.search.track_search_history.data
 
 import android.content.Context.MODE_PRIVATE
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.Utils
-import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryRepository
+import com.practicum.playlistmaker.search.track_search.domain.models.Track
+import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryRepository
 
 class SearchHistoryRepositoryImpl : SearchHistoryRepository {
     companion object {

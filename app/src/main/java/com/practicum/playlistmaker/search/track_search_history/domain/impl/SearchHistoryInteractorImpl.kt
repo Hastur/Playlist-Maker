@@ -1,8 +1,8 @@
-package com.practicum.playlistmaker.search_history.domain.impl
+package com.practicum.playlistmaker.search.track_search_history.domain.impl
 
-import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryInteractor
-import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryRepository
+import com.practicum.playlistmaker.search.track_search.domain.models.Track
+import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryRepository
 
 class SearchHistoryInteractorImpl(private val repository: SearchHistoryRepository) :
     SearchHistoryInteractor {

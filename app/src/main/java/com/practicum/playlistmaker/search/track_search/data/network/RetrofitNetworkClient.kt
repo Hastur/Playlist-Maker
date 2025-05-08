@@ -1,12 +1,12 @@
-package com.practicum.playlistmaker.search.data.network
+package com.practicum.playlistmaker.search.track_search.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.Creator
-import com.practicum.playlistmaker.search.data.NetworkClient
-import com.practicum.playlistmaker.search.data.dto.Response
-import com.practicum.playlistmaker.search.data.dto.TrackSearchRequest
+import com.practicum.playlistmaker.search.track_search.data.NetworkClient
+import com.practicum.playlistmaker.search.track_search.data.dto.Response
+import com.practicum.playlistmaker.search.track_search.data.dto.TrackSearchRequest
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

@@ -1,8 +1,8 @@
-package com.practicum.playlistmaker.search.data.dto
+package com.practicum.playlistmaker.search.track_search.domain.models
 
 import java.util.Date
 
-data class TrackDto(
+data class Track(
     val trackId: Int,
     val trackName: String,
     val artistName: String,
@@ -13,4 +13,6 @@ data class TrackDto(
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String?
-)
+) {
+    fun getCoverArtwork() = artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
+}

@@ -1,7 +1,7 @@
-package com.practicum.playlistmaker.search.domain.impl
+package com.practicum.playlistmaker.search.track_search.domain.impl
 
-import com.practicum.playlistmaker.search.domain.api.SearchInteractor
-import com.practicum.playlistmaker.search.domain.api.SearchRepository
+import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
+import com.practicum.playlistmaker.search.track_search.domain.api.SearchRepository
 import java.util.concurrent.Executors
 
 class SearchInteractorImpl(private val repository: SearchRepository) : SearchInteractor {

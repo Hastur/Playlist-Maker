@@ -19,8 +19,8 @@ import com.google.android.material.button.MaterialButton
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.Creator
-import com.practicum.playlistmaker.search.ui.SearchActivity.Companion.TRACK
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.search.track_search.ui.SearchActivity.Companion.TRACK
+import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.time.DurationUnit

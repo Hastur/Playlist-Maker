@@ -23,7 +23,7 @@
             android:name=".library.LibraryActivity"
             android:exported="false" />
         <activity
-            android:name=".search.ui.SearchActivity"
+            android:name=".search.track_search.ui.SearchActivity"
             android:exported="false" />
         <activity
             android:name=".settings.ui.SettingsActivity"

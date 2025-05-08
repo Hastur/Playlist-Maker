@@ -1,6 +1,6 @@
-package com.practicum.playlistmaker.search.data.network
+package com.practicum.playlistmaker.search.track_search.data.network
 
-import com.practicum.playlistmaker.search.data.dto.TrackSearchResponse
+import com.practicum.playlistmaker.search.track_search.data.dto.TrackSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.ui
+package com.practicum.playlistmaker.search.track_search.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -27,8 +27,8 @@ import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.player.ui.PlayerActivity
-import com.practicum.playlistmaker.search.domain.api.SearchInteractor
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
+import com.practicum.playlistmaker.search.track_search.domain.models.Track
 
 class SearchActivity : AppCompatActivity() {
 
