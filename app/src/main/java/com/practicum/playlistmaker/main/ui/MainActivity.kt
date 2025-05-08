@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.practicum.playlistmaker.library.LibraryActivity
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.ui.SearchActivity
-import com.practicum.playlistmaker.settings.SettingsActivity
+import com.practicum.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

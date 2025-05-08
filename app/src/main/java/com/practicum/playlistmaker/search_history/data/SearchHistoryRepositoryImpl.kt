@@ -6,8 +6,7 @@ import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryRepository
 
-class SearchHistoryRepositoryImpl :
-    SearchHistoryRepository {
+class SearchHistoryRepositoryImpl : SearchHistoryRepository {
     companion object {
         private const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
         private const val HISTORY_TRACK_LIST = "HISTORY_TRACK_LIST"

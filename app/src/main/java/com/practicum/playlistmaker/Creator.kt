@@ -15,6 +15,10 @@ import com.practicum.playlistmaker.search_history.data.SearchHistoryRepositoryIm
 import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search_history.domain.impl.SearchHistoryInteractorImpl
+import com.practicum.playlistmaker.settings.data.SettingsRepositoryImpl
+import com.practicum.playlistmaker.settings.domain.api.SettingsInteractor
+import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
+import com.practicum.playlistmaker.settings.domain.impl.SettingsInteractorImpl
 
 object Creator {
     lateinit var application: Application
@@ -34,4 +38,9 @@ object Creator {
 
     fun provideSearchHistoryInteractor(): SearchHistoryInteractor =
         SearchHistoryInteractorImpl(getSearchHistoryRepository())
+
+    private fun getSettingsRepository(): SettingsRepository = SettingsRepositoryImpl()
+
+    fun provideSettingsInteractor(): SettingsInteractor =
+        SettingsInteractorImpl(getSettingsRepository())
 }
