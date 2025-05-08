@@ -5,7 +5,7 @@ import android.app.Application
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        Creator.application = applicationContext as Application
+        Creator.setApplication(this)
 
         val themeSettings = Creator.provideSettingsInteractor()
         themeSettings.switchTheme(themeSettings.checkDarkThemeEnabled())

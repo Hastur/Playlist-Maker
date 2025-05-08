@@ -21,10 +21,14 @@ import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
 import com.practicum.playlistmaker.settings.domain.impl.SettingsInteractorImpl
 
 object Creator {
-    lateinit var application: Application
+    private lateinit var application: Application
+
+    fun setApplication(app: Application) {
+        application = app
+    }
 
     private fun getSearchRepository(): SearchRepository =
-        SearchRepositoryImpl(RetrofitNetworkClient())
+        SearchRepositoryImpl(RetrofitNetworkClient(application))
 
     fun provideSearchInteractor(): SearchInteractor =
         SearchInteractorImpl(getSearchRepository())
@@ -34,12 +38,12 @@ object Creator {
     fun providePlayerInteractor(): PlayerInteractor = PlayerInteractorImpl(getPlayerRepository())
 
     private fun getSearchHistoryRepository(): SearchHistoryRepository =
-        SearchHistoryRepositoryImpl()
+        SearchHistoryRepositoryImpl(application)
 
     fun provideSearchHistoryInteractor(): SearchHistoryInteractor =
         SearchHistoryInteractorImpl(getSearchHistoryRepository())
 
-    private fun getSettingsRepository(): SettingsRepository = SettingsRepositoryImpl()
+    private fun getSettingsRepository(): SettingsRepository = SettingsRepositoryImpl(application)
 
     fun provideSettingsInteractor(): SettingsInteractor =
         SettingsInteractorImpl(getSettingsRepository())
