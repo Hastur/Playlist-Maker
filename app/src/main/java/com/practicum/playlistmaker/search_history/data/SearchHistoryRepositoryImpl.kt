@@ -1,12 +1,12 @@
 package com.practicum.playlistmaker.search_history.data
 
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search_history.domain.api.SearchHistoryRepository
 
-class SearchHistoryRepositoryImpl(context: Context) :
+class SearchHistoryRepositoryImpl :
     SearchHistoryRepository {
     companion object {
         private const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
@@ -14,7 +14,7 @@ class SearchHistoryRepositoryImpl(context: Context) :
     }
 
     private val sharedPreferences =
-        context.getSharedPreferences(SHARED_PREFERENCE_SEARCH_HISTORY, MODE_PRIVATE)
+        Creator.application.getSharedPreferences(SHARED_PREFERENCE_SEARCH_HISTORY, MODE_PRIVATE)
 
     override fun getTracks(): List<Track> {
         val savedValue = sharedPreferences.getString(HISTORY_TRACK_LIST, null)

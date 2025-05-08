@@ -76,7 +76,7 @@ class SearchActivity : AppCompatActivity() {
             searchField.clearFocus()
         }
 
-        val searchHistory = Creator.provideSearchHistoryInteractor(applicationContext)
+        val searchHistory = Creator.provideSearchHistoryInteractor()
         val rwTracksHistory = findViewById<RecyclerView>(R.id.track_history_list)
         rwTracksHistory.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -118,7 +118,8 @@ class SearchActivity : AppCompatActivity() {
         rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackListAdapter = SearchAdapter { track ->
             if (clickDebounce()) {
-                tracksHistoryAdapter.trackList = searchHistory.addTrack(track)
+                tracksHistory = searchHistory.addTrack(track)
+                tracksHistoryAdapter.trackList = tracksHistory
                 tracksHistoryAdapter.notifyDataSetChanged()
 
                 startActivity(
@@ -185,13 +186,15 @@ class SearchActivity : AppCompatActivity() {
             historyContainer.isVisible = false
             emptyScreen.isVisible = false
 
-            Creator.provideSearchInteractor(applicationContext)
+            Creator.provideSearchInteractor()
                 .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
                     override fun consume(foundTracks: List<Track>?) {
                         runOnUiThread {
                             progressBar.isVisible = false
-                            if (foundTracks != null) {
-                                if (foundTracks.isNotEmpty()) {
+                            when {
+                                foundTracks == null -> toggleEmptyScreen(MessageTypes.NoInternet)
+                                foundTracks.isEmpty() -> toggleEmptyScreen(MessageTypes.NothingFound)
+                                else -> {
                                     tracks.clear()
                                     tracks.addAll(foundTracks)
                                     trackListAdapter.notifyDataSetChanged()
@@ -200,8 +203,8 @@ class SearchActivity : AppCompatActivity() {
                                         rwTrackList, null, 0
                                     )
                                     toggleEmptyScreen(null)
-                                } else toggleEmptyScreen(MessageTypes.NothingFound)
-                            } else toggleEmptyScreen(MessageTypes.NoInternet)
+                                }
+                            }
                         }
                     }
                 })
