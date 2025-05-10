@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search
+package com.practicum.playlistmaker.search.track_search.domain.models
 
 import java.util.Date
 

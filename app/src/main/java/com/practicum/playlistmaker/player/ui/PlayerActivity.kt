@@ -1,7 +1,6 @@
-package com.practicum.playlistmaker.player
+package com.practicum.playlistmaker.player.ui
 
 import android.annotation.SuppressLint
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,24 +18,17 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.button.MaterialButton
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
-import com.practicum.playlistmaker.search.SearchActivity.Companion.TRACK
-import com.practicum.playlistmaker.search.Track
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.search.track_search.ui.SearchActivity.Companion.TRACK
+import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class PlayerActivity : AppCompatActivity() {
-    private companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val STATE_UNAVAILABLE = 4
-
-        private const val DELAY = 1000L
-    }
-
-    private var mediaPlayer = MediaPlayer()
-    private var playerState = STATE_DEFAULT
+    private val player = Creator.providePlayerInteractor()
+    private val handler = Handler(Looper.getMainLooper())
     private lateinit var playButton: MaterialButton
     private lateinit var trackTimer: TextView
 
@@ -87,94 +79,54 @@ class PlayerActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.value_genre).text = track.primaryGenreName
         findViewById<TextView>(R.id.value_country).text = track.country
 
-        preparePlayer(track.previewUrl)
+        if (track.previewUrl != null) {
+            player.preparePlayer(
+                track.previewUrl,
+                {
+                    playButton.isEnabled = true
+                },
+                {
+                    playButton.setIconResource(R.drawable.ic_play)
+                    trackTimer.setText(R.string.track_start_time)
+                }
+            )
+        } else Toast.makeText(applicationContext, R.string.track_unavailable, Toast.LENGTH_SHORT)
+            .show()
+
         playButton.setOnClickListener {
-            playbackControl()
+            player.controlPlayer(
+                {
+                    playButton.setIconResource(R.drawable.ic_pause)
+                    handler.post(timerTask)
+                },
+                {
+                    playButton.setIconResource(R.drawable.ic_play)
+                }
+            )
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (playerState != STATE_UNAVAILABLE) pausePlayer()
+        player.pausePlayer { playButton.setIconResource(R.drawable.ic_play) }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
-    }
-
-    private fun preparePlayer(source: String?) {
-        if (source != null) {
-            mediaPlayer.setDataSource(source)
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener {
-                playButton.isEnabled = true
-                playerState = STATE_PREPARED
-            }
-            mediaPlayer.setOnCompletionListener {
-                stopPlayer()
-            }
-        } else playerState = STATE_UNAVAILABLE
-    }
-
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
-            STATE_UNAVAILABLE -> Toast.makeText(
-                applicationContext,
-                R.string.track_unavailable,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
-    private fun startPlayer() {
-        mediaPlayer.start()
-        playButton.setIconResource(R.drawable.ic_pause)
-        playerState = STATE_PLAYING
-        startPlayingTimer()
-    }
-
-    private fun pausePlayer() {
-        mediaPlayer.pause()
-        playButton.setIconResource(R.drawable.ic_play)
-        playerState = STATE_PAUSED
-    }
-
-    private fun stopPlayer() {
-        mediaPlayer.pause()
-        mediaPlayer.seekTo(0)
-        playButton.setIconResource(R.drawable.ic_play)
-        trackTimer.setText(R.string.track_start_time)
-        playerState = STATE_PREPARED
-    }
-
-    private val handler = Handler(Looper.getMainLooper())
-    private fun startPlayingTimer() {
-        val playedMinutes = trackTimer.text.toString().substringBefore(":").toLong()
-        val playedSeconds = trackTimer.text.toString().substringAfter(":").toLong()
-        val playedTime =
-            if (playedMinutes > 0) (60 * DELAY * playedMinutes) + (playedSeconds * DELAY) else playedSeconds * DELAY
-        handler.post(createTimerTask(System.currentTimeMillis(), playedTime))
+        player.releasePlayer()
+        handler.removeCallbacks(timerTask)
     }
 
     @SuppressLint("DefaultLocale")
-    private fun createTimerTask(startTime: Long, playedTime: Long): Runnable {
-        return object : Runnable {
-            override fun run() {
-                if (playerState == STATE_PLAYING) {
-                    val nowPlayingTime = System.currentTimeMillis() - startTime
-                    val displayedTime = (playedTime + nowPlayingTime) / DELAY
-                    if (displayedTime <= 30) {
-                        trackTimer.text =
-                            String.format("%02d:%02d", displayedTime / 60, displayedTime % 60)
-                        handler.postDelayed(this, DELAY)
-                    } else {
-                        stopPlayer()
-                    }
-                }
+    private val timerTask = object : Runnable {
+        override fun run() {
+            val duration =
+                player.getPlayingTime().toLong().toDuration(DurationUnit.MILLISECONDS)
+            val time = duration.toComponents { minutes, seconds, _ ->
+                String.format("%02d:%02d", minutes, seconds)
             }
+            trackTimer.text = time
+            handler.postDelayed(this, 1000L)
         }
     }
 }

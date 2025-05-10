@@ -1,7 +1,5 @@
-package com.practicum.playlistmaker.settings
+package com.practicum.playlistmaker.settings.ui
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -10,7 +8,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -28,32 +26,24 @@ class SettingsActivity : AppCompatActivity() {
             this.finish()
         }
 
+        val settings = Creator.provideSettingsInteractor()
+
         val nightModeSwitch = findViewById<SwitchCompat>(R.id.night_mode_switch)
-        nightModeSwitch.isChecked = (applicationContext as App).darkThemeEnabledCheck()
+        nightModeSwitch.isChecked = settings.checkDarkThemeEnabled()
         nightModeSwitch.setOnCheckedChangeListener { _, checked ->
-            (applicationContext as App).switchTheme(checked)
+            settings.switchTheme(checked)
         }
 
         findViewById<TextView>(R.id.settings_share).setOnClickListener {
-            val shareIntent = Intent(Intent.ACTION_SEND)
-            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_url))
-            shareIntent.type = "text/plain"
-            startActivity(shareIntent)
+            settings.shareApp()
         }
 
         findViewById<TextView>(R.id.settings_support).setOnClickListener {
-            val sendMailIntent = Intent(Intent.ACTION_SENDTO)
-            sendMailIntent.data = Uri.parse("mailto:")
-            sendMailIntent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.send_mail_address))
-                .putExtra(Intent.EXTRA_SUBJECT, getString(R.string.send_mail_subject))
-                .putExtra(Intent.EXTRA_TEXT, getString(R.string.send_mail_text))
-            startActivity(sendMailIntent)
+            settings.sendMail()
         }
 
         findViewById<TextView>(R.id.settings_user_agreement).setOnClickListener {
-            startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.user_agreement_offer)))
-            )
+            settings.openUserAgreement()
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search
+package com.practicum.playlistmaker.search.track_search.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -24,20 +23,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.Utils
-import com.practicum.playlistmaker.player.PlayerActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.player.ui.PlayerActivity
+import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
+import com.practicum.playlistmaker.search.track_search.domain.models.Track
 
 class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val SEARCH_TEXT = "SEARCH_TEXT"
-        private const val SHARED_PREFERENCE_SEARCH_HISTORY = "SHARED_PREFERENCE_SEARCH_HISTORY"
         private const val DEBOUNCE_DELAY = 2000L
         const val TRACK = "TRACK"
     }
@@ -52,13 +48,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackListAdapter: SearchAdapter
     private lateinit var tracksHistoryAdapter: SearchAdapter
     private var tracksHistory = listOf<Track>()
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://itunes.apple.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val searchService = retrofit.create(SearchApi::class.java)
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,8 +76,7 @@ class SearchActivity : AppCompatActivity() {
             searchField.clearFocus()
         }
 
-        val searchHistory =
-            SearchHistory(getSharedPreferences(SHARED_PREFERENCE_SEARCH_HISTORY, MODE_PRIVATE))
+        val searchHistory = Creator.provideSearchHistoryInteractor()
         val rwTracksHistory = findViewById<RecyclerView>(R.id.track_history_list)
         rwTracksHistory.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -130,7 +118,8 @@ class SearchActivity : AppCompatActivity() {
         rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         trackListAdapter = SearchAdapter { track ->
             if (clickDebounce()) {
-                tracksHistoryAdapter.trackList = searchHistory.addTrack(track)
+                tracksHistory = searchHistory.addTrack(track)
+                tracksHistoryAdapter.trackList = tracksHistory
                 tracksHistoryAdapter.notifyDataSetChanged()
 
                 startActivity(
@@ -197,42 +186,32 @@ class SearchActivity : AppCompatActivity() {
             historyContainer.isVisible = false
             emptyScreen.isVisible = false
 
-            searchService.searchTrack(searchQuery!!)
-                .enqueue(object : Callback<SearchResponse> {
-                    override fun onResponse(
-                        call: Call<SearchResponse?>,
-                        response: Response<SearchResponse?>
-                    ) {
-                        progressBar.isVisible = false
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                tracks.addAll(response.body()?.results ?: listOf())
-                                trackListAdapter.notifyDataSetChanged()
-                                rwTrackList.isVisible = true
-                                rwTrackList.layoutManager?.smoothScrollToPosition(
-                                    rwTrackList, null, 0
-                                )
-                                toggleEmptyScreen(null, null)
-                            } else toggleEmptyScreen(MessageTypes.NothingFound, null)
-                        } else toggleEmptyScreen(
-                            MessageTypes.NoInternet,
-                            response.code().toString()
-                        )
-                    }
-
-                    override fun onFailure(
-                        call: Call<SearchResponse?>,
-                        error: Throwable
-                    ) {
-                        progressBar.isVisible = false
-                        toggleEmptyScreen(MessageTypes.NoInternet, error.message.toString())
+            Creator.provideSearchInteractor()
+                .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
+                    override fun consume(foundTracks: List<Track>?) {
+                        runOnUiThread {
+                            progressBar.isVisible = false
+                            when {
+                                foundTracks == null -> toggleEmptyScreen(MessageTypes.NoInternet)
+                                foundTracks.isEmpty() -> toggleEmptyScreen(MessageTypes.NothingFound)
+                                else -> {
+                                    tracks.clear()
+                                    tracks.addAll(foundTracks)
+                                    trackListAdapter.notifyDataSetChanged()
+                                    rwTrackList.isVisible = true
+                                    rwTrackList.layoutManager?.smoothScrollToPosition(
+                                        rwTrackList, null, 0
+                                    )
+                                    toggleEmptyScreen(null)
+                                }
+                            }
+                        }
                     }
                 })
         }
     }
 
-    private fun toggleEmptyScreen(type: MessageTypes?, error: String?) {
+    private fun toggleEmptyScreen(type: MessageTypes?) {
         val shouldShow = type != null
 
         emptyScreen.isVisible = shouldShow
@@ -247,8 +226,6 @@ class SearchActivity : AppCompatActivity() {
             buttonRetry.setOnClickListener {
                 loadData()
             }
-
-            if (error != null) Toast.makeText(applicationContext, error, Toast.LENGTH_LONG).show()
         }
     }
 
