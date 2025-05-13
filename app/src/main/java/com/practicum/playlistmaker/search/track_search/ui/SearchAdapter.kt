@@ -31,7 +31,7 @@ class SearchAdapter(private val clickListener: (Track) -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(model: Track) {
-            val cornerRadiusToPx = TypedValue.applyDimension(
+            val cornerRadiusToDp = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 2F,
                 itemView.resources.displayMetrics
@@ -41,7 +41,7 @@ class SearchAdapter(private val clickListener: (Track) -> Unit) :
                     .load(model.artworkUrl100)
                     .placeholder(R.drawable.ic_track_placeholder)
                     .fitCenter()
-                    .transform(RoundedCorners(cornerRadiusToPx))
+                    .transform(RoundedCorners(cornerRadiusToDp))
                     .into(binding.trackCover)
 
                 songName.text = model.trackName

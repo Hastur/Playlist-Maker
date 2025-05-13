@@ -9,7 +9,6 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_player"
         style="@style/Toolbar"
-        app:layout_constraintBottom_toTopOf="@id/track_cover"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -221,4 +220,19 @@
         app:barrierDirection="end"
         app:constraint_referenced_tags="tag_track_time, tag_album, tag_year, tag_genre, tag_country" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/all_visible_elements"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="track_cover, track_name, artist_name, button_add_to_playlist, button_play, button_like, playing_time, label_track_time, value_track_time, label_album, value_album, label_year, value_year, label_genre, value_genre, label_country, value_country" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
