@@ -2,40 +2,46 @@ package com.practicum.playlistmaker.main.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.library.LibraryActivity
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.track_search.ui.SearchActivity
 import com.practicum.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        findViewById<Toolbar>(R.id.toolbar_main).setNavigationIcon(null)
+        binding.run {
+            toolbarMain.navigationIcon = null
 
-        findViewById<Button>(R.id.button_search).setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
-        }
+            buttonSearch.setOnClickListener {
+                startActivity(Intent(this@MainActivity, SearchActivity::class.java))
+            }
 
-        findViewById<Button>(R.id.button_library).setOnClickListener {
-            startActivity(Intent(this, LibraryActivity::class.java))
-        }
+            buttonLibrary.setOnClickListener {
+                startActivity(Intent(this@MainActivity, LibraryActivity::class.java))
+            }
 
-        findViewById<Button>(R.id.button_settings).setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            buttonSettings.setOnClickListener {
+                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+            }
         }
     }
 }
