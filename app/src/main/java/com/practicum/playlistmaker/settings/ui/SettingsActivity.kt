@@ -8,7 +8,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -34,16 +34,22 @@ class SettingsActivity : AppCompatActivity() {
             settings.switchTheme(checked)
         }
 
+        val sharing = Creator.provideSharingInteractor()
+
         findViewById<TextView>(R.id.settings_share).setOnClickListener {
-            settings.shareApp()
+            sharing.shareApp()
         }
 
         findViewById<TextView>(R.id.settings_support).setOnClickListener {
-            settings.sendMail()
+            sharing.sendMail(
+                application.getString(R.string.send_mail_address),
+                application.getString(R.string.send_mail_subject),
+                application.getString(R.string.send_mail_text)
+            )
         }
 
         findViewById<TextView>(R.id.settings_user_agreement).setOnClickListener {
-            settings.openUserAgreement()
+            sharing.openUserAgreement()
         }
     }
 }

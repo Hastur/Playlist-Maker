@@ -23,12 +23,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.Utils
 import com.practicum.playlistmaker.player.ui.PlayerActivity
+import com.practicum.playlistmaker.search.track_search.data.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
+import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.util.Utils
 
 class SearchActivity : AppCompatActivity() {
 
@@ -48,6 +49,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackListAdapter: SearchAdapter
     private lateinit var tracksHistoryAdapter: SearchAdapter
     private var tracksHistory = listOf<Track>()
+    private var textWatcher: TextWatcher? = null
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,7 +92,7 @@ class SearchActivity : AppCompatActivity() {
         }
         rwTracksHistory.adapter = tracksHistoryAdapter
 
-        val textWatcher = object : TextWatcher {
+        textWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //empty
             }
@@ -188,13 +190,13 @@ class SearchActivity : AppCompatActivity() {
 
             Creator.provideSearchInteractor()
                 .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
-                    override fun consume(foundTracks: List<Track>?) {
-                        runOnUiThread {
+                    override fun consume(foundTracks: List<Track>?, errorType: ErrorType?) {
+                        handler.post {
                             progressBar.isVisible = false
                             when {
-                                foundTracks == null -> toggleEmptyScreen(MessageTypes.NoInternet)
-                                foundTracks.isEmpty() -> toggleEmptyScreen(MessageTypes.NothingFound)
-                                else -> {
+                                errorType != null -> toggleEmptyScreen(errorType)
+
+                                foundTracks != null -> {
                                     tracks.clear()
                                     tracks.addAll(foundTracks)
                                     trackListAdapter.notifyDataSetChanged()
@@ -211,7 +213,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun toggleEmptyScreen(type: MessageTypes?) {
+    private fun toggleEmptyScreen(type: ErrorType?) {
         val shouldShow = type != null
 
         emptyScreen.isVisible = shouldShow
@@ -222,15 +224,15 @@ class SearchActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.empty_screen_text).setText(type.messageId)
 
             val buttonRetry = findViewById<MaterialButton>(R.id.empty_screen_button)
-            buttonRetry.isVisible = type == MessageTypes.NoInternet
+            buttonRetry.isVisible = type == ErrorType.NoInternet
             buttonRetry.setOnClickListener {
                 loadData()
             }
         }
     }
 
-    enum class MessageTypes(val imageId: Int, val messageId: Int) {
-        NothingFound(R.drawable.ic_nothing_found, R.string.search_nothing_found),
-        NoInternet(R.drawable.ic_no_internet, R.string.search_no_internet);
+    override fun onDestroy() {
+        super.onDestroy()
+        searchField.removeTextChangedListener(textWatcher)
     }
 }

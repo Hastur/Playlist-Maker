@@ -9,10 +9,4 @@ class SettingsInteractorImpl(private val repository: SettingsRepository) : Setti
 
     override fun switchTheme(isDarkThemeEnabled: Boolean) =
         repository.switchTheme(isDarkThemeEnabled)
-
-    override fun shareApp() = repository.shareApp()
-
-    override fun sendMail() = repository.sendMail()
-
-    override fun openUserAgreement() = repository.openUserAgreement()
 }
