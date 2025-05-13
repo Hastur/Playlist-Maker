@@ -1,55 +1,61 @@
 package com.practicum.playlistmaker.settings.ui
 
 import android.os.Bundle
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.settings.presentation.SettingsViewModel
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySettingsBinding
+    private val viewModel by viewModels<SettingsViewModel> { SettingsViewModel.getViewModelFactory() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         enableEdgeToEdge()
-        setContentView(R.layout.activity_settings)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        findViewById<Toolbar>(R.id.toolbar_settings).setNavigationOnClickListener {
-            this.finish()
+        binding.run {
+            toolbarSettings.setNavigationOnClickListener {
+                this@SettingsActivity.finish()
+            }
+
+            nightModeSwitch.setOnCheckedChangeListener { _, checked ->
+                viewModel.switchTheme(checked)
+            }
+
+            settingsShare.setOnClickListener {
+                viewModel.shareApp()
+            }
+
+            settingsSupport.setOnClickListener {
+                viewModel.sendMail(
+                    application.getString(R.string.send_mail_address),
+                    application.getString(R.string.send_mail_subject),
+                    application.getString(R.string.send_mail_text)
+                )
+            }
+
+            settingsUserAgreement.setOnClickListener {
+                viewModel.openUserAgreement()
+            }
         }
 
-        val settings = Creator.provideSettingsInteractor()
-
-        val nightModeSwitch = findViewById<SwitchCompat>(R.id.night_mode_switch)
-        nightModeSwitch.isChecked = settings.checkDarkThemeEnabled()
-        nightModeSwitch.setOnCheckedChangeListener { _, checked ->
-            settings.switchTheme(checked)
-        }
-
-        val sharing = Creator.provideSharingInteractor()
-
-        findViewById<TextView>(R.id.settings_share).setOnClickListener {
-            sharing.shareApp()
-        }
-
-        findViewById<TextView>(R.id.settings_support).setOnClickListener {
-            sharing.sendMail(
-                application.getString(R.string.send_mail_address),
-                application.getString(R.string.send_mail_subject),
-                application.getString(R.string.send_mail_text)
-            )
-        }
-
-        findViewById<TextView>(R.id.settings_user_agreement).setOnClickListener {
-            sharing.openUserAgreement()
+        viewModel.getDarkThemeEnabledLiveData().observe(this) { isEnabled ->
+            binding.nightModeSwitch.isChecked = isEnabled
         }
     }
 }
