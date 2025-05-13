@@ -8,42 +8,39 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.ui.PlayerActivity
-import com.practicum.playlistmaker.search.track_search.data.ErrorType
+import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
+import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
 import com.practicum.playlistmaker.util.Utils
 
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        private const val SEARCH_TEXT = "SEARCH_TEXT"
+        //private const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val DEBOUNCE_DELAY = 2000L
         const val TRACK = "TRACK"
     }
 
-    private lateinit var searchField: EditText
-    private lateinit var clearButton: ImageView
-    private lateinit var rwTrackList: RecyclerView
-    private lateinit var historyContainer: ScrollView
-    private lateinit var emptyScreen: LinearLayout
+    private lateinit var binding: ActivitySearchBinding
+    private val viewModel by viewModels<SearchViewModel> { SearchViewModel.getViewModelFactory() }
+
     private var searchQuery: String? = null
     private val tracks = mutableListOf<Track>()
     private lateinit var trackListAdapter: SearchAdapter
@@ -54,101 +51,78 @@ class SearchActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         enableEdgeToEdge()
-        setContentView(R.layout.activity_search)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        findViewById<Toolbar>(R.id.toolbar_search).setNavigationOnClickListener {
+        binding.toolbarSearch.setNavigationOnClickListener {
             this.finish()
         }
 
-        searchField = findViewById(R.id.search_input)
-        clearButton = findViewById(R.id.search_clear)
-        historyContainer = findViewById(R.id.history_container)
-        emptyScreen = findViewById(R.id.empty_screen)
+        setupHistory()
 
-        clearButton.setOnClickListener {
-            searchField.setText("")
-            val inputManager = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            inputManager.hideSoftInputFromWindow(searchField.windowToken, 0)
-            searchField.clearFocus()
+        viewModel.getHistoryLiveData().observe(this) { history ->
+            tracksHistoryAdapter.updateTrackList(history)
         }
 
-        val searchHistory = Creator.provideSearchHistoryInteractor()
-        val rwTracksHistory = findViewById<RecyclerView>(R.id.track_history_list)
-        rwTracksHistory.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        tracksHistoryAdapter = SearchAdapter { track ->
-            if (clickDebounce()) startActivity(
-                Intent(this, PlayerActivity::class.java).putExtra(
-                    TRACK,
-                    Utils().serializeToJson(track)
-                )
-            )
-        }
-        rwTracksHistory.adapter = tracksHistoryAdapter
+        setupSearchField()
 
-        textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                //empty
-            }
+        setupSearchResultContainer()
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                clearButton.isVisible = !searchField.text.isNullOrEmpty()
-                searchDebounce()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-                searchQuery = searchField.text.toString()
-
-                if (searchQuery.isNullOrEmpty()) {
-                    rwTrackList.isVisible = false
-                    emptyScreen.isVisible = false
+        viewModel.getScreenStateLiveData().observe(this) { screenState ->
+            when (screenState) {
+                is SearchScreenState.Loading -> {
+                    binding.run {
+                        progressBar.isVisible = true
+                        trackList.isVisible = false
+                        emptyScreen.isVisible = false
+                    }
                 }
 
-                historyContainer.isVisible =
-                    searchField.hasFocus() && searchQuery.isNullOrEmpty() && tracksHistoryAdapter.trackList.isNotEmpty()
+                is SearchScreenState.Content -> {
+                    trackListAdapter.updateTrackList(screenState.trackList)
+                    binding.run {
+                        progressBar.isVisible = false
+                        trackList.isVisible = true
+                        emptyScreen.isVisible = false
+                    }
+                }
+
+                is SearchScreenState.Error -> {
+                    showErrorScreen(screenState.errorType)
+                    binding.run {
+                        progressBar.isVisible = false
+                        trackList.isVisible = false
+                        emptyScreen.isVisible = true
+                    }
+                }
             }
         }
-        searchField.addTextChangedListener(textWatcher)
 
-        rwTrackList = findViewById(R.id.track_list)
-        rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        trackListAdapter = SearchAdapter { track ->
-            if (clickDebounce()) {
-                tracksHistory = searchHistory.addTrack(track)
-                tracksHistoryAdapter.trackList = tracksHistory
-                tracksHistoryAdapter.notifyDataSetChanged()
+//old
 
-                startActivity(
-                    Intent(this, PlayerActivity::class.java).putExtra(
-                        TRACK,
-                        Utils().serializeToJson(track)
-                    )
-                )
-            }
-        }
-        trackListAdapter.trackList = tracks
-        rwTrackList.adapter = trackListAdapter
 
-        searchField.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && searchQuery.isNullOrEmpty()) {
-                if (tracksHistory.isEmpty()) tracksHistory = searchHistory.getTracks()
-                tracksHistoryAdapter.trackList = tracksHistory.asReversed()
-                historyContainer.isVisible = tracksHistory.isNotEmpty()
-            } else historyContainer.isVisible = false
-        }
+        //searchField.setOnFocusChangeListener { _, hasFocus ->
+        //    if (hasFocus && searchQuery.isNullOrEmpty()) {
+        //        if (tracksHistory.isEmpty()) tracksHistory = searchHistory.getTracks()
+        //        tracksHistoryAdapter.trackList = tracksHistory.asReversed()
+        //        historyContainer.isVisible = tracksHistory.isNotEmpty()
+        //    } else historyContainer.isVisible = false
+        //}
 
-        findViewById<MaterialButton>(R.id.track_history_clear).setOnClickListener {
-            searchHistory.clearHistory()
-            tracksHistoryAdapter.trackList = listOf()
-            tracksHistoryAdapter.notifyDataSetChanged()
-            historyContainer.isVisible = false
-        }
+        //findViewById<MaterialButton>(R.id.track_history_clear).setOnClickListener {
+        //    searchHistory.clearHistory()
+        //    tracksHistoryAdapter.trackList = listOf()
+        //    tracksHistoryAdapter.notifyDataSetChanged()
+        //    historyContainer.isVisible = false
+        //}
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -168,64 +142,165 @@ class SearchActivity : AppCompatActivity() {
         return current
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, searchQuery)
-    }
+    //override fun onSaveInstanceState(outState: Bundle) {
+    //    super.onSaveInstanceState(outState)
+    //    outState.putString(SEARCH_TEXT, searchQuery)
+    //}
+//
+    //override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    //    super.onRestoreInstanceState(savedInstanceState)
+    //    searchField.setText(savedInstanceState.getString(SEARCH_TEXT))
+    //}
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchField.setText(savedInstanceState.getString(SEARCH_TEXT))
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
+    //@SuppressLint("NotifyDataSetChanged")
     private fun loadData() {
         if (!searchQuery.isNullOrEmpty()) {
+            viewModel.searchTrack(searchQuery!!)
 
-            val progressBar = findViewById<CircularProgressIndicator>(R.id.progressBar)
-            progressBar.isVisible = true
-            rwTrackList.isVisible = false
-            historyContainer.isVisible = false
-            emptyScreen.isVisible = false
-
-            Creator.provideSearchInteractor()
-                .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
-                    override fun consume(foundTracks: List<Track>?, errorType: ErrorType?) {
-                        handler.post {
-                            progressBar.isVisible = false
-                            when {
-                                errorType != null -> toggleEmptyScreen(errorType)
-
-                                foundTracks != null -> {
-                                    tracks.clear()
-                                    tracks.addAll(foundTracks)
-                                    trackListAdapter.notifyDataSetChanged()
-                                    rwTrackList.isVisible = true
-                                    rwTrackList.layoutManager?.smoothScrollToPosition(
-                                        rwTrackList, null, 0
-                                    )
-                                    toggleEmptyScreen(null)
-                                }
-                            }
-                        }
-                    }
-                })
+            //val progressBar = findViewById<CircularProgressIndicator>(R.id.progressBar)
+            //progressBar.isVisible = true
+            //rwTrackList.isVisible = false
+            //historyContainer.isVisible = false
+            //emptyScreen.isVisible = false
+//
+            //Creator.provideSearchInteractor()
+            //    .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
+            //        override fun consume(foundTracks: List<Track>?, errorType: ErrorType?) {
+            //            handler.post {
+            //                progressBar.isVisible = false
+            //                when {
+            //                    errorType != null -> toggleEmptyScreen(errorType)
+//
+            //                    foundTracks != null -> {
+            //                        tracks.clear()
+            //                        tracks.addAll(foundTracks)
+            //                        trackListAdapter.notifyDataSetChanged()
+            //                        rwTrackList.isVisible = true
+            //                        rwTrackList.layoutManager?.smoothScrollToPosition(
+            //                            rwTrackList, null, 0
+            //                        )
+            //                        toggleEmptyScreen(null)
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    })
         }
     }
 
-    private fun toggleEmptyScreen(type: ErrorType?) {
-        val shouldShow = type != null
+    //private fun toggleEmptyScreen(type: ErrorType?) {
+    //    val shouldShow = type != null
+//
+    //    emptyScreen.isVisible = shouldShow
+    //    rwTrackList.isVisible = !shouldShow
+//
+    //    if (shouldShow) {
+    //        findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type!!.imageId)
+    //        findViewById<TextView>(R.id.empty_screen_text).setText(type.messageId)
+//
+    //        val buttonRetry = findViewById<MaterialButton>(R.id.empty_screen_button)
+    //        buttonRetry.isVisible = type == ErrorType.NoInternet
+    //        buttonRetry.setOnClickListener {
+    //            loadData()
+    //        }
+    //    }
+    //}
 
-        emptyScreen.isVisible = shouldShow
-        rwTrackList.isVisible = !shouldShow
+    private fun setupHistory() {
+        binding.run {
+            trackHistoryList.layoutManager =
+                LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
+            tracksHistoryAdapter = SearchAdapter { track ->
+                if (clickDebounce()) startActivity(
+                    Intent(this@SearchActivity, PlayerActivity::class.java).putExtra(
+                        TRACK,
+                        Utils().serializeToJson(track)
+                    )
+                )
+            }
+            trackHistoryList.adapter = tracksHistoryAdapter
 
-        if (shouldShow) {
-            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type!!.imageId)
-            findViewById<TextView>(R.id.empty_screen_text).setText(type.messageId)
+            trackHistoryClear.setOnClickListener {
+                viewModel.clearHistory()
+            }
+        }
+    }
 
-            val buttonRetry = findViewById<MaterialButton>(R.id.empty_screen_button)
-            buttonRetry.isVisible = type == ErrorType.NoInternet
-            buttonRetry.setOnClickListener {
+    private fun setupSearchField() {
+        binding.run {
+            searchClear.setOnClickListener {
+                searchInput.setText("")
+                val inputManager =
+                    this@SearchActivity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                inputManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
+                searchInput.clearFocus()
+            }
+
+            textWatcher = object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    //empty
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    searchClear.isVisible = !searchInput.text.isNullOrEmpty()
+                    searchDebounce()
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    //searchQuery = searchInput.text.toString()
+//
+                    //if (searchQuery.isNullOrEmpty()) {
+                    //    rwTrackList.isVisible = false
+                    //    emptyScreen.isVisible = false
+                    //}
+//
+                    //historyContainer.isVisible =
+                    //    searchInput.hasFocus() && searchQuery.isNullOrEmpty() && tracksHistoryAdapter.trackList.isNotEmpty()
+                }
+            }
+            searchInput.addTextChangedListener(textWatcher)
+
+            searchInput.setOnFocusChangeListener { _, hasFocus ->
+                changeHistoryVisibility(hasFocus && searchInput.text.isNullOrEmpty())
+            }
+        }
+    }
+
+    private fun setupSearchResultContainer() {
+        binding.run {
+            trackList.layoutManager =
+                LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
+            trackListAdapter = SearchAdapter { track ->
+                if (clickDebounce()) {
+                    //tracksHistory = searchHistory.addTrack(track)
+                    //tracksHistoryAdapter.trackList = tracksHistory
+                    //tracksHistoryAdapter.notifyDataSetChanged()
+                    viewModel.addToHistory(track)
+                    startActivity(
+                        Intent(this@SearchActivity, PlayerActivity::class.java).putExtra(
+                            TRACK,
+                            Utils().serializeToJson(track)
+                        )
+                    )
+                }
+            }
+            //trackListAdapter.trackList = tracks
+            trackList.adapter = trackListAdapter
+        }
+    }
+
+    private fun changeHistoryVisibility(shouldShow: Boolean) {
+        binding.historyContainer.isVisible =
+            (shouldShow && !viewModel.getHistoryLiveData().value.isNullOrEmpty())
+    }
+
+    private fun showErrorScreen(error: ErrorType) {
+        binding.run {
+            emptyScreenImage.setImageResource(error.imageId)
+            emptyScreenText.setText(error.messageId)
+
+            emptyScreenButton.isVisible = error == ErrorType.NoInternet
+            emptyScreenButton.setOnClickListener {
                 loadData()
             }
         }
@@ -233,6 +308,6 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        searchField.removeTextChangedListener(textWatcher)
+        binding.searchInput.removeTextChangedListener(textWatcher)
     }
 }

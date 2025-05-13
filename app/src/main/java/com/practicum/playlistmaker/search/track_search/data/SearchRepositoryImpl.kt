@@ -3,6 +3,7 @@ package com.practicum.playlistmaker.search.track_search.data
 import com.practicum.playlistmaker.search.track_search.data.dto.TrackSearchRequest
 import com.practicum.playlistmaker.search.track_search.data.dto.TrackSearchResponse
 import com.practicum.playlistmaker.search.track_search.domain.api.SearchRepository
+import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.util.Resource
 

@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.search.track_search.ui
 
+import android.annotation.SuppressLint
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import java.util.Locale
 class SearchAdapter(private val clickListener: (Track) -> Unit) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
-    var trackList = listOf<Track>()
+    private var trackList = listOf<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = SearchViewHolder(
         ItemTrackBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,6 +27,12 @@ class SearchAdapter(private val clickListener: (Track) -> Unit) :
     }
 
     override fun getItemCount() = trackList.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateTrackList(newTrackList: List<Track>) {
+        trackList = newTrackList
+        notifyDataSetChanged()
+    }
 
     inner class SearchViewHolder(private val binding: ItemTrackBinding) :
         RecyclerView.ViewHolder(binding.root) {

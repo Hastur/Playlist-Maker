@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.search.track_search.data
+package com.practicum.playlistmaker.search.track_search.domain.models
 
 import com.practicum.playlistmaker.R
 
