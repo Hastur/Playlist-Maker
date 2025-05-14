@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.search.track_search.presentation
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,6 +29,8 @@ class SearchViewModel(
                 SearchViewModel(searchInteractor, searchHistoryInteractor)
             }
         }
+
+        private const val DEBOUNCE_DELAY = 2000L
     }
 
     private var screenStateLiveData = MutableLiveData<SearchScreenState>()
@@ -39,7 +43,17 @@ class SearchViewModel(
         getHistory()
     }
 
-    fun searchTrack(searchQuery: String) {
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { searchTrack() }
+    private lateinit var searchQuery: String
+
+    fun searchWithDebounce(searchInput: String) {
+        searchQuery = searchInput
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, DEBOUNCE_DELAY)
+    }
+
+    private fun searchTrack() {
         screenStateLiveData.value = SearchScreenState.Loading
         when (val response = searchInteractor.searchTrack(searchQuery)) {
             is Resource.Success -> screenStateLiveData.postValue(response.data?.let {
@@ -53,7 +67,8 @@ class SearchViewModel(
     }
 
     fun performTrackClick(track: Track) {
-        screenStateLiveData.value = SearchScreenState.OpenPlayer(Utils().serializeToJson(track))
+        if (openPlayerDebounce()) screenStateLiveData.value =
+            SearchScreenState.OpenPlayer(Utils().serializeToJson(track))
     }
 
     fun setInitialState() {
@@ -67,6 +82,16 @@ class SearchViewModel(
 
     fun setTypingState() {
         screenStateLiveData.value = SearchScreenState.Typing
+    }
+
+    private var isClickAllowed = true
+    private fun openPlayerDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, DEBOUNCE_DELAY)
+        }
+        return current
     }
 
     private fun getHistory() {

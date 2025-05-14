@@ -3,8 +3,6 @@ package com.practicum.playlistmaker.search.track_search.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
@@ -24,7 +22,6 @@ import com.practicum.playlistmaker.search.track_search.presentation.models.Searc
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        private const val DEBOUNCE_DELAY = 2000L
         const val TRACK = "TRACK"
     }
 
@@ -120,7 +117,7 @@ class SearchActivity : AppCompatActivity() {
             trackHistoryList.layoutManager =
                 LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
             tracksHistoryAdapter = SearchAdapter { track ->
-                if (clickDebounce()) viewModel.performTrackClick(track)
+                viewModel.performTrackClick(track)
             }
             trackHistoryList.adapter = tracksHistoryAdapter
 
@@ -133,8 +130,6 @@ class SearchActivity : AppCompatActivity() {
     private fun setupSearchField() {
         binding.run {
             searchClearButton.setOnClickListener {
-                handler.removeCallbacks(searchRunnable)
-                searchInput.removeTextChangedListener(textWatcher)
                 viewModel.setInitialState()
             }
 
@@ -146,19 +141,17 @@ class SearchActivity : AppCompatActivity() {
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     if (searchInput.text.isNullOrEmpty()) viewModel.setFocusedState()
                     else viewModel.setTypingState()
-                    searchDebounce()
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
                     searchQuery = searchInput.text.toString()
+                    loadData()
                 }
             }
+            searchInput.addTextChangedListener(textWatcher)
 
             searchInput.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    viewModel.setFocusedState()
-                    searchInput.addTextChangedListener(textWatcher)
-                }
+                if (hasFocus) viewModel.setFocusedState()
             }
         }
     }
@@ -184,10 +177,8 @@ class SearchActivity : AppCompatActivity() {
             trackList.layoutManager =
                 LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
             trackListAdapter = SearchAdapter { track ->
-                if (clickDebounce()) {
-                    viewModel.addToHistory(track)
-                    viewModel.performTrackClick(track)
-                }
+                viewModel.addToHistory(track)
+                viewModel.performTrackClick(track)
             }
             trackList.adapter = trackListAdapter
         }
@@ -212,26 +203,9 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { loadData() }
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, DEBOUNCE_DELAY)
-    }
-
-    private var isClickAllowed = true
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, DEBOUNCE_DELAY)
-        }
-        return current
-    }
-
     private fun loadData() {
         if (!searchQuery.isNullOrEmpty()) {
-            viewModel.searchTrack(searchQuery!!)
+            viewModel.searchWithDebounce(searchQuery!!)
         }
     }
 
