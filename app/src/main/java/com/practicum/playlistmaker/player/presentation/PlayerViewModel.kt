@@ -11,7 +11,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
-import com.practicum.playlistmaker.player.presentation.models.PlayingStatus
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 
 class PlayerViewModel(private val track: Track, private val playerInteractor: PlayerInteractor) :
@@ -29,9 +28,6 @@ class PlayerViewModel(private val track: Track, private val playerInteractor: Pl
     private var screenStateLiveData = MutableLiveData<PlayerScreenState>(PlayerScreenState.Loading)
     fun getScreenStateLiveData(): LiveData<PlayerScreenState> = screenStateLiveData
 
-    private var playingStatusLiveData = MutableLiveData<PlayingStatus>()
-    fun getPlayingStatusLiveData(): LiveData<PlayingStatus> = playingStatusLiveData
-
     private val handler = Handler(Looper.getMainLooper())
 
     init {
@@ -39,11 +35,12 @@ class PlayerViewModel(private val track: Track, private val playerInteractor: Pl
             playerInteractor.preparePlayer(
                 source = track.previewUrl,
                 onPrepared = {
-                    screenStateLiveData.postValue(PlayerScreenState.Content(track))
+                    screenStateLiveData.postValue(PlayerScreenState.Prepared(track))
                 },
                 onComplete = {
-                    playingStatusLiveData.value =
-                        getCurrentPlayingStatus().copy(playingTime = 0, isPlaying = false)
+                    screenStateLiveData.postValue(
+                        PlayerScreenState.Playing(0, false)
+                    )
                 }
             )
         } else screenStateLiveData.postValue(PlayerScreenState.Error)
@@ -52,11 +49,15 @@ class PlayerViewModel(private val track: Track, private val playerInteractor: Pl
     fun playOrPause() {
         playerInteractor.controlPlayer(
             onStart = {
-                playingStatusLiveData.value = getCurrentPlayingStatus().copy(isPlaying = true)
+                screenStateLiveData.postValue(
+                    PlayerScreenState.Playing(playerInteractor.getPlayingTime(), true)
+                )
                 handler.post(playingTimeTask)
             },
             onPause = {
-                playingStatusLiveData.value = getCurrentPlayingStatus().copy(isPlaying = false)
+                screenStateLiveData.postValue(
+                    PlayerScreenState.Playing(playerInteractor.getPlayingTime(), false)
+                )
                 handler.removeCallbacks(playingTimeTask)
             }
         )
@@ -65,19 +66,19 @@ class PlayerViewModel(private val track: Track, private val playerInteractor: Pl
     fun pause() {
         playerInteractor.pausePlayer(
             onPause = {
-                playingStatusLiveData.value = getCurrentPlayingStatus().copy(isPlaying = false)
+                screenStateLiveData.postValue(
+                    PlayerScreenState.Playing(playerInteractor.getPlayingTime(), false)
+                )
                 handler.removeCallbacks(playingTimeTask)
             }
         )
     }
 
-    private fun getCurrentPlayingStatus(): PlayingStatus =
-        playingStatusLiveData.value ?: PlayingStatus(0, false)
-
     private val playingTimeTask = object : Runnable {
         override fun run() {
-            playingStatusLiveData.value =
-                getCurrentPlayingStatus().copy(playingTime = playerInteractor.getPlayingTime())
+            screenStateLiveData.postValue(
+                PlayerScreenState.Playing(playerInteractor.getPlayingTime(), true)
+            )
             handler.postDelayed(this, 1000L)
         }
     }

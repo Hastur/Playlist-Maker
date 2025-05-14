@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +17,6 @@ import com.practicum.playlistmaker.util.Utils
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.player.presentation.PlayerViewModel
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
-import com.practicum.playlistmaker.player.presentation.models.PlayingStatus
 import com.practicum.playlistmaker.search.track_search.ui.SearchActivity.Companion.TRACK
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import java.text.SimpleDateFormat
@@ -56,21 +56,20 @@ class PlayerActivity : AppCompatActivity() {
             when (screenState) {
                 is PlayerScreenState.Loading -> changeContentVisibility(loading = true)
 
-                is PlayerScreenState.Content -> {
-                    changeContentVisibility(loading = false)
-                    setContent(screenState.trackModel)
-                }
-
                 is PlayerScreenState.Error -> Toast.makeText(
                     applicationContext,
                     R.string.track_unavailable,
                     Toast.LENGTH_SHORT
                 ).show()
-            }
-        }
 
-        viewModel.getPlayingStatusLiveData().observe(this) { playingStatus ->
-            changeControlElementsStyle(playingStatus)
+                is PlayerScreenState.Prepared -> {
+                    changeContentVisibility(loading = false)
+                    setContent(screenState.trackModel)
+                }
+
+                is PlayerScreenState.Playing -> {changeControlElementsStyle(screenState)
+                Log.e("IsPlaying", screenState.isPlaying.toString())}
+            }
         }
     }
 
@@ -111,7 +110,7 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeControlElementsStyle(playingStatus: PlayingStatus) {
+    private fun changeControlElementsStyle(playingStatus: PlayerScreenState.Playing) {
         binding.run {
             buttonPlay.setIconResource(
                 if (playingStatus.isPlaying) R.drawable.ic_pause
