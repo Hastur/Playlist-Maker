@@ -8,10 +8,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
-import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
 import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.util.Resource
 import com.practicum.playlistmaker.util.Utils
 
 class SearchViewModel(
@@ -41,19 +41,15 @@ class SearchViewModel(
 
     fun searchTrack(searchQuery: String) {
         screenStateLiveData.value = SearchScreenState.Loading
-        searchInteractor.searchTrack(searchQuery, object : SearchInteractor.TrackConsumer {
-            override fun consume(foundTracks: List<Track>?, errorType: ErrorType?) {
-                when {
-                    foundTracks != null -> screenStateLiveData.postValue(
-                        SearchScreenState.Content(foundTracks)
-                    )
+        when (val response = searchInteractor.searchTrack(searchQuery)) {
+            is Resource.Success -> screenStateLiveData.postValue(response.data?.let {
+                SearchScreenState.Content(it)
+            })
 
-                    errorType != null -> screenStateLiveData.postValue(
-                        SearchScreenState.Error(errorType)
-                    )
-                }
-            }
-        })
+            is Resource.Error -> screenStateLiveData.postValue(response.errorType?.let {
+                SearchScreenState.Error(it)
+            })
+        }
     }
 
     fun performTrackClick(track: Track) {
