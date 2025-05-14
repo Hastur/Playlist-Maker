@@ -66,6 +66,21 @@ class SearchActivity : AppCompatActivity() {
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->
             when (screenState) {
+                is SearchScreenState.Initial -> setupInitialScreen()
+
+                is SearchScreenState.Focused -> {
+                    changeHistoryVisibility(screenState.isHistoryAvailable)
+                    binding.searchClearButton.isVisible = false
+                }
+
+                is SearchScreenState.Typing -> {
+                    binding.run {
+                        changeHistoryVisibility(false)
+                        searchClearButton.isVisible = true
+                        emptyScreen.isVisible = false
+                    }
+                }
+
                 is SearchScreenState.Loading -> changeContentVisibility(
                     progressBarVisibility = true,
                     trackListVisibility = false,
@@ -117,12 +132,10 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupSearchField() {
         binding.run {
-            searchClear.setOnClickListener {
-                searchInput.setText("")
-                val inputManager =
-                    this@SearchActivity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                inputManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
-                searchInput.clearFocus()
+            searchClearButton.setOnClickListener {
+                handler.removeCallbacks(searchRunnable)
+                searchInput.removeTextChangedListener(textWatcher)
+                viewModel.setInitialState()
             }
 
             textWatcher = object : TextWatcher {
@@ -131,21 +144,38 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    searchClear.isVisible = !searchInput.text.isNullOrEmpty()
-                    emptyScreen.isVisible = false
+                    if (searchInput.text.isNullOrEmpty()) viewModel.setFocusedState()
+                    else viewModel.setTypingState()
                     searchDebounce()
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
                     searchQuery = searchInput.text.toString()
-                    changeHistoryVisibility(searchInput.text.isNullOrEmpty())
                 }
             }
-            searchInput.addTextChangedListener(textWatcher)
 
             searchInput.setOnFocusChangeListener { _, hasFocus ->
-                changeHistoryVisibility(hasFocus && searchInput.text.isNullOrEmpty())
+                if (hasFocus) {
+                    viewModel.setFocusedState()
+                    searchInput.addTextChangedListener(textWatcher)
+                }
             }
+        }
+    }
+
+    private fun setupInitialScreen() {
+        binding.run {
+            searchInput.setText("")
+            val inputManager =
+                this@SearchActivity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
+            searchInput.clearFocus()
+
+            progressBar.isVisible = false
+            historyContainer.isVisible = false
+            searchClearButton.isVisible = false
+            trackList.isVisible = false
+            emptyScreen.isVisible = false
         }
     }
 
@@ -165,8 +195,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun changeHistoryVisibility(shouldShow: Boolean) {
         binding.run {
-            historyContainer.isVisible =
-                (shouldShow && !viewModel.getHistoryLiveData().value.isNullOrEmpty())
+            historyContainer.isVisible = shouldShow
             trackList.isVisible = false
         }
     }

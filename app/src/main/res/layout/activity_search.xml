@@ -38,7 +38,7 @@
             android:textColorHint="@color/search_hint" />
 
         <ImageView
-            android:id="@+id/search_clear"
+            android:id="@+id/search_clear_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"

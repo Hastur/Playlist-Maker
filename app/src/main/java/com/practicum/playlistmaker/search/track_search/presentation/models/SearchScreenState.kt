@@ -4,6 +4,9 @@ import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 
 sealed class SearchScreenState {
+    data object Initial : SearchScreenState()
+    data class Focused(val isHistoryAvailable: Boolean) : SearchScreenState()
+    data object Typing : SearchScreenState()
     data object Loading : SearchScreenState()
     data class Error(val errorType: ErrorType) : SearchScreenState()
     data class Content(val trackList: List<Track>) : SearchScreenState()

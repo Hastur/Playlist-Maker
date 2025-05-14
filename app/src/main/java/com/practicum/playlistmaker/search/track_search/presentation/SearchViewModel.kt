@@ -56,6 +56,19 @@ class SearchViewModel(
         screenStateLiveData.value = SearchScreenState.OpenPlayer(Utils().serializeToJson(track))
     }
 
+    fun setInitialState() {
+        screenStateLiveData.value = SearchScreenState.Initial
+    }
+
+    fun setFocusedState() {
+        screenStateLiveData.value =
+            SearchScreenState.Focused(!historyLiveData.value.isNullOrEmpty())
+    }
+
+    fun setTypingState() {
+        screenStateLiveData.value = SearchScreenState.Typing
+    }
+
     private fun getHistory() {
         historyLiveData.value = searchHistoryInteractor.getTracks()
     }
