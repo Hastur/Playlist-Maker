@@ -6,5 +6,5 @@ interface PlayerInteractor {
     fun startPlayer(onStart: () -> Unit)
     fun pausePlayer(onPause: () -> Unit)
     fun releasePlayer()
-    fun getPlayingTime(): Int
+    fun getPlayingTime(): String
 }

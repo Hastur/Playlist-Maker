@@ -20,7 +20,6 @@ import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
-import com.practicum.playlistmaker.util.Utils
 
 class SearchActivity : AppCompatActivity() {
 
@@ -67,31 +66,36 @@ class SearchActivity : AppCompatActivity() {
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->
             when (screenState) {
-                is SearchScreenState.Loading -> {
-                    binding.run {
-                        progressBar.isVisible = true
-                        trackList.isVisible = false
-                        emptyScreen.isVisible = false
-                    }
-                }
+                is SearchScreenState.Loading -> changeContentVisibility(
+                    progressBarVisibility = true,
+                    trackListVisibility = false,
+                    emptyScreenVisibility = false
+                )
 
                 is SearchScreenState.Content -> {
                     trackListAdapter.updateTrackList(screenState.trackList)
-                    binding.run {
-                        progressBar.isVisible = false
-                        trackList.isVisible = true
-                        emptyScreen.isVisible = false
-                    }
+                    changeContentVisibility(
+                        progressBarVisibility = false,
+                        trackListVisibility = true,
+                        emptyScreenVisibility = false
+                    )
                 }
 
                 is SearchScreenState.Error -> {
                     showErrorScreen(screenState.errorType)
-                    binding.run {
-                        progressBar.isVisible = false
-                        trackList.isVisible = false
-                        emptyScreen.isVisible = true
-                    }
+                    changeContentVisibility(
+                        progressBarVisibility = false,
+                        trackListVisibility = false,
+                        emptyScreenVisibility = true
+                    )
                 }
+
+                is SearchScreenState.OpenPlayer -> startActivity(
+                    Intent(this@SearchActivity, PlayerActivity::class.java).putExtra(
+                        TRACK,
+                        screenState.serializedTrack
+                    )
+                )
             }
         }
     }
@@ -101,12 +105,7 @@ class SearchActivity : AppCompatActivity() {
             trackHistoryList.layoutManager =
                 LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
             tracksHistoryAdapter = SearchAdapter { track ->
-                if (clickDebounce()) startActivity(
-                    Intent(this@SearchActivity, PlayerActivity::class.java).putExtra(
-                        TRACK,
-                        Utils().serializeToJson(track)
-                    )
-                )
+                if (clickDebounce()) viewModel.performTrackClick(track)
             }
             trackHistoryList.adapter = tracksHistoryAdapter
 
@@ -157,12 +156,7 @@ class SearchActivity : AppCompatActivity() {
             trackListAdapter = SearchAdapter { track ->
                 if (clickDebounce()) {
                     viewModel.addToHistory(track)
-                    startActivity(
-                        Intent(this@SearchActivity, PlayerActivity::class.java).putExtra(
-                            TRACK,
-                            Utils().serializeToJson(track)
-                        )
-                    )
+                    viewModel.performTrackClick(track)
                 }
             }
             trackList.adapter = trackListAdapter
@@ -174,6 +168,18 @@ class SearchActivity : AppCompatActivity() {
             historyContainer.isVisible =
                 (shouldShow && !viewModel.getHistoryLiveData().value.isNullOrEmpty())
             trackList.isVisible = false
+        }
+    }
+
+    private fun changeContentVisibility(
+        progressBarVisibility: Boolean,
+        trackListVisibility: Boolean,
+        emptyScreenVisibility: Boolean
+    ) {
+        binding.run {
+            progressBar.isVisible = progressBarVisibility
+            trackList.isVisible = trackListVisibility
+            emptyScreen.isVisible = emptyScreenVisibility
         }
     }
 

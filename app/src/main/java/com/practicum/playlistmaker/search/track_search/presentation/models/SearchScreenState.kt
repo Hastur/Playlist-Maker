@@ -7,4 +7,5 @@ sealed class SearchScreenState {
     data object Loading : SearchScreenState()
     data class Error(val errorType: ErrorType) : SearchScreenState()
     data class Content(val trackList: List<Track>) : SearchScreenState()
+    data class OpenPlayer(val serializedTrack: String) : SearchScreenState()
 }

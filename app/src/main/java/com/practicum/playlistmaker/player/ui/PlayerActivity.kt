@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.util.TypedValue
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -13,20 +12,19 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.util.Utils
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.player.presentation.PlayerViewModel
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
-import com.practicum.playlistmaker.search.track_search.ui.SearchActivity.Companion.TRACK
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.practicum.playlistmaker.search.track_search.ui.SearchActivity.Companion.TRACK
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var track: Track
-    private val viewModel by viewModels<PlayerViewModel> { PlayerViewModel.getViewModelFactory(track) }
+    private lateinit var serializedTrack: String
+    private val viewModel by viewModels<PlayerViewModel> {
+        PlayerViewModel.getViewModelFactory(serializedTrack)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +39,7 @@ class PlayerActivity : AppCompatActivity() {
             insets
         }
 
-        track = Utils().createFromJson(this.intent.getStringExtra(TRACK) ?: "", Track::class.java)
+        serializedTrack = this.intent.getStringExtra(TRACK) ?: ""
 
         binding.run {
             toolbarPlayer.setNavigationOnClickListener {
@@ -67,8 +65,7 @@ class PlayerActivity : AppCompatActivity() {
                     setContent(screenState.trackModel)
                 }
 
-                is PlayerScreenState.Playing -> {changeControlElementsStyle(screenState)
-                Log.e("IsPlaying", screenState.isPlaying.toString())}
+                is PlayerScreenState.Playing -> changeControlElementsStyle(screenState)
             }
         }
     }
@@ -87,8 +84,7 @@ class PlayerActivity : AppCompatActivity() {
         binding.run {
             trackName.text = trackModel.trackName
             artistName.text = trackModel.artistName
-            valueTrackTime.text =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackModel.trackTimeMillis)
+            valueTrackTime.text = trackModel.trackTime
             if (trackModel.collectionName == null) {
                 labelAlbum.isVisible = false
                 valueAlbum.isVisible = false
@@ -96,8 +92,7 @@ class PlayerActivity : AppCompatActivity() {
             if (trackModel.releaseDate == null) {
                 labelYear.isVisible = false
                 valueYear.isVisible = false
-            } else valueYear.text =
-                SimpleDateFormat("yyyy", Locale.getDefault()).format(trackModel.releaseDate)
+            } else valueYear.text = trackModel.releaseDate
             valueGenre.text = trackModel.primaryGenreName
             valueCountry.text = trackModel.country
         }
@@ -116,8 +111,7 @@ class PlayerActivity : AppCompatActivity() {
                 if (playingStatus.isPlaying) R.drawable.ic_pause
                 else R.drawable.ic_play
             )
-            playingTime.text =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(playingStatus.playingTime)
+            playingTime.text = playingStatus.playingTime
         }
     }
 

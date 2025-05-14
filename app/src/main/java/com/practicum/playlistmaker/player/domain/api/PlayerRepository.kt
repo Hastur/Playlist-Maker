@@ -9,5 +9,5 @@ interface PlayerRepository {
     fun pausePlayer()
     fun stopPlayer()
     fun releasePlayer()
-    fun getPlayingTime(): Int
+    fun getPlayingTime(): String
 }

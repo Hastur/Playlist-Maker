@@ -10,8 +10,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ItemTrackBinding
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class SearchAdapter(private val clickListener: (Track) -> Unit) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
@@ -54,10 +52,7 @@ class SearchAdapter(private val clickListener: (Track) -> Unit) :
                 songName.text = model.trackName
                 artistName.text = model.artistName
                 artistName.requestLayout()
-                trackTime.text = SimpleDateFormat(
-                    "mm:ss",
-                    Locale.getDefault()
-                ).format(model.trackTimeMillis)
+                trackTime.text = model.trackTime
 
                 root.setOnClickListener { clickListener(model) }
             }

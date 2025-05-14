@@ -6,6 +6,7 @@ import com.practicum.playlistmaker.search.track_search.domain.api.SearchReposito
 import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.util.Resource
+import com.practicum.playlistmaker.util.Utils
 
 class SearchRepositoryImpl(private val networkClient: NetworkClient) : SearchRepository {
     override fun searchTrack(searchText: String): Resource<List<Track>> {
@@ -19,10 +20,10 @@ class SearchRepositoryImpl(private val networkClient: NetworkClient) : SearchRep
                             it.trackId,
                             it.trackName,
                             it.artistName,
-                            it.trackTimeMillis,
+                            Utils().formatTimeAsString(it.trackTimeMillis),
                             it.artworkUrl100,
                             it.collectionName,
-                            it.releaseDate,
+                            Utils().formatYearAsString(it.releaseDate),
                             it.primaryGenreName,
                             it.country,
                             it.previewUrl

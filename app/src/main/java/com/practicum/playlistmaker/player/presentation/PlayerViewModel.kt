@@ -12,13 +12,15 @@ import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
+import com.practicum.playlistmaker.util.Utils
 
 class PlayerViewModel(private val track: Track, private val playerInteractor: PlayerInteractor) :
     ViewModel() {
 
     companion object {
-        fun getViewModelFactory(track: Track): ViewModelProvider.Factory = viewModelFactory {
+        fun getViewModelFactory(serializedTrack: String): ViewModelProvider.Factory = viewModelFactory {
             initializer {
+                val track = Utils().createFromJson(serializedTrack, Track::class.java)
                 val interactor = Creator.providePlayerInteractor()
                 PlayerViewModel(track, interactor)
             }
@@ -39,7 +41,7 @@ class PlayerViewModel(private val track: Track, private val playerInteractor: Pl
                 },
                 onComplete = {
                     screenStateLiveData.postValue(
-                        PlayerScreenState.Playing(0, false)
+                        PlayerScreenState.Playing("00:00", false)
                     )
                 }
             )

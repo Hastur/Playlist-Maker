@@ -12,6 +12,7 @@ import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
 import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.util.Utils
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
@@ -53,6 +54,10 @@ class SearchViewModel(
                 }
             }
         })
+    }
+
+    fun performTrackClick(track: Track) {
+        screenStateLiveData.value = SearchScreenState.OpenPlayer(Utils().serializeToJson(track))
     }
 
     private fun getHistory() {
