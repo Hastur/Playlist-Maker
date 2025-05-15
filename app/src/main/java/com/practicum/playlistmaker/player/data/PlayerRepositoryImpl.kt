@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import com.practicum.playlistmaker.player.data.dto.PlayerStateDto
 import com.practicum.playlistmaker.player.domain.api.PlayerRepository
 import com.practicum.playlistmaker.player.domain.models.PlayerState
+import com.practicum.playlistmaker.util.Utils
 
 class PlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : PlayerRepository {
     private var state = PlayerStateDto.STATE_DEFAULT
@@ -50,5 +51,6 @@ class PlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : PlayerReposit
         mediaPlayer.release()
     }
 
-    override fun getPlayingTime(): Int = mediaPlayer.currentPosition
+    override fun getPlayingTime(): String =
+        Utils().formatTimeAsString(mediaPlayer.currentPosition.toLong())
 }

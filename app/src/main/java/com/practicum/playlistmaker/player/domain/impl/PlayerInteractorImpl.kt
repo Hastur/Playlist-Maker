@@ -40,5 +40,5 @@ class PlayerInteractorImpl(private val repository: PlayerRepository) : PlayerInt
         repository.releasePlayer()
     }
 
-    override fun getPlayingTime(): Int = repository.getPlayingTime()
+    override fun getPlayingTime(): String = repository.getPlayingTime()
 }

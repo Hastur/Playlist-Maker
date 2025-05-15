@@ -24,4 +24,5 @@
     <string name="genre">Жанр</string>
     <string name="country">Страна</string>
     <string name="track_unavailable">Воспроизведение трека недоступно</string>
+    <string name="server_error">Ошибка сервера</string>
 </resources>

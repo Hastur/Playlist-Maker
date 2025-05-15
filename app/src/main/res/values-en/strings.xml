@@ -20,4 +20,5 @@
     <string name="genre">Genre</string>
     <string name="country">Country</string>
     <string name="track_unavailable">Track unavailable</string>
+    <string name="server_error">Server error</string>
 </resources>

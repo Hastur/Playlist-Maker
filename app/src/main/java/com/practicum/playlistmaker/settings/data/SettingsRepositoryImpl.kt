@@ -2,11 +2,8 @@ package com.practicum.playlistmaker.settings.data
 
 import android.app.Application
 import android.app.Application.MODE_PRIVATE
-import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
 
 class SettingsRepositoryImpl(private val application: Application) : SettingsRepository {
@@ -26,35 +23,5 @@ class SettingsRepositoryImpl(private val application: Application) : SettingsRep
     override fun switchTheme(isDarkThemeEnabled: Boolean) {
         AppCompatDelegate.setDefaultNightMode(if (isDarkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
         sharedPreferences.edit().putBoolean(DARK_THEME, isDarkThemeEnabled).apply()
-    }
-
-    override fun shareApp() {
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.putExtra(Intent.EXTRA_TEXT, application.getString(R.string.share_url))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            .type = "text/plain"
-        application.startActivity(shareIntent)
-    }
-
-    override fun sendMail() {
-        val sendMailIntent = Intent(Intent.ACTION_SENDTO)
-        sendMailIntent.data = Uri.parse("mailto:")
-        sendMailIntent.putExtra(
-            Intent.EXTRA_EMAIL,
-            application.getString(R.string.send_mail_address)
-        )
-            .putExtra(Intent.EXTRA_SUBJECT, application.getString(R.string.send_mail_subject))
-            .putExtra(Intent.EXTRA_TEXT, application.getString(R.string.send_mail_text))
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        application.startActivity(sendMailIntent)
-    }
-
-    override fun openUserAgreement() {
-        application.startActivity(
-            Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse(application.getString(R.string.user_agreement_offer))
-            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
     }
 }

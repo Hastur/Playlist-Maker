@@ -38,7 +38,7 @@
             android:textColorHint="@color/search_hint" />
 
         <ImageView
-            android:id="@+id/search_clear"
+            android:id="@+id/search_clear_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
@@ -51,7 +51,7 @@
     </FrameLayout>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         android:layout_width="@dimen/progress_bar_size"
         android:layout_height="@dimen/progress_bar_size"
         android:layout_gravity="center"

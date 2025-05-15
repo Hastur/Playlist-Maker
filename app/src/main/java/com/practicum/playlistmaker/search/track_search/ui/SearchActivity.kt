@@ -3,234 +3,226 @@ package com.practicum.playlistmaker.search.track_search.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.practicum.playlistmaker.Creator
-import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.Utils
+import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
-import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
-import com.practicum.playlistmaker.search.track_search.domain.models.Track
+import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
+import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
+import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
 
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        private const val SEARCH_TEXT = "SEARCH_TEXT"
-        private const val DEBOUNCE_DELAY = 2000L
         const val TRACK = "TRACK"
     }
 
-    private lateinit var searchField: EditText
-    private lateinit var clearButton: ImageView
-    private lateinit var rwTrackList: RecyclerView
-    private lateinit var historyContainer: ScrollView
-    private lateinit var emptyScreen: LinearLayout
+    private lateinit var binding: ActivitySearchBinding
+    private val viewModel by viewModels<SearchViewModel> { SearchViewModel.getViewModelFactory() }
+
     private var searchQuery: String? = null
-    private val tracks = mutableListOf<Track>()
+    private var textWatcher: TextWatcher? = null
     private lateinit var trackListAdapter: SearchAdapter
     private lateinit var tracksHistoryAdapter: SearchAdapter
-    private var tracksHistory = listOf<Track>()
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         enableEdgeToEdge()
-        setContentView(R.layout.activity_search)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        findViewById<Toolbar>(R.id.toolbar_search).setNavigationOnClickListener {
+        binding.toolbarSearch.setNavigationOnClickListener {
             this.finish()
         }
 
-        searchField = findViewById(R.id.search_input)
-        clearButton = findViewById(R.id.search_clear)
-        historyContainer = findViewById(R.id.history_container)
-        emptyScreen = findViewById(R.id.empty_screen)
+        setupHistory()
 
-        clearButton.setOnClickListener {
-            searchField.setText("")
-            val inputManager = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            inputManager.hideSoftInputFromWindow(searchField.windowToken, 0)
-            searchField.clearFocus()
+        viewModel.getHistoryLiveData().observe(this) { history ->
+            tracksHistoryAdapter.updateTrackList(history.asReversed())
         }
 
-        val searchHistory = Creator.provideSearchHistoryInteractor()
-        val rwTracksHistory = findViewById<RecyclerView>(R.id.track_history_list)
-        rwTracksHistory.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        tracksHistoryAdapter = SearchAdapter { track ->
-            if (clickDebounce()) startActivity(
-                Intent(this, PlayerActivity::class.java).putExtra(
-                    TRACK,
-                    Utils().serializeToJson(track)
-                )
-            )
-        }
-        rwTracksHistory.adapter = tracksHistoryAdapter
+        setupSearchField()
 
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                //empty
-            }
+        setupSearchResultContainer()
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                clearButton.isVisible = !searchField.text.isNullOrEmpty()
-                searchDebounce()
-            }
+        viewModel.getScreenStateLiveData().observe(this) { screenState ->
+            when (screenState) {
+                is SearchScreenState.Initial -> setupInitialScreen()
 
-            override fun afterTextChanged(p0: Editable?) {
-                searchQuery = searchField.text.toString()
-
-                if (searchQuery.isNullOrEmpty()) {
-                    rwTrackList.isVisible = false
-                    emptyScreen.isVisible = false
+                is SearchScreenState.Focused -> {
+                    changeHistoryVisibility(screenState.isHistoryAvailable)
+                    binding.searchClearButton.isVisible = false
                 }
 
-                historyContainer.isVisible =
-                    searchField.hasFocus() && searchQuery.isNullOrEmpty() && tracksHistoryAdapter.trackList.isNotEmpty()
-            }
-        }
-        searchField.addTextChangedListener(textWatcher)
+                is SearchScreenState.Typing -> {
+                    binding.run {
+                        changeHistoryVisibility(false)
+                        searchClearButton.isVisible = true
+                        emptyScreen.isVisible = false
+                    }
+                }
 
-        rwTrackList = findViewById(R.id.track_list)
-        rwTrackList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        trackListAdapter = SearchAdapter { track ->
-            if (clickDebounce()) {
-                tracksHistory = searchHistory.addTrack(track)
-                tracksHistoryAdapter.trackList = tracksHistory
-                tracksHistoryAdapter.notifyDataSetChanged()
+                is SearchScreenState.Loading -> changeContentVisibility(
+                    progressBarVisibility = true,
+                    trackListVisibility = false,
+                    emptyScreenVisibility = false
+                )
 
-                startActivity(
-                    Intent(this, PlayerActivity::class.java).putExtra(
+                is SearchScreenState.Content -> {
+                    trackListAdapter.updateTrackList(screenState.trackList)
+                    changeContentVisibility(
+                        progressBarVisibility = false,
+                        trackListVisibility = true,
+                        emptyScreenVisibility = false
+                    )
+                }
+
+                is SearchScreenState.Error -> {
+                    showErrorScreen(screenState.errorType)
+                    changeContentVisibility(
+                        progressBarVisibility = false,
+                        trackListVisibility = false,
+                        emptyScreenVisibility = true
+                    )
+                }
+
+                is SearchScreenState.OpenPlayer -> startActivity(
+                    Intent(this@SearchActivity, PlayerActivity::class.java).putExtra(
                         TRACK,
-                        Utils().serializeToJson(track)
+                        screenState.serializedTrack
                     )
                 )
             }
         }
-        trackListAdapter.trackList = tracks
-        rwTrackList.adapter = trackListAdapter
+    }
 
-        searchField.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && searchQuery.isNullOrEmpty()) {
-                if (tracksHistory.isEmpty()) tracksHistory = searchHistory.getTracks()
-                tracksHistoryAdapter.trackList = tracksHistory.asReversed()
-                historyContainer.isVisible = tracksHistory.isNotEmpty()
-            } else historyContainer.isVisible = false
+    private fun setupHistory() {
+        binding.run {
+            trackHistoryList.layoutManager =
+                LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
+            tracksHistoryAdapter = SearchAdapter { track ->
+                viewModel.performTrackClick(track)
+            }
+            trackHistoryList.adapter = tracksHistoryAdapter
+
+            trackHistoryClear.setOnClickListener {
+                viewModel.clearHistory()
+            }
         }
+    }
 
-        findViewById<MaterialButton>(R.id.track_history_clear).setOnClickListener {
-            searchHistory.clearHistory()
-            tracksHistoryAdapter.trackList = listOf()
-            tracksHistoryAdapter.notifyDataSetChanged()
+    private fun setupSearchField() {
+        binding.run {
+            searchClearButton.setOnClickListener {
+                viewModel.setInitialState()
+            }
+
+            textWatcher = object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    //empty
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    if (searchInput.text.isNullOrEmpty()) viewModel.setFocusedState()
+                    else viewModel.setTypingState()
+                }
+
+                override fun afterTextChanged(p0: Editable?) {
+                    searchQuery = searchInput.text.toString()
+                    loadData()
+                }
+            }
+            searchInput.addTextChangedListener(textWatcher)
+
+            searchInput.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) viewModel.setFocusedState()
+            }
+        }
+    }
+
+    private fun setupInitialScreen() {
+        binding.run {
+            searchInput.setText("")
+            val inputManager =
+                this@SearchActivity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
+            searchInput.clearFocus()
+
+            progressBar.isVisible = false
             historyContainer.isVisible = false
+            searchClearButton.isVisible = false
+            trackList.isVisible = false
+            emptyScreen.isVisible = false
         }
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { loadData() }
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, DEBOUNCE_DELAY)
-    }
-
-    private var isClickAllowed = true
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, DEBOUNCE_DELAY)
+    private fun setupSearchResultContainer() {
+        binding.run {
+            trackList.layoutManager =
+                LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
+            trackListAdapter = SearchAdapter { track ->
+                viewModel.addToHistory(track)
+                viewModel.performTrackClick(track)
+            }
+            trackList.adapter = trackListAdapter
         }
-        return current
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, searchQuery)
+    private fun changeHistoryVisibility(shouldShow: Boolean) {
+        binding.run {
+            historyContainer.isVisible = shouldShow
+            trackList.isVisible = false
+        }
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchField.setText(savedInstanceState.getString(SEARCH_TEXT))
+    private fun changeContentVisibility(
+        progressBarVisibility: Boolean,
+        trackListVisibility: Boolean,
+        emptyScreenVisibility: Boolean
+    ) {
+        binding.run {
+            progressBar.isVisible = progressBarVisibility
+            trackList.isVisible = trackListVisibility
+            emptyScreen.isVisible = emptyScreenVisibility
+        }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun loadData() {
         if (!searchQuery.isNullOrEmpty()) {
-
-            val progressBar = findViewById<CircularProgressIndicator>(R.id.progressBar)
-            progressBar.isVisible = true
-            rwTrackList.isVisible = false
-            historyContainer.isVisible = false
-            emptyScreen.isVisible = false
-
-            Creator.provideSearchInteractor()
-                .searchTrack(searchQuery ?: "", object : SearchInteractor.TrackConsumer {
-                    override fun consume(foundTracks: List<Track>?) {
-                        runOnUiThread {
-                            progressBar.isVisible = false
-                            when {
-                                foundTracks == null -> toggleEmptyScreen(MessageTypes.NoInternet)
-                                foundTracks.isEmpty() -> toggleEmptyScreen(MessageTypes.NothingFound)
-                                else -> {
-                                    tracks.clear()
-                                    tracks.addAll(foundTracks)
-                                    trackListAdapter.notifyDataSetChanged()
-                                    rwTrackList.isVisible = true
-                                    rwTrackList.layoutManager?.smoothScrollToPosition(
-                                        rwTrackList, null, 0
-                                    )
-                                    toggleEmptyScreen(null)
-                                }
-                            }
-                        }
-                    }
-                })
+            viewModel.searchWithDebounce(searchQuery!!)
         }
     }
 
-    private fun toggleEmptyScreen(type: MessageTypes?) {
-        val shouldShow = type != null
+    private fun showErrorScreen(error: ErrorType) {
+        binding.run {
+            emptyScreenImage.setImageResource(error.imageId)
+            emptyScreenText.setText(error.messageId)
 
-        emptyScreen.isVisible = shouldShow
-        rwTrackList.isVisible = !shouldShow
-
-        if (shouldShow) {
-            findViewById<ImageView>(R.id.empty_screen_image).setImageResource(type!!.imageId)
-            findViewById<TextView>(R.id.empty_screen_text).setText(type.messageId)
-
-            val buttonRetry = findViewById<MaterialButton>(R.id.empty_screen_button)
-            buttonRetry.isVisible = type == MessageTypes.NoInternet
-            buttonRetry.setOnClickListener {
+            emptyScreenButton.isVisible = error == ErrorType.NoInternet
+            emptyScreenButton.setOnClickListener {
                 loadData()
             }
         }
     }
 
-    enum class MessageTypes(val imageId: Int, val messageId: Int) {
-        NothingFound(R.drawable.ic_nothing_found, R.string.search_nothing_found),
-        NoInternet(R.drawable.ic_no_internet, R.string.search_no_internet);
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.searchInput.removeTextChangedListener(textWatcher)
     }
 }
