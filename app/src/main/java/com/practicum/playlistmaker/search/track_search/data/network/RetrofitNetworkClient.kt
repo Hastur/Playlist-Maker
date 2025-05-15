@@ -1,27 +1,20 @@
 package com.practicum.playlistmaker.search.track_search.data.network
 
-import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.search.track_search.data.NetworkClient
 import com.practicum.playlistmaker.search.track_search.data.dto.Response
 import com.practicum.playlistmaker.search.track_search.data.dto.TrackSearchRequest
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitNetworkClient(private val application: Application) : NetworkClient {
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://itunes.apple.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val searchService = retrofit.create(TrackSearchApi::class.java)
+class RetrofitNetworkClient(
+    private val searchService: TrackSearchApi,
+    private val context: Context
+) : NetworkClient {
 
     private fun isNetworkAvailable(): Boolean {
         val manager =
-            application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = manager.activeNetwork ?: return false
         val activeNetwork = manager.getNetworkCapabilities(capabilities) ?: return false
         val connected = when {

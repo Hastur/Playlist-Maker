@@ -7,7 +7,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -18,6 +17,7 @@ import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
@@ -26,7 +26,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivitySearchBinding
-    private val viewModel by viewModels<SearchViewModel> { SearchViewModel.getViewModelFactory() }
+    private val viewModel by viewModel<SearchViewModel>()
 
     private var searchQuery: String? = null
     private var textWatcher: TextWatcher? = null
