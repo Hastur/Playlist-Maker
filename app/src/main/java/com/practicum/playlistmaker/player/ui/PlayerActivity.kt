@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -17,13 +16,15 @@ import com.practicum.playlistmaker.player.presentation.PlayerViewModel
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.search.track_search.ui.SearchActivity.Companion.TRACK
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var serializedTrack: String
-    private val viewModel by viewModels<PlayerViewModel> {
-        PlayerViewModel.getViewModelFactory(serializedTrack)
+    private val viewModel by viewModel<PlayerViewModel> {
+        parametersOf(serializedTrack)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,19 +1,19 @@
 package com.practicum.playlistmaker.sharing.data
 
-import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.practicum.playlistmaker.sharing.domain.model.EmailData
 
-class ExternalNavigatorImpl(private val application: Application) : ExternalNavigator {
+class ExternalNavigatorImpl(private val context: Context) : ExternalNavigator {
     override fun shareApp() {
         val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.putExtra(Intent.EXTRA_TEXT, application.getString(R.string.share_url))
+        shareIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_url))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             .type = "text/plain"
-        application.startActivity(shareIntent)
+        context.startActivity(shareIntent)
     }
 
     override fun sendMail(emailData: EmailData) {
@@ -23,14 +23,14 @@ class ExternalNavigatorImpl(private val application: Application) : ExternalNavi
             .putExtra(Intent.EXTRA_SUBJECT, emailData.subject)
             .putExtra(Intent.EXTRA_TEXT, emailData.text)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        application.startActivity(sendMailIntent)
+        context.startActivity(sendMailIntent)
     }
 
     override fun openUserAgreement() {
-        application.startActivity(
+        context.startActivity(
             Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse(application.getString(R.string.user_agreement_offer))
+                Uri.parse(context.getString(R.string.user_agreement_offer))
             ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }
