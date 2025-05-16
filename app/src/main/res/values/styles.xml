@@ -31,6 +31,10 @@
         <item name="android:textSize">@dimen/text_19</item>
     </style>
 
+    <style name="TabLayoutText" parent="TextBase">
+        <item name="android:textSize">@dimen/text_14</item>
+    </style>
+
     <style name="ButtonBase" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:insetLeft">@dimen/indent_0</item>
         <item name="android:insetTop">@dimen/indent_0</item>
