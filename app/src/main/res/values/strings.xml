@@ -25,4 +25,9 @@
     <string name="country">Страна</string>
     <string name="track_unavailable">Воспроизведение трека недоступно</string>
     <string name="server_error">Ошибка сервера</string>
+    <string name="favorites">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
+    <string name="library_empty">Ваша медиатека пуста</string>
+    <string name="no_playlists">Вы не создали\nни одного плейлиста</string>
+    <string name="new_playlist">Новый плейлист</string>
 </resources>

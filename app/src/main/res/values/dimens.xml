@@ -26,4 +26,5 @@
     <dimen name="track_list_track_cover">45dp</dimen>
     <dimen name="round_button_size">50dp</dimen>
     <dimen name="play_button_size">84dp</dimen>
+    <dimen name="empty_screen_icon">120dp</dimen>
 </resources>

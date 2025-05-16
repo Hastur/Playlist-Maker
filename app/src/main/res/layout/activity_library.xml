@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/library"
     style="@style/BaseVerticalLayout">
@@ -7,6 +7,31 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_library"
         style="@style/Toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:title="@string/library" />
 
-</LinearLayout>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/library_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/indent_16"
+        android:layout_marginEnd="@dimen/indent_16"
+        android:background="@color/background"
+        app:layout_constraintBottom_toTopOf="@id/library_view_pager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_library"
+        app:tabIndicatorColor="@color/title_text"
+        app:tabTextAppearance="@style/TabLayoutText"
+        app:tabTextColor="@color/title_text" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/library_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/library_tabs" />
+</androidx.constraintlayout.widget.ConstraintLayout>
