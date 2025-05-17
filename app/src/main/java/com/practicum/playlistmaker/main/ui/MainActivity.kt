@@ -5,6 +5,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -24,20 +26,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        /*binding.run {
-            toolbarMain.navigationIcon = null
+        binding.run {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(containerView.id) as NavHostFragment
+            val navController = navHostFragment.navController
 
-            buttonSearch.setOnClickListener {
-                startActivity(Intent(this@MainActivity, SearchActivity::class.java))
-            }
-
-            buttonLibrary.setOnClickListener {
-                startActivity(Intent(this@MainActivity, LibraryActivity::class.java))
-            }
-
-            buttonSettings.setOnClickListener {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-            }
-        }*/
+            bottomNavigationView.setupWithNavController(navController)
+        }
     }
 }
