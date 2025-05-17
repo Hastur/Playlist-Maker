@@ -116,6 +116,7 @@ class SearchFragment : Fragment() {
 
             trackHistoryClear.setOnClickListener {
                 viewModel.clearHistory()
+                viewModel.setFocusedState()
             }
         }
     }
@@ -123,6 +124,7 @@ class SearchFragment : Fragment() {
     private fun setupSearchField() {
         binding.run {
             searchClearButton.setOnClickListener {
+                searchInput.removeTextChangedListener(textWatcher)
                 viewModel.setInitialState()
             }
 
@@ -141,10 +143,12 @@ class SearchFragment : Fragment() {
                     loadData()
                 }
             }
-            searchInput.addTextChangedListener(textWatcher)
 
             searchInput.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) viewModel.setFocusedState()
+                if (hasFocus) {
+                    viewModel.setFocusedState()
+                    searchInput.addTextChangedListener(textWatcher)
+                }
             }
         }
     }
@@ -217,5 +221,6 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.searchInput.removeTextChangedListener(textWatcher)
+        viewModel.setInitialState()
     }
 }
