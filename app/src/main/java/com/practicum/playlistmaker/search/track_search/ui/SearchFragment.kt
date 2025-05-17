@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.track_search.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,10 +10,11 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
-import com.practicum.playlistmaker.player.ui.PlayerActivity.Companion.TRACK
 import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
@@ -95,11 +95,9 @@ class SearchFragment : Fragment() {
                     )
                 }
 
-                is SearchScreenState.OpenPlayer -> startActivity(
-                    Intent(requireActivity(), PlayerActivity::class.java).putExtra(
-                        TRACK,
-                        screenState.serializedTrack
-                    )
+                is SearchScreenState.OpenPlayer -> findNavController().navigate(
+                    R.id.action_searchFragment_to_playerActivity,
+                    PlayerActivity.createArgs(screenState.serializedTrack)
                 )
             }
         }

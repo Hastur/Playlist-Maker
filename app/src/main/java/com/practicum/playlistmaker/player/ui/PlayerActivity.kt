@@ -5,6 +5,7 @@ import android.util.TypedValue
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -21,7 +22,8 @@ import org.koin.core.parameter.parametersOf
 class PlayerActivity : AppCompatActivity() {
 
     companion object {
-        const val TRACK = "TRACK"
+        private const val TRACK = "TRACK"
+        fun createArgs(serializedTrack: String): Bundle = bundleOf(TRACK to serializedTrack)
     }
 
     private lateinit var binding: ActivityPlayerBinding
