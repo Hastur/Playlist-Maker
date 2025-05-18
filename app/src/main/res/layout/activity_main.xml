@@ -12,16 +12,29 @@
         android:layout_width="@dimen/indent_0"
         android:layout_height="@dimen/indent_0"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
+        app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/main_navigation_graph" />
 
+    <View
+        android:id="@+id/divider"
+        android:layout_width="@dimen/indent_0"
+        android:layout_height="@dimen/indent_1"
+        android:background="@color/title_text"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
         android:layout_width="@dimen/indent_0"
         android:layout_height="wrap_content"
+        android:background="@color/background"
+        android:maxHeight="6dp"
+        app:itemIconTint="@drawable/selector_bottom_menu_item"
+        app:itemTextColor="@drawable/selector_bottom_menu_item"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
