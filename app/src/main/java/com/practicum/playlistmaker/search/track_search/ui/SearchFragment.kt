@@ -94,11 +94,16 @@ class SearchFragment : Fragment() {
                         emptyScreenVisibility = true
                     )
                 }
+            }
+        }
 
-                is SearchScreenState.OpenPlayer -> findNavController().navigate(
+        viewModel.getSelectedTrackLiveData().observe(viewLifecycleOwner) { track ->
+            if (track.needOpen) {
+                findNavController().navigate(
                     R.id.action_searchFragment_to_playerActivity,
-                    PlayerActivity.createArgs(screenState.serializedTrack)
+                    PlayerActivity.createArgs(track.serializedTrack)
                 )
+                viewModel.onTrackOpened(track)
             }
         }
     }
@@ -219,6 +224,5 @@ class SearchFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.searchInput.removeTextChangedListener(textWatcher)
-        viewModel.setInitialState()
     }
 }

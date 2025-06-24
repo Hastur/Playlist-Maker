@@ -9,6 +9,7 @@ import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteract
 import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
+import com.practicum.playlistmaker.search.track_search.presentation.models.SelectedTrack
 import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.util.Utils
 
@@ -26,6 +27,9 @@ class SearchViewModel(
 
     private var historyLiveData = MutableLiveData<List<Track>>()
     fun getHistoryLiveData(): LiveData<List<Track>> = historyLiveData
+
+    private var selectedTrackLiveData = MutableLiveData<SelectedTrack>()
+    fun getSelectedTrackLiveData(): LiveData<SelectedTrack> = selectedTrackLiveData
 
     init {
         getHistory()
@@ -59,8 +63,12 @@ class SearchViewModel(
     }
 
     fun performTrackClick(track: Track) {
-        if (openPlayerDebounce()) screenStateLiveData.value =
-            SearchScreenState.OpenPlayer(Utils().serializeToJson(track))
+        if (openPlayerDebounce()) selectedTrackLiveData.value =
+            SelectedTrack(Utils().serializeToJson(track), true)
+    }
+
+    fun onTrackOpened(track: SelectedTrack) {
+        selectedTrackLiveData.value = track.copy(needOpen = false)
     }
 
     fun setInitialState() {

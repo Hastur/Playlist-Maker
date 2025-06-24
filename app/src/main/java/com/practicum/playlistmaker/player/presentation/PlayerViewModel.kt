@@ -25,6 +25,7 @@ class PlayerViewModel(private val track: Track, private val playerInteractor: Pl
                     screenStateLiveData.postValue(PlayerScreenState.Prepared(track))
                 },
                 onComplete = {
+                    handler.removeCallbacks(playingTimeTask)
                     screenStateLiveData.postValue(
                         PlayerScreenState.Playing("00:00", false)
                     )
