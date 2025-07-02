@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.koin)
     implementation(libs.fragment)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

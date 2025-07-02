@@ -6,10 +6,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
+import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
+import com.practicum.playlistmaker.search.track_search.presentation.models.SelectedTrack
 import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
-import com.practicum.playlistmaker.util.Resource
 import com.practicum.playlistmaker.util.Utils
 
 class SearchViewModel(
@@ -27,6 +28,9 @@ class SearchViewModel(
     private var historyLiveData = MutableLiveData<List<Track>>()
     fun getHistoryLiveData(): LiveData<List<Track>> = historyLiveData
 
+    private var selectedTrackLiveData = MutableLiveData<SelectedTrack>()
+    fun getSelectedTrackLiveData(): LiveData<SelectedTrack> = selectedTrackLiveData
+
     init {
         getHistory()
     }
@@ -43,20 +47,28 @@ class SearchViewModel(
 
     private fun searchTrack() {
         screenStateLiveData.value = SearchScreenState.Loading
-        when (val response = searchInteractor.searchTrack(searchQuery)) {
-            is Resource.Success -> screenStateLiveData.postValue(response.data?.let {
-                SearchScreenState.Content(it)
-            })
+        searchInteractor.searchTrack(searchQuery, object : SearchInteractor.TrackConsumer {
+            override fun consume(foundTracks: List<Track>?, errorType: ErrorType?) {
+                when {
+                    foundTracks != null -> screenStateLiveData.postValue(
+                        SearchScreenState.Content(foundTracks)
+                    )
 
-            is Resource.Error -> screenStateLiveData.postValue(response.errorType?.let {
-                SearchScreenState.Error(it)
-            })
-        }
+                    errorType != null -> screenStateLiveData.postValue(
+                        SearchScreenState.Error(errorType)
+                    )
+                }
+            }
+        })
     }
 
     fun performTrackClick(track: Track) {
-        if (openPlayerDebounce()) screenStateLiveData.value =
-            SearchScreenState.OpenPlayer(Utils().serializeToJson(track))
+        if (openPlayerDebounce()) selectedTrackLiveData.value =
+            SelectedTrack(Utils().serializeToJson(track), true)
+    }
+
+    fun onTrackOpened(track: SelectedTrack) {
+        selectedTrackLiveData.value = track.copy(needOpen = false)
     }
 
     fun setInitialState() {

@@ -1,15 +1,13 @@
 package com.practicum.playlistmaker.main.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
-import com.practicum.playlistmaker.library.ui.LibraryActivity
-import com.practicum.playlistmaker.search.track_search.ui.SearchActivity
-import com.practicum.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,19 +27,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.run {
-            toolbarMain.navigationIcon = null
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(containerView.id) as NavHostFragment
+            val navController = navHostFragment.navController
 
-            buttonSearch.setOnClickListener {
-                startActivity(Intent(this@MainActivity, SearchActivity::class.java))
-            }
-
-            buttonLibrary.setOnClickListener {
-                startActivity(Intent(this@MainActivity, LibraryActivity::class.java))
-            }
-
-            buttonSettings.setOnClickListener {
-                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
-            }
+            bottomNavigationView.setupWithNavController(navController)
         }
     }
 }

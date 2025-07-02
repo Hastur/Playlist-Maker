@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/library"
-    style="@style/BaseVerticalLayout">
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/BaseVerticalLayout"
+    tools:context=".library.ui.LibraryFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar_library"
