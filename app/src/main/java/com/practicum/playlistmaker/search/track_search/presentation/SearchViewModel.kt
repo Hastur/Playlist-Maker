@@ -1,10 +1,9 @@
 package com.practicum.playlistmaker.search.track_search.presentation
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
@@ -12,6 +11,9 @@ import com.practicum.playlistmaker.search.track_search.presentation.models.Searc
 import com.practicum.playlistmaker.search.track_search.presentation.models.SelectedTrack
 import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.util.Utils
+import com.practicum.playlistmaker.util.debounce
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
@@ -31,23 +33,23 @@ class SearchViewModel(
     private var selectedTrackLiveData = MutableLiveData<SelectedTrack>()
     fun getSelectedTrackLiveData(): LiveData<SelectedTrack> = selectedTrackLiveData
 
+    private val searchDebounce: (String) -> Unit
+
     init {
+        searchDebounce = debounce(DEBOUNCE_DELAY, viewModelScope, true) { input ->
+            searchTrack(input)
+        }
+
         getHistory()
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { searchTrack() }
-    private lateinit var searchQuery: String
-
     fun searchWithDebounce(searchInput: String) {
-        searchQuery = searchInput
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, DEBOUNCE_DELAY)
+        searchDebounce(searchInput)
     }
 
-    private fun searchTrack() {
+    private fun searchTrack(searchInput: String) {
         screenStateLiveData.value = SearchScreenState.Loading
-        searchInteractor.searchTrack(searchQuery, object : SearchInteractor.TrackConsumer {
+        searchInteractor.searchTrack(searchInput, object : SearchInteractor.TrackConsumer {
             override fun consume(foundTracks: List<Track>?, errorType: ErrorType?) {
                 when {
                     foundTracks != null -> screenStateLiveData.postValue(
@@ -89,7 +91,10 @@ class SearchViewModel(
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, DEBOUNCE_DELAY)
+            viewModelScope.launch {
+                delay(DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
         }
         return current
     }

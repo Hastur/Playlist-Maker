@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.fragment)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.coroutines)
     annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
