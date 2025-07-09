@@ -14,6 +14,10 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(private val track: Track, private val playerInteractor: PlayerInteractor) :
     ViewModel() {
 
+    companion object {
+        private const val TIMER_UPDATE_DELAY = 300L
+    }
+
     private var screenStateLiveData = MutableLiveData<PlayerScreenState>(PlayerScreenState.Loading)
     fun getScreenStateLiveData(): LiveData<PlayerScreenState> = screenStateLiveData
 
@@ -65,9 +69,10 @@ class PlayerViewModel(private val track: Track, private val playerInteractor: Pl
     }
 
     private fun startTimer() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (true) {
-                delay(300L)
+                delay(TIMER_UPDATE_DELAY)
                 screenStateLiveData.postValue(
                     PlayerScreenState.Playing(playerInteractor.getPlayingTime(), true)
                 )
