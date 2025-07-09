@@ -12,8 +12,6 @@ import com.practicum.playlistmaker.search.track_search.presentation.models.Selec
 import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.util.Utils
 import com.practicum.playlistmaker.util.debounce
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
@@ -34,10 +32,16 @@ class SearchViewModel(
     fun getSelectedTrackLiveData(): LiveData<SelectedTrack> = selectedTrackLiveData
 
     private val searchDebounce: (String) -> Unit
+    private val trackOpenDebounce: (Boolean) -> Unit
+    private var isClickAllowed = true
 
     init {
         searchDebounce = debounce(DEBOUNCE_DELAY, viewModelScope, true) { input ->
             searchTrack(input)
+        }
+
+        trackOpenDebounce = debounce(DEBOUNCE_DELAY, viewModelScope, false) {
+            isClickAllowed = it
         }
 
         getHistory()
@@ -64,9 +68,12 @@ class SearchViewModel(
         })
     }
 
-    fun performTrackClick(track: Track) {
-        if (openPlayerDebounce()) selectedTrackLiveData.value =
-            SelectedTrack(Utils().serializeToJson(track), true)
+    fun openTrackWithDebounce(track: Track) {
+        if (isClickAllowed) {
+            isClickAllowed = false
+            selectedTrackLiveData.value = SelectedTrack(Utils().serializeToJson(track), true)
+            trackOpenDebounce(true)
+        }
     }
 
     fun onTrackOpened(track: SelectedTrack) {
@@ -84,19 +91,6 @@ class SearchViewModel(
 
     fun setTypingState() {
         screenStateLiveData.value = SearchScreenState.Typing
-    }
-
-    private var isClickAllowed = true
-    private fun openPlayerDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            viewModelScope.launch {
-                delay(DEBOUNCE_DELAY)
-                isClickAllowed = true
-            }
-        }
-        return current
     }
 
     private fun getHistory() {
