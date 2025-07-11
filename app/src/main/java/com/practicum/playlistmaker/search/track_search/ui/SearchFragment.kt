@@ -97,14 +97,11 @@ class SearchFragment : Fragment() {
             }
         }
 
-        viewModel.getSelectedTrackLiveData().observe(viewLifecycleOwner) { track ->
-            if (track.needOpen) {
-                findNavController().navigate(
-                    R.id.action_searchFragment_to_playerActivity,
-                    PlayerActivity.createArgs(track.serializedTrack)
-                )
-                viewModel.onTrackOpened(track)
-            }
+        viewModel.getSelectedTrackSingleEvent().observe(viewLifecycleOwner) { serializedTrack ->
+            findNavController().navigate(
+                R.id.action_searchFragment_to_playerActivity,
+                PlayerActivity.createArgs(serializedTrack)
+            )
         }
     }
 
@@ -113,7 +110,7 @@ class SearchFragment : Fragment() {
             trackHistoryList.layoutManager =
                 LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             tracksHistoryAdapter = SearchAdapter { track ->
-                viewModel.performTrackClick(track)
+                viewModel.openTrackWithDebounce(track)
             }
             trackHistoryList.adapter = tracksHistoryAdapter
 
@@ -149,7 +146,9 @@ class SearchFragment : Fragment() {
 
             searchInput.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    viewModel.setFocusedState()
+                    if (searchInput.text.isNullOrEmpty()) viewModel.setFocusedState()
+                    else viewModel.setTypingState()
+
                     searchInput.addTextChangedListener(textWatcher)
                 }
             }
@@ -178,7 +177,7 @@ class SearchFragment : Fragment() {
                 LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             trackListAdapter = SearchAdapter { track ->
                 viewModel.addToHistory(track)
-                viewModel.performTrackClick(track)
+                viewModel.openTrackWithDebounce(track)
             }
             trackList.adapter = trackListAdapter
         }
@@ -187,7 +186,7 @@ class SearchFragment : Fragment() {
     private fun changeHistoryVisibility(shouldShow: Boolean) {
         binding.run {
             historyContainer.isVisible = shouldShow
-            trackList.isVisible = false
+            trackList.isVisible = !shouldShow
         }
     }
 
@@ -204,9 +203,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun loadData() {
-        if (!searchQuery.isNullOrEmpty()) {
-            viewModel.searchWithDebounce(searchQuery!!)
-        }
+        viewModel.searchWithDebounce(searchQuery ?: "")
     }
 
     private fun showErrorScreen(error: ErrorType) {

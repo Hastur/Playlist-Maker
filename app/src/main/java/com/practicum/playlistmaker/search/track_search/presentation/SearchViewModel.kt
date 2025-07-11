@@ -1,17 +1,17 @@
 package com.practicum.playlistmaker.search.track_search.presentation
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.track_search.domain.api.SearchInteractor
-import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
-import com.practicum.playlistmaker.search.track_search.presentation.models.SelectedTrack
 import com.practicum.playlistmaker.search.track_search_history.domain.api.SearchHistoryInteractor
+import com.practicum.playlistmaker.util.SingleLiveEvent
 import com.practicum.playlistmaker.util.Utils
+import com.practicum.playlistmaker.util.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
@@ -28,47 +28,55 @@ class SearchViewModel(
     private var historyLiveData = MutableLiveData<List<Track>>()
     fun getHistoryLiveData(): LiveData<List<Track>> = historyLiveData
 
-    private var selectedTrackLiveData = MutableLiveData<SelectedTrack>()
-    fun getSelectedTrackLiveData(): LiveData<SelectedTrack> = selectedTrackLiveData
+    private var selectedTrackSingleEvent = SingleLiveEvent<String>()
+    fun getSelectedTrackSingleEvent(): SingleLiveEvent<String> = selectedTrackSingleEvent
+
+    private val searchDebounce: (String) -> Unit
+    private val trackOpenDebounce: (Boolean) -> Unit
+    private var isClickAllowed = true
 
     init {
+        searchDebounce = debounce(DEBOUNCE_DELAY, viewModelScope, true) { input ->
+            if (input.isNotEmpty()) searchTrack(input)
+        }
+
+        trackOpenDebounce = debounce(DEBOUNCE_DELAY, viewModelScope, false) {
+            isClickAllowed = it
+        }
+
         getHistory()
     }
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable { searchTrack() }
-    private lateinit var searchQuery: String
-
     fun searchWithDebounce(searchInput: String) {
-        searchQuery = searchInput
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, DEBOUNCE_DELAY)
+        searchDebounce(searchInput)
     }
 
-    private fun searchTrack() {
+    private fun searchTrack(searchInput: String) {
         screenStateLiveData.value = SearchScreenState.Loading
-        searchInteractor.searchTrack(searchQuery, object : SearchInteractor.TrackConsumer {
-            override fun consume(foundTracks: List<Track>?, errorType: ErrorType?) {
-                when {
-                    foundTracks != null -> screenStateLiveData.postValue(
-                        SearchScreenState.Content(foundTracks)
-                    )
 
-                    errorType != null -> screenStateLiveData.postValue(
-                        SearchScreenState.Error(errorType)
-                    )
+        viewModelScope.launch {
+            searchInteractor
+                .searchTrack(searchInput)
+                .collect { pair ->
+                    when {
+                        pair.first != null -> screenStateLiveData.postValue(
+                            SearchScreenState.Content(pair.first!!)
+                        )
+
+                        pair.second != null -> screenStateLiveData.postValue(
+                            SearchScreenState.Error(pair.second!!)
+                        )
+                    }
                 }
-            }
-        })
+        }
     }
 
-    fun performTrackClick(track: Track) {
-        if (openPlayerDebounce()) selectedTrackLiveData.value =
-            SelectedTrack(Utils().serializeToJson(track), true)
-    }
-
-    fun onTrackOpened(track: SelectedTrack) {
-        selectedTrackLiveData.value = track.copy(needOpen = false)
+    fun openTrackWithDebounce(track: Track) {
+        if (isClickAllowed) {
+            isClickAllowed = false
+            selectedTrackSingleEvent.value = Utils().serializeToJson(track)
+            trackOpenDebounce(true)
+        }
     }
 
     fun setInitialState() {
@@ -82,16 +90,6 @@ class SearchViewModel(
 
     fun setTypingState() {
         screenStateLiveData.value = SearchScreenState.Typing
-    }
-
-    private var isClickAllowed = true
-    private fun openPlayerDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, DEBOUNCE_DELAY)
-        }
-        return current
     }
 
     private fun getHistory() {
