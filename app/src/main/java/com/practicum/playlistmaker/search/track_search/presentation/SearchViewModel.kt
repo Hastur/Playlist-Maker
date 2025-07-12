@@ -93,11 +93,15 @@ class SearchViewModel(
     }
 
     private fun getHistory() {
-        historyLiveData.value = searchHistoryInteractor.getTracks()
+        viewModelScope.launch {
+            historyLiveData.value = searchHistoryInteractor.getTracks()
+        }
     }
 
     fun addToHistory(track: Track) {
-        historyLiveData.value = searchHistoryInteractor.addTrack(track)
+        viewModelScope.launch {
+            historyLiveData.value = searchHistoryInteractor.addTrack(track)
+        }
     }
 
     fun clearHistory() {

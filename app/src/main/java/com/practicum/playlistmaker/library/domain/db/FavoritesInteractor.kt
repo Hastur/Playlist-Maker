@@ -1,9 +1,9 @@
-package com.practicum.playlistmaker.library.domain
+package com.practicum.playlistmaker.library.domain.db
 
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
-interface FavoritesRepository {
+interface FavoritesInteractor {
 
     suspend fun addToFavorites(track: Track)
 
