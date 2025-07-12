@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.library.data.converters.TrackDbConverter
 import com.practicum.playlistmaker.player.data.PlayerRepositoryImpl
 import com.practicum.playlistmaker.player.domain.api.PlayerRepository
 import com.practicum.playlistmaker.search.track_search.data.SearchRepositoryImpl
@@ -24,5 +25,7 @@ val repositoryModule = module {
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 
     single<ExternalNavigator> { ExternalNavigatorImpl(androidContext()) }
+
+    factory { TrackDbConverter() }
 
 }

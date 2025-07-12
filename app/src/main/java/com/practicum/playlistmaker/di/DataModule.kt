@@ -2,7 +2,9 @@ package com.practicum.playlistmaker.di
 
 import android.content.Context.MODE_PRIVATE
 import android.media.MediaPlayer
+import androidx.room.Room
 import com.google.gson.Gson
+import com.practicum.playlistmaker.library.data.db.AppDatabase
 import com.practicum.playlistmaker.search.track_search.data.NetworkClient
 import com.practicum.playlistmaker.search.track_search.data.network.RetrofitNetworkClient
 import com.practicum.playlistmaker.search.track_search.data.network.TrackSearchApi
@@ -50,6 +52,10 @@ val dataModule = module {
     }
 
     single<NetworkClient> { RetrofitNetworkClient(get(), androidContext()) }
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").build()
+    }
 
     factory { Gson() }
 
