@@ -20,6 +20,27 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.6" />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="@dimen/progress_bar_size"
+        android:layout_height="@dimen/progress_bar_size"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favorites_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/indent_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_track" />
+
     <ImageView
         android:id="@+id/no_content_image"
         android:layout_width="@dimen/empty_screen_icon"
@@ -29,7 +50,8 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_guideline" />
+        app:layout_constraintTop_toBottomOf="@id/top_guideline"
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/no_content_label"
@@ -39,6 +61,7 @@
         android:text="@string/library_empty"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/no_content_image" />
+        app:layout_constraintTop_toBottomOf="@id/no_content_image"
+        tools:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

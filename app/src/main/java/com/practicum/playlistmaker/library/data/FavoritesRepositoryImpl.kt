@@ -21,7 +21,6 @@ class FavoritesRepositoryImpl(
         val tracks = database.trackDao()
             .getTracks()
             .map { track -> converter.mapEntityToTrack(track) }
-            .asReversed()
         emit(tracks)
     }
 
