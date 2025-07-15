@@ -54,6 +54,9 @@ class PlayerActivity : AppCompatActivity() {
             buttonPlay.setOnClickListener {
                 viewModel.playOrPause()
             }
+            buttonLike.setOnClickListener {
+                viewModel.onFavoriteClick()
+            }
         }
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->
@@ -72,6 +75,18 @@ class PlayerActivity : AppCompatActivity() {
                 }
 
                 is PlayerScreenState.Playing -> changeControlElementsStyle(screenState)
+            }
+        }
+
+        viewModel.getFavoriteStateSingleEvent().observe(this) { inFavorites ->
+            binding.buttonLike.run {
+                if (inFavorites) {
+                    setIconResource(R.drawable.ic_like_filled)
+                    setIconTintResource(R.color.like_filled)
+                } else {
+                    setIconResource(R.drawable.ic_like)
+                    setIconTintResource(R.color.white)
+                }
             }
         }
     }

@@ -7,9 +7,9 @@ import com.practicum.playlistmaker.search.track_search_history.domain.api.Search
 class SearchHistoryInteractorImpl(private val repository: SearchHistoryRepository) :
     SearchHistoryInteractor {
 
-    override fun getTracks(): List<Track> = repository.getTracks()
+    override suspend fun getTracks(): List<Track> = repository.getTracks()
 
-    override fun addTrack(track: Track): List<Track> {
+    override suspend fun addTrack(track: Track): List<Track> {
         val trackList = repository.getTracks().toMutableList()
         if (trackList.any { it.trackId == track.trackId }) {
             trackList.remove(trackList.first { it.trackId == track.trackId })

@@ -16,12 +16,12 @@ val viewModelModule = module {
 
     viewModel { (serializedTrack: String) ->
         val track = Utils().createFromJson(serializedTrack, Track::class.java)
-        PlayerViewModel(track, get())
+        PlayerViewModel(track, get(), get())
     }
 
     viewModel { SettingsViewModel(get(), get()) }
 
-    viewModel { FavoritesViewModel() }
+    viewModel { FavoritesViewModel(get()) }
 
     viewModel { PlaylistsViewModel() }
 
