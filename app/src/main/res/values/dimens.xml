@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="text_11">11sp</dimen>
+    <dimen name="text_12">12sp</dimen>
     <dimen name="text_13">13sp</dimen>
     <dimen name="text_14">14sp</dimen>
     <dimen name="text_16">16sp</dimen>
@@ -9,6 +10,7 @@
 
     <dimen name="indent_0">0dp</dimen>
     <dimen name="indent_1">1dp</dimen>
+    <dimen name="indent_2">2dp</dimen>
     <dimen name="indent_4">4dp</dimen>
     <dimen name="indent_8">8dp</dimen>
     <dimen name="indent_12">12dp</dimen>

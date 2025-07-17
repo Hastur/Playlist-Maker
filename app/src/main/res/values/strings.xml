@@ -37,5 +37,8 @@
     <string name="playlist_dialog_message">Все несохранённые данные будут потеряны</string>
     <string name="playlist_dialog_finish">Завершить</string>
     <string name="playlist_dialog_cancel">Отмена</string>
-    <string name="playlist_finished">Плейлист создан</string>
+    <string name="playlist_finished">Плейлист %1$s создан</string>
+    <string name="playlist_size_single">трек</string>
+    <string name="playlist_size_many">трека</string>
+    <string name="playlist_size_much">треков</string>
 </resources>

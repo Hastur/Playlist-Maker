@@ -33,5 +33,8 @@
     <string name="playlist_dialog_message">All unsaved data will be lost</string>
     <string name="playlist_dialog_finish">Finish</string>
     <string name="playlist_dialog_cancel">Cancel</string>
-    <string name="playlist_finished">Playlist Created</string>
+    <string name="playlist_finished">Playlist %1$s created</string>
+    <string name="playlist_size_single">track</string>
+    <string name="playlist_size_many">tracks</string>
+    <string name="playlist_size_much">tracks</string>
 </resources>

@@ -117,8 +117,8 @@ class PlaylistAddFragment : Fragment() {
 
         viewModel.getAddPlaylistSingle().observe(viewLifecycleOwner) { isAdded ->
             if (isAdded) {
-                Toast.makeText(requireActivity(), R.string.playlist_finished, Toast.LENGTH_SHORT)
-                    .show()
+                val text = getString(R.string.playlist_finished, binding.inputName.editText?.text)
+                Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             }
         }

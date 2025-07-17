@@ -20,7 +20,7 @@ class PlaylistDbConverter {
         name = entity.name,
         description = entity.description,
         coverPath = entity.coverPath,
-        tracksIds = Utils().createListFromJson(entity.tracksIds),
+        tracksIds = Utils().createIntListFromJson(entity.tracksIds),
         tracksCount = entity.tracksCount
     )
 }

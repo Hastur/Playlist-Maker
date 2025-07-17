@@ -12,8 +12,8 @@ class Utils {
 
     fun <T> createFromJson(json: String, className: Class<T>): T = gson.fromJson(json, className)
 
-    fun <T> createListFromJson(json: String): List<T> {
-        val type: Type = object : TypeToken<List<T>>() {}.type
+    fun createIntListFromJson(json: String): List<Int> {
+        val type: Type = object : TypeToken<List<Int>>() {}.type
         return gson.fromJson(json, type)
     }
 

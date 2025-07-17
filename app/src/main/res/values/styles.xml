@@ -133,4 +133,9 @@
         <item name="android:textSize">@dimen/text_11</item>
     </style>
 
+    <style name="roundedCornersImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/indent_8</item>
+    </style>
+
 </resources>
