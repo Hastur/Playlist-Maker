@@ -19,7 +19,9 @@
     <dimen name="indent_21">21dp</dimen>
     <dimen name="indent_24">24dp</dimen>
     <dimen name="indent_30">30dp</dimen>
+    <dimen name="indent_32">32dp</dimen>
     <dimen name="indent_36">36dp</dimen>
+    <dimen name="indent_44">44dp</dimen>
     <dimen name="indent_86">86dp</dimen>
     <dimen name="indent_124">124dp</dimen>
 

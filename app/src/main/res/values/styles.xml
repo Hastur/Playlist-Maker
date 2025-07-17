@@ -54,6 +54,17 @@
         <item name="cornerRadius">@dimen/indent_36</item>
     </style>
 
+    <style name="BottomButton" parent="ButtonBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/indent_44</item>
+        <item name="android:layout_marginHorizontal">@dimen/indent_16</item>
+        <item name="android:layout_marginBottom">@dimen/indent_32</item>
+        <item name="android:color">@color/white</item>
+        <item name="android:backgroundTint">@color/grey</item>
+        <item name="android:textSize">@dimen/text_16</item>
+        <item name="cornerRadius">@dimen/indent_8</item>
+    </style>
+
     <style name="RoundButton" parent="ButtonBase">
         <item name="android:layout_width">@dimen/round_button_size</item>
         <item name="android:layout_height">@dimen/round_button_size</item>

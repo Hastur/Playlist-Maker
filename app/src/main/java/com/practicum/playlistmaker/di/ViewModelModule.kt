@@ -23,6 +23,6 @@ val viewModelModule = module {
 
     viewModel { FavoritesViewModel(get()) }
 
-    viewModel { PlaylistsViewModel() }
+    viewModel { PlaylistsViewModel(get()) }
 
 }

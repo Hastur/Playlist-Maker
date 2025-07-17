@@ -26,4 +26,12 @@
     <string name="library_empty">Your media library is empty</string>
     <string name="no_playlists">No playlists created</string>
     <string name="new_playlist">New playlist</string>
+    <string name="playlist_name">Name*</string>
+    <string name="playlist_description">Description</string>
+    <string name="playlist_create">Create</string>
+    <string name="playlist_dialog_title">Finish playlist creating?</string>
+    <string name="playlist_dialog_message">All unsaved data will be lost</string>
+    <string name="playlist_dialog_finish">Finish</string>
+    <string name="playlist_dialog_cancel">Cancel</string>
+    <string name="playlist_finished">Playlist Created</string>
 </resources>

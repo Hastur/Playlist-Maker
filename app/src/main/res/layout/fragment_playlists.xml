@@ -21,7 +21,7 @@
         app:layout_constraintGuide_percent="0.6" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/track_history_clear"
+        android:id="@+id/button_new_playlist"
         style="@style/RoundedCornersButton"
         android:text="@string/new_playlist"
         app:layout_constraintEnd_toEndOf="parent"
