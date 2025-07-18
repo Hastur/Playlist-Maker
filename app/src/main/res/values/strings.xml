@@ -44,4 +44,7 @@
     <string name="add_to_playlist">Добавить в плейлист</string>
     <string name="add_to_playlist_success">Трек добавлен в плейлист</string>
     <string name="add_to_playlist_exists">Трек уже есть в этом плейлисте</string>
+    <string name="permission_dialog_title">Доступ к изображениям</string>
+    <string name="permission_dialog_message">Вы можете предоставить разрешение в настройках</string>
+    <string name="permission_dialog_settings">Настройки</string>
 </resources>

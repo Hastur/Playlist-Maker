@@ -1,11 +1,16 @@
 package com.practicum.playlistmaker.library.ui
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -48,6 +53,14 @@ class PlaylistAddFragment : Fragment() {
 
     private var coverUri: Uri? = null
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
+    private lateinit var permissionDialog: MaterialAlertDialogBuilder
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (!isGranted) {
+                permissionDialog.show()
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,6 +108,19 @@ class PlaylistAddFragment : Fragment() {
                 checkIsEditing()
             }
 
+            fun checkPermission(permission: String): Boolean {
+                if (ContextCompat.checkSelfPermission(
+                        requireActivity(),
+                        permission
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    return true
+                } else {
+                    requestPermissionLauncher.launch(permission)
+                    return false
+                }
+            }
+
             val pickMedia =
                 registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                     if (uri != null) {
@@ -105,7 +131,13 @@ class PlaylistAddFragment : Fragment() {
                 }
 
             playlistCover.setOnClickListener {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                val permission =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_IMAGES
+                    else Manifest.permission.READ_EXTERNAL_STORAGE
+
+                if (checkPermission(permission)) {
+                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
             }
 
             inputName.editText?.addTextChangedListener(textWatcher)
@@ -137,6 +169,18 @@ class PlaylistAddFragment : Fragment() {
             }
             .setPositiveButton(R.string.playlist_dialog_finish) { _, _ ->
                 closeFragment()
+            }
+
+        permissionDialog = MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.permission_dialog_title)
+            .setMessage(R.string.permission_dialog_message)
+            .setNeutralButton(R.string.playlist_dialog_cancel) { _, _ ->
+            }
+            .setPositiveButton(R.string.permission_dialog_settings) { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.data = Uri.fromParts("package", context?.packageName, null)
+                context?.startActivity(intent)
             }
 
         requireActivity().onBackPressedDispatcher.addCallback(
