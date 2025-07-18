@@ -273,7 +273,7 @@
             android:id="@+id/title"
             style="@style/SubtitleText"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/indent_44"
+            android:layout_marginTop="@dimen/indent_21"
             android:text="@string/add_to_playlist" />
 
         <com.google.android.material.button.MaterialButton

@@ -28,8 +28,7 @@ class PlaylistsViewModel(private val playlistsInteractor: PlaylistsInteractor) :
                     name = name,
                     description = description,
                     coverPath = coverPath,
-                    tracksIds = listOf(),
-                    tracksCount = 0
+                    tracksIds = listOf()
                 )
             )
             addPlaylistSingle.value = true

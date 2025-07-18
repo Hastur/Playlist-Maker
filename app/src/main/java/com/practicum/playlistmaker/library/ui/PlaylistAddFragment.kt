@@ -11,8 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -74,35 +73,6 @@ class PlaylistAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.run {
-                    if (s.isNullOrEmpty()) {
-                        buttonCreate.run {
-                            isEnabled = false
-                            backgroundTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(requireActivity(), R.color.grey)
-                            )
-                        }
-                    } else {
-                        buttonCreate.run {
-                            isEnabled = true
-                            backgroundTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(requireActivity(), R.color.blue)
-                            )
-                            setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
-                        }
-                    }
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        }
-
         binding.run {
             toolbarAddPlaylist.setNavigationOnClickListener {
                 checkIsEditing()
@@ -140,15 +110,34 @@ class PlaylistAddFragment : Fragment() {
                 }
             }
 
-            inputName.editText?.addTextChangedListener(textWatcher)
+            inputName.editText?.doOnTextChanged { text, _, _, _ ->
+                binding.run {
+                    if (text?.trim().isNullOrEmpty()) {
+                        buttonCreate.run {
+                            isEnabled = false
+                            backgroundTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(requireActivity(), R.color.grey)
+                            )
+                        }
+                    } else {
+                        buttonCreate.run {
+                            isEnabled = true
+                            backgroundTintList = ColorStateList.valueOf(
+                                ContextCompat.getColor(requireActivity(), R.color.blue)
+                            )
+                            setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+                        }
+                    }
+                }
+            }
 
             buttonCreate.setOnClickListener {
                 val storedCoverUri = if (coverUri != null) saveCoverToStorage()
                 else ""
 
                 viewModel.addPlaylist(
-                    name = binding.inputName.editText?.text.toString(),
-                    description = binding.inputDescription.editText?.text.toString(),
+                    name = binding.inputName.editText?.text.toString().trim(),
+                    description = binding.inputDescription.editText?.text.toString().trim(),
                     coverPath = storedCoverUri.toString()
                 )
             }

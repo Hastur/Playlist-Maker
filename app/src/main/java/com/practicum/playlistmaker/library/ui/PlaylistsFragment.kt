@@ -44,7 +44,7 @@ class PlaylistsFragment : Fragment() {
             when (screenState) {
                 is PlaylistsScreenState.Loading -> {
                     binding.progressBar.isVisible = true
-                    switchContentScreen(listOf(), false)
+                    switchContentScreen(emptyList(), false)
                     switchEmptyScreen(false)
                 }
 
@@ -56,7 +56,7 @@ class PlaylistsFragment : Fragment() {
 
                 is PlaylistsScreenState.Empty -> {
                     binding.progressBar.isVisible = false
-                    switchContentScreen(listOf(), false)
+                    switchContentScreen(emptyList(), false)
                     switchEmptyScreen(true)
                 }
             }

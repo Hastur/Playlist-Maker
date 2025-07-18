@@ -13,8 +13,7 @@ class PlaylistDbConverter {
         name = playlist.name,
         description = playlist.description,
         coverPath = playlist.coverPath,
-        tracksIds = Utils().serializeToJson(playlist.tracksIds),
-        tracksCount = playlist.tracksCount
+        tracksIds = Utils().serializeToJson(playlist.tracksIds)
     )
 
     fun mapEntityToPlaylist(entity: PlaylistEntity): Playlist = Playlist(
@@ -22,8 +21,7 @@ class PlaylistDbConverter {
         name = entity.name,
         description = entity.description,
         coverPath = entity.coverPath,
-        tracksIds = Utils().createIntListFromJson(entity.tracksIds),
-        tracksCount = entity.tracksCount
+        tracksIds = Utils().createIntListFromJson(entity.tracksIds)
     )
 
     fun mapTrackToPlaylistEntity(track: Track): TrackToPlaylistEntity = TrackToPlaylistEntity(

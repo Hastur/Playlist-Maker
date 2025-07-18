@@ -38,9 +38,11 @@
     <string name="playlist_dialog_finish">Завершить</string>
     <string name="playlist_dialog_cancel">Отмена</string>
     <string name="playlist_finished">Плейлист %1$s создан</string>
-    <string name="playlist_size_single">трек</string>
-    <string name="playlist_size_many">трека</string>
-    <string name="playlist_size_much">треков</string>
+    <plurals name="numberOfTracks">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
     <string name="add_to_playlist">Добавить в плейлист</string>
     <string name="add_to_playlist_success">Трек добавлен в плейлист</string>
     <string name="add_to_playlist_exists">Трек уже есть в этом плейлисте</string>

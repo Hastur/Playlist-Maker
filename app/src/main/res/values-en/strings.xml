@@ -34,9 +34,10 @@
     <string name="playlist_dialog_finish">Finish</string>
     <string name="playlist_dialog_cancel">Cancel</string>
     <string name="playlist_finished">Playlist %1$s created</string>
-    <string name="playlist_size_single">track</string>
-    <string name="playlist_size_many">tracks</string>
-    <string name="playlist_size_much">tracks</string>
+    <plurals name="numberOfTracks">
+        <item quantity="one">track</item>
+        <item quantity="other">tracks</item>
+    </plurals>
     <string name="add_to_playlist">Add to playlist</string>
     <string name="add_to_playlist_success">Track added to playlist</string>
     <string name="add_to_playlist_exists">Track already exists in this playlist</string>

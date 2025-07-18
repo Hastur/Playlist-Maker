@@ -51,21 +51,13 @@ class AddToPlaylistAdapter(private val clickListener: (Playlist) -> Unit) :
                     .into(binding.playlistCover)
 
                 playlistName.text = model.name
-                playlistSize.text = tracksAmountWording(model.tracksCount)
+                playlistSize.text = itemView.resources.getQuantityString(
+                    R.plurals.numberOfTracks,
+                    model.tracksIds.size,
+                    model.tracksIds.size
+                )
 
                 root.setOnClickListener { clickListener(model) }
-            }
-        }
-
-        private fun tracksAmountWording(amount: Int): String {
-            return when {
-                amount % 10 == 1 && amount % 100 != 11 ->
-                    "$amount ${itemView.resources.getString(R.string.playlist_size_single)}"
-
-                amount % 10 in 2..4 && (amount % 100 < 10 || amount % 100 >= 20) ->
-                    "$amount ${itemView.resources.getString(R.string.playlist_size_many)}"
-
-                else -> "$amount ${itemView.resources.getString(R.string.playlist_size_much)}"
             }
         }
     }
