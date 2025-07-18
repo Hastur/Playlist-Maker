@@ -138,4 +138,9 @@
         <item name="cornerSize">@dimen/indent_8</item>
     </style>
 
+    <style name="bottomSheetLine">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/indent_2</item>
+    </style>
+
 </resources>

@@ -18,6 +18,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -32,6 +33,12 @@ class PlaylistAddFragment : Fragment() {
 
     companion object {
         private const val DIRECTORY_NAME = "playlists"
+        private const val WITH_FRAGMENT_MANAGER = "WITH_FRAGMENT_MANAGER"
+
+        fun newInstance(withFragmentManager: Boolean): PlaylistAddFragment =
+            PlaylistAddFragment().apply {
+                arguments = bundleOf(WITH_FRAGMENT_MANAGER to withFragmentManager)
+            }
     }
 
     private var _binding: FragmentPlaylistAddBinding? = null
@@ -119,7 +126,7 @@ class PlaylistAddFragment : Fragment() {
             if (isAdded) {
                 val text = getString(R.string.playlist_finished, binding.inputName.editText?.text)
                 Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
+                closeFragment()
             }
         }
 
@@ -129,14 +136,16 @@ class PlaylistAddFragment : Fragment() {
             .setNeutralButton(R.string.playlist_dialog_cancel) { _, _ ->
             }
             .setPositiveButton(R.string.playlist_dialog_finish) { _, _ ->
-                findNavController().popBackStack()
+                closeFragment()
             }
 
-        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                checkIsEditing()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    checkIsEditing()
+                }
+            })
     }
 
     private fun saveCoverToStorage(): Uri {
@@ -161,6 +170,11 @@ class PlaylistAddFragment : Fragment() {
             || !binding.inputName.editText?.text.isNullOrEmpty()
             || !binding.inputDescription.editText?.text.isNullOrEmpty()
         ) confirmDialog.show()
+        else closeFragment()
+    }
+
+    private fun closeFragment() {
+        if (arguments?.getBoolean(WITH_FRAGMENT_MANAGER) == true) parentFragmentManager.popBackStack()
         else findNavController().popBackStack()
     }
 }

@@ -37,4 +37,5 @@
     <string name="playlist_size_single">track</string>
     <string name="playlist_size_many">tracks</string>
     <string name="playlist_size_much">tracks</string>
+    <string name="add_to_playlist">Add to playlist</string>
 </resources>

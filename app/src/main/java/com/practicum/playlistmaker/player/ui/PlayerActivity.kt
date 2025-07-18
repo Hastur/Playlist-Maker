@@ -2,6 +2,8 @@ package com.practicum.playlistmaker.player.ui
 
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -9,10 +11,15 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.commit
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
+import com.practicum.playlistmaker.library.domain.models.Playlist
+import com.practicum.playlistmaker.library.ui.PlaylistAddFragment
 import com.practicum.playlistmaker.player.presentation.PlayerViewModel
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
@@ -28,6 +35,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var serializedTrack: String
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private val viewModel by viewModel<PlayerViewModel> {
         parametersOf(serializedTrack)
     }
@@ -89,6 +97,27 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.playlistsBottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.buttonAddToPlaylist.setOnClickListener {
+            viewModel.getPlaylists()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        viewModel.getPlaylistsSingleEvent().observe(this) { playlists ->
+            setBottomSheet(playlists)
+        }
+
+        binding.buttonNewPlaylist.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            supportFragmentManager.commit {
+                add(R.id.player_container_view, PlaylistAddFragment.newInstance(true))
+                addToBackStack(null)
+            }
+        }
     }
 
     private fun setContent(trackModel: Track) {
@@ -139,5 +168,34 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.pause()
+    }
+
+    private fun setBottomSheet(playlists: List<Playlist>) {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        binding.playlists.layoutManager = LinearLayoutManager(
+                            this@PlayerActivity,
+                            LinearLayoutManager.VERTICAL,
+                            false
+                        )
+                        val playlistsAdapter = AddToPlaylistAdapter()
+                        playlistsAdapter.updatePlaylists(playlists)
+                        binding.playlists.adapter = playlistsAdapter
+                    }
+
+                    else -> {}
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.run {
+                    overlay.isVisible = true
+                    overlay.alpha = (slideOffset + 1) / 2
+                }
+            }
+        })
     }
 }

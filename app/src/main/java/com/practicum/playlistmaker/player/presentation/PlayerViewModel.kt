@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.library.domain.db.FavoritesInteractor
+import com.practicum.playlistmaker.library.domain.db.PlaylistsInteractor
+import com.practicum.playlistmaker.library.domain.models.Playlist
 import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(
     private val track: Track,
     private val playerInteractor: PlayerInteractor,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
     companion object {
@@ -28,6 +31,9 @@ class PlayerViewModel(
 
     private var favoriteStateSingleEvent = SingleLiveEvent<Boolean>()
     fun getFavoriteStateSingleEvent(): SingleLiveEvent<Boolean> = favoriteStateSingleEvent
+
+    private var playlistsSingleEvent = SingleLiveEvent<List<Playlist>>()
+    fun getPlaylistsSingleEvent(): SingleLiveEvent<List<Playlist>> = playlistsSingleEvent
 
     private var timerJob: Job? = null
 
@@ -96,6 +102,14 @@ class PlayerViewModel(
             if (track.isFavorite) favoritesInteractor.addToFavorites(track)
             else favoritesInteractor.removeFromFavorites(track)
             favoriteStateSingleEvent.value = track.isFavorite
+        }
+    }
+
+    fun getPlaylists() {
+        viewModelScope.launch {
+            playlistsInteractor.getPlaylists().collect { result ->
+                playlistsSingleEvent.value = result
+            }
         }
     }
 

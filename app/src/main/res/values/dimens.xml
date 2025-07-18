@@ -32,4 +32,6 @@
     <dimen name="round_button_size">50dp</dimen>
     <dimen name="play_button_size">84dp</dimen>
     <dimen name="empty_screen_icon">120dp</dimen>
+    <dimen name="bottom_sheet_peek_height">240dp</dimen>
+    <dimen name="bottom_sheet_line_width">50dp</dimen>
 </resources>
