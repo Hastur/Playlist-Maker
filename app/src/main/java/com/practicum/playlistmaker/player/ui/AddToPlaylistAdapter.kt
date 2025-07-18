@@ -12,7 +12,8 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ItemAddToPlaylistBinding
 import com.practicum.playlistmaker.library.domain.models.Playlist
 
-class AddToPlaylistAdapter : RecyclerView.Adapter<AddToPlaylistAdapter.AddToPlaylistViewHolder>() {
+class AddToPlaylistAdapter(private val clickListener: (Playlist) -> Unit) :
+    RecyclerView.Adapter<AddToPlaylistAdapter.AddToPlaylistViewHolder>() {
 
     private var playlists = listOf<Playlist>()
 
@@ -51,6 +52,8 @@ class AddToPlaylistAdapter : RecyclerView.Adapter<AddToPlaylistAdapter.AddToPlay
 
                 playlistName.text = model.name
                 playlistSize.text = tracksAmountWording(model.tracksCount)
+
+                root.setOnClickListener { clickListener(model) }
             }
         }
 

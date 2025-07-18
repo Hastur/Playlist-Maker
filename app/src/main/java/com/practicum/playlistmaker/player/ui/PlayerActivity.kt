@@ -118,6 +118,21 @@ class PlayerActivity : AppCompatActivity() {
                 addToBackStack(null)
             }
         }
+
+        viewModel.getAddingResultSingleEvent().observe(this) { isAddedToPlaylist ->
+            if (isAddedToPlaylist) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.add_to_playlist_success),
+                    Toast.LENGTH_SHORT
+                ).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            } else Toast.makeText(
+                this,
+                getString(R.string.add_to_playlist_exists),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private fun setContent(trackModel: Track) {
@@ -181,7 +196,9 @@ class PlayerActivity : AppCompatActivity() {
                             LinearLayoutManager.VERTICAL,
                             false
                         )
-                        val playlistsAdapter = AddToPlaylistAdapter()
+                        val playlistsAdapter = AddToPlaylistAdapter { playlist ->
+                            viewModel.addToPlaylist(playlist)
+                        }
                         playlistsAdapter.updatePlaylists(playlists)
                         binding.playlists.adapter = playlistsAdapter
                     }

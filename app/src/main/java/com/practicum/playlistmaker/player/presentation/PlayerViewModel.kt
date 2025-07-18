@@ -35,6 +35,9 @@ class PlayerViewModel(
     private var playlistsSingleEvent = SingleLiveEvent<List<Playlist>>()
     fun getPlaylistsSingleEvent(): SingleLiveEvent<List<Playlist>> = playlistsSingleEvent
 
+    private var addingResultSingleEvent = SingleLiveEvent<Boolean>()
+    fun getAddingResultSingleEvent(): SingleLiveEvent<Boolean> = addingResultSingleEvent
+
     private var timerJob: Job? = null
 
     init {
@@ -110,6 +113,15 @@ class PlayerViewModel(
             playlistsInteractor.getPlaylists().collect { result ->
                 playlistsSingleEvent.value = result
             }
+        }
+    }
+
+    fun addToPlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            if (track.trackId !in playlist.tracksIds) {
+                playlistsInteractor.addToPlaylist(track, playlist)
+                addingResultSingleEvent.value = true
+            } else addingResultSingleEvent.value = false
         }
     }
 
