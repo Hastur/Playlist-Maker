@@ -18,7 +18,6 @@ class PlayerRepositoryImpl(private val mediaPlayer: MediaPlayer) : PlayerReposit
         }
         mediaPlayer.setOnCompletionListener {
             onComplete()
-            stopPlayer()
         }
     }
 

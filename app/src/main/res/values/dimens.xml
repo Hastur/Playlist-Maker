@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="text_11">11sp</dimen>
+    <dimen name="text_12">12sp</dimen>
     <dimen name="text_13">13sp</dimen>
     <dimen name="text_14">14sp</dimen>
     <dimen name="text_16">16sp</dimen>
@@ -9,6 +10,7 @@
 
     <dimen name="indent_0">0dp</dimen>
     <dimen name="indent_1">1dp</dimen>
+    <dimen name="indent_2">2dp</dimen>
     <dimen name="indent_4">4dp</dimen>
     <dimen name="indent_8">8dp</dimen>
     <dimen name="indent_12">12dp</dimen>
@@ -19,7 +21,9 @@
     <dimen name="indent_21">21dp</dimen>
     <dimen name="indent_24">24dp</dimen>
     <dimen name="indent_30">30dp</dimen>
+    <dimen name="indent_32">32dp</dimen>
     <dimen name="indent_36">36dp</dimen>
+    <dimen name="indent_44">44dp</dimen>
     <dimen name="indent_86">86dp</dimen>
     <dimen name="indent_124">124dp</dimen>
 
@@ -28,4 +32,6 @@
     <dimen name="round_button_size">50dp</dimen>
     <dimen name="play_button_size">84dp</dimen>
     <dimen name="empty_screen_icon">120dp</dimen>
+    <dimen name="bottom_sheet_peek_height">440dp</dimen>
+    <dimen name="bottom_sheet_line_width">50dp</dimen>
 </resources>
