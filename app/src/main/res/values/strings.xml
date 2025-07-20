@@ -38,6 +38,7 @@
     <string name="playlist_dialog_finish">Завершить</string>
     <string name="playlist_dialog_cancel">Отмена</string>
     <string name="playlist_finished">Плейлист %1$s создан</string>
+    <string name="number_of_tracks_placeholder">777 треков</string>
     <plurals name="numberOfTracks">
         <item quantity="one">%d трек</item>
         <item quantity="few">%d трека</item>
@@ -49,4 +50,9 @@
     <string name="permission_dialog_title">Доступ к изображениям</string>
     <string name="permission_dialog_message">Вы можете предоставить разрешение в настройках</string>
     <string name="permission_dialog_settings">Настройки</string>
+    <plurals name="playlistDuration">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
 </resources>

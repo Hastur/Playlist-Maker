@@ -34,4 +34,15 @@ class PlaylistsRepositoryImpl(
         database.playlistDao().updatePlaylist(modifiedPlaylistEntity)
     }
 
+    override suspend fun getPlaylistById(id: Int): Flow<Playlist> = flow {
+        val entity = database.playlistDao().getPlaylistById(id)
+        emit(converter.mapEntityToPlaylist(entity))
+    }
+
+    override suspend fun getTracksByIds(ids: List<Int>): Flow<List<Track>> = flow {
+        val tracks = database.trackToPlaylistDao()
+            .getTracksByIds(ids)
+            .map {trackEntity -> converter.mapPlaylistEntityToTrack(trackEntity)}
+        emit(tracks)
+    }
 }
