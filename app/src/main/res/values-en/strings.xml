@@ -26,4 +26,22 @@
     <string name="library_empty">Your media library is empty</string>
     <string name="no_playlists">No playlists created</string>
     <string name="new_playlist">New playlist</string>
+    <string name="playlist_name">Name*</string>
+    <string name="playlist_description">Description</string>
+    <string name="playlist_create">Create</string>
+    <string name="playlist_dialog_title">Finish playlist creating?</string>
+    <string name="playlist_dialog_message">All unsaved data will be lost</string>
+    <string name="playlist_dialog_finish">Finish</string>
+    <string name="playlist_dialog_cancel">Cancel</string>
+    <string name="playlist_finished">Playlist %1$s created</string>
+    <plurals name="numberOfTracks">
+        <item quantity="one">%d track</item>
+        <item quantity="other">%d tracks</item>
+    </plurals>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="add_to_playlist_success">Track added to playlist</string>
+    <string name="add_to_playlist_exists">Track already exists in this playlist</string>
+    <string name="permission_dialog_title">Access to images</string>
+    <string name="permission_dialog_message">You can grant permission in the settings</string>
+    <string name="permission_dialog_settings">Settings</string>
 </resources>
