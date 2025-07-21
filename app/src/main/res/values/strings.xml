@@ -55,4 +55,7 @@
         <item quantity="few">%d минуты</item>
         <item quantity="other">%d минут</item>
     </plurals>
+    <string name="track_remove_confirmation">Хотите удалить трек?</string>
+    <string name="track_remove_accept">Да</string>
+    <string name="track_remove_reject">Нет</string>
 </resources>

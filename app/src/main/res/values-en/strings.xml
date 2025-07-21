@@ -49,4 +49,7 @@
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>
     </plurals>
+    <string name="track_remove_confirmation">Do you want to remove track?</string>
+    <string name="track_remove_accept">Yes</string>
+    <string name="track_remove_reject">No</string>
 </resources>
