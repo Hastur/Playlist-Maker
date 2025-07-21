@@ -9,6 +9,7 @@ import com.practicum.playlistmaker.library.domain.models.PlaylistInfo
 import com.practicum.playlistmaker.library.presentation.models.PlaylistItemScreenState
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
 
 class PlaylistsItemViewModel(private val playlistsInteractor: PlaylistsInteractor) : ViewModel() {
@@ -49,5 +50,14 @@ class PlaylistsItemViewModel(private val playlistsInteractor: PlaylistsInteracto
             durationSeconds = durationSeconds.plus(minAndSec.last().toInt())
         }
         return durationMinutes.plus((durationSeconds / 60.0).roundToInt())
+    }
+
+    fun removeTrackFromPlaylist(trackId: Int, playlistId: Int) {
+        viewModelScope.launch {
+            runBlocking {
+                playlistsInteractor.removeFromPlaylist(trackId, playlistId)
+                getPlaylistById(playlistId)
+            }
+        }
     }
 }

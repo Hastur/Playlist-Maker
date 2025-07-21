@@ -48,5 +48,9 @@
         android:id="@+id/playlistsItemFragment"
         android:name="com.practicum.playlistmaker.library.ui.PlaylistsItemFragment"
         android:label="fragment_playlists_item"
-        tools:layout="@layout/fragment_playlists_item" />
+        tools:layout="@layout/fragment_playlists_item" >
+        <action
+            android:id="@+id/action_playlistsItemFragment_to_playerActivity"
+            app:destination="@id/playerActivity" />
+    </fragment>
 </navigation>

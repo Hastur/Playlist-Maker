@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.library.ui
 
-import android.content.Intent
 import android.graphics.Insets
 import android.os.Build
 import android.os.Bundle
@@ -19,12 +18,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsItemBinding
+import com.practicum.playlistmaker.library.domain.models.PlaylistInfo
 import com.practicum.playlistmaker.library.presentation.PlaylistsItemViewModel
 import com.practicum.playlistmaker.library.presentation.models.PlaylistItemScreenState
 import com.practicum.playlistmaker.player.ui.PlayerActivity
-import com.practicum.playlistmaker.search.track_search.domain.models.Track
+import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
 import com.practicum.playlistmaker.search.track_search.ui.SearchAdapter
-import com.practicum.playlistmaker.util.Utils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsItemFragment : Fragment() {
@@ -38,10 +37,10 @@ class PlaylistsItemFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModel<PlaylistsItemViewModel>()
+    private val trackViewModel by viewModel<SearchViewModel>()
 
     private var playlistId: Int? = null
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
-    private lateinit var deleteConfirmationDialog: MaterialAlertDialogBuilder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,7 +95,7 @@ class PlaylistsItemFragment : Fragment() {
                                 var insets: Insets? = null
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                     insets =
-                                        requireActivity().windowManager.currentWindowMetrics.getWindowInsets()
+                                        requireActivity().windowManager.currentWindowMetrics.windowInsets
                                             .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
                                 }
                                 share.post {
@@ -108,16 +107,24 @@ class PlaylistsItemFragment : Fragment() {
                                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                                 }
                             }
-                        setBottomSheet(screenState.playlistInfo.tracks)
+                        setBottomSheet(screenState.playlistInfo)
 
                         progressBar.isVisible = false
                     }
                 }
             }
         }
+
+        trackViewModel.getSelectedTrackSingleEvent()
+            .observe(viewLifecycleOwner) { serializedTrack ->
+                findNavController().navigate(
+                    R.id.action_playlistsItemFragment_to_playerActivity,
+                    PlayerActivity.createArgs(serializedTrack)
+                )
+            }
     }
 
-    private fun setBottomSheet(tracks: List<Track>) {
+    private fun setBottomSheet(playlistInfo: PlaylistInfo) {
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -129,17 +136,12 @@ class PlaylistsItemFragment : Fragment() {
                             false
                         )
                         val tracksAdapter = SearchAdapter({ track ->
-                            startActivity(
-                                Intent(
-                                    requireActivity(), PlayerActivity::class.java
-                                ).apply {
-                                    putExtra("TRACK", Utils().serializeToJson(track))
-                                })
+                            trackViewModel.openTrackWithDebounce(track)
                         }, { track ->
-                            removeFromPlaylist(track)
+                            removeFromPlaylist(track.trackId, playlistInfo.id)
                             true
                         })
-                        tracksAdapter.updateTrackList(tracks)
+                        tracksAdapter.updateTrackList(playlistInfo.tracks)
                         binding.tracks.adapter = tracksAdapter
                     }
 
@@ -156,14 +158,14 @@ class PlaylistsItemFragment : Fragment() {
         })
     }
 
-    private fun removeFromPlaylist(track: Track) {
-        deleteConfirmationDialog = MaterialAlertDialogBuilder(requireActivity())
+    private fun removeFromPlaylist(trackId: Int, playlistId: Int) {
+        MaterialAlertDialogBuilder(requireActivity())
             .setMessage(R.string.track_remove_confirmation)
             .setNegativeButton(R.string.track_remove_reject) { _, _ ->
             }
             .setPositiveButton(R.string.track_remove_accept) { _, _ ->
-                //TODO: viewModel.removeTrack(track, playlist)
+                viewModel.removeTrackFromPlaylist(trackId, playlistId)
             }
-        deleteConfirmationDialog.show()
+            .show()
     }
 }
