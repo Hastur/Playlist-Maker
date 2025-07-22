@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -109,6 +110,14 @@ class PlaylistsItemFragment : Fragment() {
                             }
                         setBottomSheet(screenState.playlistInfo)
 
+                        viewModel.setPlural(
+                            resources.getQuantityString(
+                                R.plurals.numberOfTracks,
+                                screenState.playlistInfo.tracks.size,
+                                screenState.playlistInfo.tracks.size
+                            )
+                        )
+
                         progressBar.isVisible = false
                     }
                 }
@@ -122,6 +131,15 @@ class PlaylistsItemFragment : Fragment() {
                     PlayerActivity.createArgs(serializedTrack)
                 )
             }
+
+        binding.share.setOnClickListener {
+            viewModel.sharePlaylist()
+        }
+
+        viewModel.getToastSingleEvent().observe(viewLifecycleOwner) { messageResId ->
+            Toast.makeText(requireActivity(), resources.getText(messageResId), Toast.LENGTH_LONG)
+                .show()
+        }
     }
 
     private fun setBottomSheet(playlistInfo: PlaylistInfo) {

@@ -58,4 +58,5 @@
     <string name="track_remove_confirmation">Хотите удалить трек?</string>
     <string name="track_remove_accept">Да</string>
     <string name="track_remove_reject">Нет</string>
+    <string name="playlist_share_no_tracks">В этом плейлисте нет списка треков, которым можно поделиться</string>
 </resources>
