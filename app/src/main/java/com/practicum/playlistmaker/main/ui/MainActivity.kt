@@ -5,8 +5,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +34,12 @@ class MainActivity : AppCompatActivity() {
             val navController = navHostFragment.navController
 
             bottomNavigationView.setupWithNavController(navController)
+
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                val targetDestination = destination.id == R.id.playlistsItemFragment
+                bottomNavigationView.isVisible = !targetDestination
+                divider.isVisible = !targetDestination
+            }
         }
     }
 }

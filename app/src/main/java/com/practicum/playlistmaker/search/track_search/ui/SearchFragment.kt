@@ -109,9 +109,11 @@ class SearchFragment : Fragment() {
         binding.run {
             trackHistoryList.layoutManager =
                 LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            tracksHistoryAdapter = SearchAdapter { track ->
-                viewModel.openTrackWithDebounce(track)
-            }
+            tracksHistoryAdapter = SearchAdapter(
+                { track ->
+                    viewModel.openTrackWithDebounce(track)
+                },
+                { false })
             trackHistoryList.adapter = tracksHistoryAdapter
 
             trackHistoryClear.setOnClickListener {
@@ -175,10 +177,12 @@ class SearchFragment : Fragment() {
         binding.run {
             trackList.layoutManager =
                 LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            trackListAdapter = SearchAdapter { track ->
-                viewModel.addToHistory(track)
-                viewModel.openTrackWithDebounce(track)
-            }
+            trackListAdapter = SearchAdapter(
+                { track ->
+                    viewModel.addToHistory(track)
+                    viewModel.openTrackWithDebounce(track)
+                },
+                { false })
             trackList.adapter = trackListAdapter
         }
     }

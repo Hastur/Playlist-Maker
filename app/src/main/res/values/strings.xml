@@ -38,6 +38,7 @@
     <string name="playlist_dialog_finish">Завершить</string>
     <string name="playlist_dialog_cancel">Отмена</string>
     <string name="playlist_finished">Плейлист %1$s создан</string>
+    <string name="number_of_tracks_placeholder">777 треков</string>
     <plurals name="numberOfTracks">
         <item quantity="one">%d трек</item>
         <item quantity="few">%d трека</item>
@@ -49,4 +50,20 @@
     <string name="permission_dialog_title">Доступ к изображениям</string>
     <string name="permission_dialog_message">Вы можете предоставить разрешение в настройках</string>
     <string name="permission_dialog_settings">Настройки</string>
+    <plurals name="playlistDuration">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+    <string name="track_remove_confirmation">Хотите удалить трек?</string>
+    <string name="remove_accept">Да</string>
+    <string name="remove_reject">Нет</string>
+    <string name="playlist_share_no_tracks">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="context_menu_share">Поделиться</string>
+    <string name="context_menu_edit">Редактировать информацию</string>
+    <string name="context_menu_delete">Удалить плейлист</string>
+    <string name="playlist_remove_confirmation">Хотите удалить плейлист «%s»?</string>
+    <string name="playlist_remove_complete">Плейлист «%s» удалён</string>
+    <string name="playlist_edit_save">Сохранить</string>
+    <string name="playlist_no_tracks">В этом плейлисте нет треков</string>
 </resources>

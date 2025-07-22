@@ -27,8 +27,8 @@ class SettingsViewModel(
         darkThemeEnabledLiveData.value = isDarkThemeEnabled
     }
 
-    fun shareApp() {
-        sharingInteractor.shareApp()
+    fun shareApp(message: String) {
+        sharingInteractor.shareMessage(message)
     }
 
     fun sendMail(address: String, subject: String, text: String) {

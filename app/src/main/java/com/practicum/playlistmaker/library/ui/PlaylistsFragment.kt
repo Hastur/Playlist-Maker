@@ -72,7 +72,12 @@ class PlaylistsFragment : Fragment() {
         if (shouldShow) {
             binding.run {
                 playlists.layoutManager = GridLayoutManager(requireActivity(), 2)
-                val playlistsAdapter = PlaylistsAdapter()
+                val playlistsAdapter = PlaylistsAdapter { playlist ->
+                    findNavController().navigate(
+                        R.id.action_libraryFragment_to_playlistsItemFragment,
+                        PlaylistsItemFragment.createArgs(playlist.id)
+                    )
+                }
                 playlistsAdapter.updatePlaylists(content)
                 playlists.adapter = playlistsAdapter
                 playlists.isVisible = true
