@@ -55,7 +55,7 @@ class PlaylistsRepositoryImpl(
         removeHomelessTrack(playlists, trackId)
     }
 
-    override suspend fun removePlaylist(playlistId: Int): String {
+    override suspend fun removePlaylist(playlistId: Int) {
         val playlistToRemove = getPlaylist(playlistId)
         runBlocking {
             database.playlistDao().deletePlaylist(converter.mapPlaylistToEntity(playlistToRemove))
@@ -65,7 +65,6 @@ class PlaylistsRepositoryImpl(
                 removeHomelessTrack(playlists, currentId)
             }
         }
-        return playlistToRemove.name
     }
 
     private suspend fun getAllPlaylists(): List<Playlist> =

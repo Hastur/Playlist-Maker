@@ -145,12 +145,26 @@ class PlaylistsItemFragment : Fragment() {
                     val targetElement = binding.share.bottom
                     val screenHeight = resources.displayMetrics.heightPixels
                     val peekHeight =
-                        screenHeight - targetElement - (insets?.top ?: 0) - (insets?.bottom ?: 0)
+                        screenHeight - targetElement - (insets?.top ?: 0) - (insets?.bottom
+                            ?: 0) - binding.share.height
                     bottomSheetBehavior.peekHeight = peekHeight
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
             }
-        setBottomSheetCallback(playlistInfo)
+
+        binding.tracks.layoutManager = LinearLayoutManager(
+            requireActivity(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+        val tracksAdapter = SearchAdapter({ track ->
+            trackViewModel.openTrackWithDebounce(track)
+        }, { track ->
+            removeFromPlaylist(track.trackId, playlistInfo.id)
+            true
+        })
+        tracksAdapter.updateTrackList(playlistInfo.tracks)
+        binding.tracks.adapter = tracksAdapter
 
         viewModel.setPlural(
             resources.getQuantityString(
@@ -191,31 +205,14 @@ class PlaylistsItemFragment : Fragment() {
                 removePlaylist(playlistInfo)
             }
         }
+
+        setContextMenuBottomSheetCallback()
     }
 
-    private fun setBottomSheetCallback(playlistInfo: PlaylistInfo) {
-        bottomSheetBehavior.addBottomSheetCallback(object :
+    private fun setContextMenuBottomSheetCallback() {
+        contextMenuBottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        binding.tracks.layoutManager = LinearLayoutManager(
-                            requireActivity(),
-                            LinearLayoutManager.VERTICAL,
-                            false
-                        )
-                        val tracksAdapter = SearchAdapter({ track ->
-                            trackViewModel.openTrackWithDebounce(track)
-                        }, { track ->
-                            removeFromPlaylist(track.trackId, playlistInfo.id)
-                            true
-                        })
-                        tracksAdapter.updateTrackList(playlistInfo.tracks)
-                        binding.tracks.adapter = tracksAdapter
-                    }
-
-                    else -> {}
-                }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {

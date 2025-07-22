@@ -78,8 +78,10 @@ class PlaylistsItemViewModel(
 
     fun removePlaylist(playlistId: Int) {
         viewModelScope.launch {
-            val name = playlistsInteractor.removePlaylist(playlistId)
-            toastSingleEvent.postValue(Pair(R.string.playlist_remove_complete, name))
+            playlistsInteractor.removePlaylist(playlistId)
+            toastSingleEvent.postValue(
+                Pair(R.string.playlist_remove_complete, currentPlaylist.title)
+            )
         }
     }
 

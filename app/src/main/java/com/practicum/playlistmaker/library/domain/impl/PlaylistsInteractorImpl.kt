@@ -23,6 +23,6 @@ class PlaylistsInteractorImpl(private val repository: PlaylistsRepository) : Pla
     override suspend fun removeFromPlaylist(trackId: Int, playlistId: Int) =
         repository.removeFromPlaylist(trackId, playlistId)
 
-    override suspend fun removePlaylist(playlistId: Int): String = repository.removePlaylist(playlistId)
+    override suspend fun removePlaylist(playlistId: Int) = repository.removePlaylist(playlistId)
 
 }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/player"
     style="@style/BaseVerticalLayout"
+    android:background="@color/light_grey"
     tools:context=".library.ui.PlaylistsItemFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,8 +22,7 @@
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:background="@color/blue" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_playlists_item"
@@ -111,14 +111,6 @@
             app:tint="@color/regular_text" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View
-        android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/overlay"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
     <LinearLayout
         android:id="@+id/playlist_bottom_sheet"
         android:layout_width="match_parent"
@@ -145,6 +137,13 @@
             android:layout_marginTop="@dimen/indent_4"
             tools:listitem="@layout/item_track" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/overlay"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/context_menu_bottom_sheet"
