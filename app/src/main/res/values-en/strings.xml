@@ -50,7 +50,12 @@
         <item quantity="other">%d minutes</item>
     </plurals>
     <string name="track_remove_confirmation">Do you want to remove track?</string>
-    <string name="track_remove_accept">Yes</string>
-    <string name="track_remove_reject">No</string>
+    <string name="remove_accept">Yes</string>
+    <string name="remove_reject">No</string>
     <string name="playlist_share_no_tracks">Playlist have no tracks for sharing</string>
+    <string name="context_menu_share">Share</string>
+    <string name="context_menu_edit">Edit info</string>
+    <string name="context_menu_delete">Delete playlist</string>
+    <string name="playlist_remove_confirmation">Do you want to remove playlist «%s»?</string>
+    <string name="playlist_remove_complete">Playlist «%s» removed</string>
 </resources>

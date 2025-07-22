@@ -7,6 +7,7 @@ import com.practicum.playlistmaker.library.domain.models.Playlist
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 
 class PlaylistsRepositoryImpl(
     private val database: AppDatabase,
@@ -17,7 +18,7 @@ class PlaylistsRepositoryImpl(
         database.playlistDao().insertPlaylist(converter.mapPlaylistToEntity(playlist))
 
     override suspend fun getPlaylists(): Flow<List<Playlist>> = flow {
-        emit(getAllPlaylists())
+        emit(getAllPlaylists().asReversed())
     }
 
     override suspend fun addToPlaylist(track: Track, playlist: Playlist) {
@@ -51,8 +52,20 @@ class PlaylistsRepositoryImpl(
         database.playlistDao().updatePlaylist(modifiedPlaylistEntity)
 
         val playlists = getAllPlaylists()
-        val anyPlaylistHasTrack = playlists.any { it.tracksIds.contains(trackId) }
-        if (!anyPlaylistHasTrack) database.trackToPlaylistDao().deleteHomelessTrack(trackId)
+        removeHomelessTrack(playlists, trackId)
+    }
+
+    override suspend fun removePlaylist(playlistId: Int): String {
+        val playlistToRemove = getPlaylist(playlistId)
+        runBlocking {
+            database.playlistDao().deletePlaylist(converter.mapPlaylistToEntity(playlistToRemove))
+
+            val playlists = getAllPlaylists()
+            playlistToRemove.tracksIds.forEach { currentId ->
+                removeHomelessTrack(playlists, currentId)
+            }
+        }
+        return playlistToRemove.name
     }
 
     private suspend fun getAllPlaylists(): List<Playlist> =
@@ -62,4 +75,9 @@ class PlaylistsRepositoryImpl(
 
     private suspend fun getPlaylist(id: Int): Playlist =
         converter.mapEntityToPlaylist(database.playlistDao().getPlaylistById(id))
+
+    private suspend fun removeHomelessTrack(playlists: List<Playlist>, trackId: Int) {
+        val anyPlaylistHasTrack = playlists.any { it.tracksIds.contains(trackId) }
+        if (!anyPlaylistHasTrack) database.trackToPlaylistDao().deleteHomelessTrack(trackId)
+    }
 }

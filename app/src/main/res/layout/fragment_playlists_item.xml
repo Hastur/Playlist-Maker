@@ -126,9 +126,9 @@
         android:layout_marginTop="@dimen/indent_16"
         android:background="@drawable/shape_bottom_sheet_bg"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/indent_12"
         app:behavior_hideable="false"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="gone">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:layout_width="@dimen/bottom_sheet_line_width"
@@ -144,6 +144,58 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/indent_4"
             tools:listitem="@layout/item_track" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/context_menu_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/indent_16"
+        android:background="@drawable/shape_bottom_sheet_bg"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/indent_13"
+        android:visibility="gone"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="visible">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="@dimen/bottom_sheet_line_width"
+            android:layout_height="@dimen/indent_4"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/indent_8"
+            android:background="@color/search_background"
+            app:shapeAppearanceOverlay="@style/bottomSheetLine" />
+
+        <include
+            android:id="@+id/playlist"
+            layout="@layout/item_add_to_playlist" />
+
+        <TextView
+            android:id="@+id/context_menu_share"
+            style="@style/RegularTextViewStyle"
+            android:layout_width="match_parent"
+            android:paddingHorizontal="@dimen/indent_3"
+            android:paddingVertical="@dimen/indent_21"
+            android:text="@string/context_menu_share" />
+
+        <TextView
+            android:id="@+id/context_menu_edit"
+            style="@style/RegularTextViewStyle"
+            android:layout_width="match_parent"
+            android:paddingHorizontal="@dimen/indent_3"
+            android:paddingVertical="@dimen/indent_21"
+            android:text="@string/context_menu_edit" />
+
+        <TextView
+            android:id="@+id/context_menu_delete"
+            style="@style/RegularTextViewStyle"
+            android:layout_width="match_parent"
+            android:paddingHorizontal="@dimen/indent_3"
+            android:paddingVertical="@dimen/indent_21"
+            android:text="@string/context_menu_delete" />
+
     </LinearLayout>
 
     <LinearLayout

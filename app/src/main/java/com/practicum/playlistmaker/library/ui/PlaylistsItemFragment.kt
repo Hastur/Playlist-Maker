@@ -42,6 +42,7 @@ class PlaylistsItemFragment : Fragment() {
 
     private var playlistId: Int? = null
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var contextMenuBottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,10 +56,6 @@ class PlaylistsItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbarPlaylistsItem.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-
         playlistId = arguments?.getInt(PLAYLIST)
         if (playlistId != null) viewModel.getPlaylistById(playlistId!!)
 
@@ -69,57 +66,10 @@ class PlaylistsItemFragment : Fragment() {
                 }
 
                 is PlaylistItemScreenState.Content -> {
-                    binding.run {
-                        Glide.with(root)
-                            .load(screenState.playlistInfo.coverPath)
-                            .placeholder(R.drawable.ic_track_placeholder)
-                            .into(binding.playlistCover)
-
-                        playlistTitle.text = screenState.playlistInfo.title
-                        playlistDescription.run {
-                            text = screenState.playlistInfo.description
-                            isVisible = !screenState.playlistInfo.description.isNullOrEmpty()
-                        }
-                        playlistDuration.text = resources.getQuantityString(
-                            R.plurals.playlistDuration,
-                            screenState.playlistInfo.duration,
-                            screenState.playlistInfo.duration
-                        )
-                        playlistTracksCount.text = resources.getQuantityString(
-                            R.plurals.numberOfTracks,
-                            screenState.playlistInfo.tracks.size,
-                            screenState.playlistInfo.tracks.size
-                        )
-
-                        bottomSheetBehavior =
-                            BottomSheetBehavior.from(binding.playlistBottomSheet).apply {
-                                var insets: Insets? = null
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                    insets =
-                                        requireActivity().windowManager.currentWindowMetrics.windowInsets
-                                            .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-                                }
-                                share.post {
-                                    val targetElement = share.bottom
-                                    val screenHeight = resources.displayMetrics.heightPixels
-                                    val peekHeight = screenHeight - targetElement - (insets?.top
-                                        ?: 0) - (insets?.bottom ?: 0) - (share.height * 3)
-                                    bottomSheetBehavior.peekHeight = peekHeight
-                                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                                }
-                            }
-                        setBottomSheet(screenState.playlistInfo)
-
-                        viewModel.setPlural(
-                            resources.getQuantityString(
-                                R.plurals.numberOfTracks,
-                                screenState.playlistInfo.tracks.size,
-                                screenState.playlistInfo.tracks.size
-                            )
-                        )
-
-                        progressBar.isVisible = false
-                    }
+                    setupScreen(screenState.playlistInfo)
+                    setupBottomSheet(screenState.playlistInfo)
+                    setupContextMenuBottomSheet(screenState.playlistInfo)
+                    binding.progressBar.isVisible = false
                 }
             }
         }
@@ -132,17 +82,118 @@ class PlaylistsItemFragment : Fragment() {
                 )
             }
 
-        binding.share.setOnClickListener {
-            viewModel.sharePlaylist()
+        viewModel.getToastSingleEvent().observe(viewLifecycleOwner) { message ->
+            Toast.makeText(
+                requireActivity(),
+                getString(message.first, message.second),
+                Toast.LENGTH_LONG
+            ).show()
+            if (message.first == R.string.playlist_remove_complete) findNavController().popBackStack()
         }
 
-        viewModel.getToastSingleEvent().observe(viewLifecycleOwner) { messageResId ->
-            Toast.makeText(requireActivity(), resources.getText(messageResId), Toast.LENGTH_LONG)
-                .show()
+        binding.run {
+            toolbarPlaylistsItem.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
+
+            share.setOnClickListener {
+                viewModel.sharePlaylist()
+            }
+
+            contextMenu.setOnClickListener {
+                contextMenuBottomSheet.isVisible = true
+                contextMenuBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
     }
 
-    private fun setBottomSheet(playlistInfo: PlaylistInfo) {
+    private fun setupScreen(playlistInfo: PlaylistInfo) {
+        binding.run {
+            Glide.with(root)
+                .load(playlistInfo.coverPath)
+                .placeholder(R.drawable.ic_track_placeholder)
+                .into(playlistCover)
+
+            playlistTitle.text = playlistInfo.title
+            playlistDescription.run {
+                text = playlistInfo.description
+                isVisible = !playlistInfo.description.isNullOrEmpty()
+            }
+            playlistDuration.text = resources.getQuantityString(
+                R.plurals.playlistDuration,
+                playlistInfo.duration,
+                playlistInfo.duration
+            )
+            playlistTracksCount.text = resources.getQuantityString(
+                R.plurals.numberOfTracks,
+                playlistInfo.tracks.size,
+                playlistInfo.tracks.size
+            )
+        }
+    }
+
+    private fun setupBottomSheet(playlistInfo: PlaylistInfo) {
+        bottomSheetBehavior =
+            BottomSheetBehavior.from(binding.playlistBottomSheet).apply {
+                var insets: Insets? = null
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    insets =
+                        requireActivity().windowManager.currentWindowMetrics.windowInsets
+                            .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+                }
+                binding.share.post {
+                    val targetElement = binding.share.bottom
+                    val screenHeight = resources.displayMetrics.heightPixels
+                    val peekHeight =
+                        screenHeight - targetElement - (insets?.top ?: 0) - (insets?.bottom ?: 0)
+                    bottomSheetBehavior.peekHeight = peekHeight
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
+        setBottomSheetCallback(playlistInfo)
+
+        viewModel.setPlural(
+            resources.getQuantityString(
+                R.plurals.numberOfTracks,
+                playlistInfo.tracks.size,
+                playlistInfo.tracks.size
+            )
+        )
+    }
+
+    private fun setupContextMenuBottomSheet(playlistInfo: PlaylistInfo) {
+        contextMenuBottomSheetBehavior =
+            BottomSheetBehavior.from(binding.contextMenuBottomSheet).apply {
+                state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        binding.run {
+            Glide.with(root)
+                .load(playlistInfo.coverPath)
+                .placeholder(R.drawable.ic_track_placeholder)
+                .into(playlist.playlistCover)
+            playlist.playlistName.text = playlistInfo.title
+            playlist.playlistSize.text = resources.getQuantityString(
+                R.plurals.numberOfTracks,
+                playlistInfo.tracks.size,
+                playlistInfo.tracks.size
+            )
+
+            contextMenuShare.setOnClickListener {
+                viewModel.sharePlaylist()
+            }
+
+            contextMenuEdit.setOnClickListener {
+                //Todo next
+            }
+
+            contextMenuDelete.setOnClickListener {
+                contextMenuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                removePlaylist(playlistInfo)
+            }
+        }
+    }
+
+    private fun setBottomSheetCallback(playlistInfo: PlaylistInfo) {
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -179,10 +230,23 @@ class PlaylistsItemFragment : Fragment() {
     private fun removeFromPlaylist(trackId: Int, playlistId: Int) {
         MaterialAlertDialogBuilder(requireActivity())
             .setMessage(R.string.track_remove_confirmation)
-            .setNegativeButton(R.string.track_remove_reject) { _, _ ->
+            .setNegativeButton(R.string.remove_reject) { _, _ ->
             }
-            .setPositiveButton(R.string.track_remove_accept) { _, _ ->
+            .setPositiveButton(R.string.remove_accept) { _, _ ->
                 viewModel.removeTrackFromPlaylist(trackId, playlistId)
+            }
+            .show()
+    }
+
+    private fun removePlaylist(playlistInfo: PlaylistInfo) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setMessage(
+                resources.getString(R.string.playlist_remove_confirmation, playlistInfo.title)
+            )
+            .setNegativeButton(R.string.remove_reject) { _, _ ->
+            }
+            .setPositiveButton(R.string.remove_accept) { _, _ ->
+                viewModel.removePlaylist(playlistInfo.id)
             }
             .show()
     }

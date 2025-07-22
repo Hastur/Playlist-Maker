@@ -18,4 +18,6 @@ interface PlaylistsRepository {
 
     suspend fun removeFromPlaylist(trackId: Int, playlistId: Int)
 
+    suspend fun removePlaylist(playlistId: Int): String
+
 }

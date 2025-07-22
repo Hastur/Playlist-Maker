@@ -56,7 +56,12 @@
         <item quantity="other">%d минут</item>
     </plurals>
     <string name="track_remove_confirmation">Хотите удалить трек?</string>
-    <string name="track_remove_accept">Да</string>
-    <string name="track_remove_reject">Нет</string>
+    <string name="remove_accept">Да</string>
+    <string name="remove_reject">Нет</string>
     <string name="playlist_share_no_tracks">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="context_menu_share">Поделиться</string>
+    <string name="context_menu_edit">Редактировать информацию</string>
+    <string name="context_menu_delete">Удалить плейлист</string>
+    <string name="playlist_remove_confirmation">Хотите удалить плейлист «%s»?</string>
+    <string name="playlist_remove_complete">Плейлист «%s» удалён</string>
 </resources>

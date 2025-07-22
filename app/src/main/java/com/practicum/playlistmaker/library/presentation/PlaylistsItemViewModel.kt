@@ -26,8 +26,8 @@ class PlaylistsItemViewModel(
     fun getPlaylistWithTracksLiveData(): LiveData<PlaylistItemScreenState> =
         playlistWithTracksLiveData
 
-    private var toastSingleEvent = SingleLiveEvent<Int>()
-    fun getToastSingleEvent(): SingleLiveEvent<Int> = toastSingleEvent
+    private var toastSingleEvent = SingleLiveEvent<Pair<Int, String>>()
+    fun getToastSingleEvent(): SingleLiveEvent<Pair<Int, String>> = toastSingleEvent
 
     private lateinit var currentPlaylist: PlaylistInfo
 
@@ -76,6 +76,13 @@ class PlaylistsItemViewModel(
         }
     }
 
+    fun removePlaylist(playlistId: Int) {
+        viewModelScope.launch {
+            val name = playlistsInteractor.removePlaylist(playlistId)
+            toastSingleEvent.postValue(Pair(R.string.playlist_remove_complete, name))
+        }
+    }
+
     fun sharePlaylist() {
         if (currentPlaylist.tracks.isNotEmpty()) {
             val title = currentPlaylist.title
@@ -93,6 +100,6 @@ class PlaylistsItemViewModel(
 
             sharingInteractor.shareMessage(message)
 
-        } else toastSingleEvent.postValue(R.string.playlist_share_no_tracks)
+        } else toastSingleEvent.postValue(Pair(R.string.playlist_share_no_tracks, ""))
     }
 }
