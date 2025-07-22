@@ -58,4 +58,6 @@
     <string name="context_menu_delete">Delete playlist</string>
     <string name="playlist_remove_confirmation">Do you want to remove playlist «%s»?</string>
     <string name="playlist_remove_complete">Playlist «%s» removed</string>
+    <string name="playlist_edit_save">Save</string>
+    <string name="playlist_no_tracks">No tracks in this playlist</string>
 </resources>

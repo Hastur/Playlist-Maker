@@ -30,7 +30,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/ic_arrow_back" />
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/darkest_grey" />
 
         <TextView
             android:id="@+id/playlist_title"
@@ -38,6 +39,7 @@
             android:layout_marginHorizontal="@dimen/indent_16"
             android:layout_marginTop="@dimen/indent_24"
             android:text="@string/new_playlist"
+            android:textColor="@color/darkest_grey"
             app:layout_constraintBottom_toTopOf="@id/playlist_description"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/playlist_cover" />
@@ -48,6 +50,7 @@
             android:layout_marginHorizontal="@dimen/indent_16"
             android:layout_marginTop="@dimen/indent_8"
             android:text="@string/playlist_description"
+            android:textColor="@color/darkest_grey"
             android:textSize="@dimen/text_18"
             app:layout_constraintBottom_toTopOf="@id/playlist_duration"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,6 +62,7 @@
             android:layout_marginStart="@dimen/indent_16"
             android:layout_marginTop="@dimen/indent_8"
             android:text="@string/track_time"
+            android:textColor="@color/darkest_grey"
             android:textSize="@dimen/text_18"
             app:layout_constraintEnd_toStartOf="@id/dot"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,13 +78,14 @@
             app:layout_constraintEnd_toStartOf="@id/playlist_tracks_count"
             app:layout_constraintStart_toEndOf="@id/playlist_duration"
             app:layout_constraintTop_toTopOf="@id/playlist_duration"
-            app:tint="@color/regular_text" />
+            app:tint="@color/darkest_grey" />
 
         <TextView
             android:id="@+id/playlist_tracks_count"
             style="@style/RegularTextViewStyle"
             android:layout_marginTop="@dimen/indent_8"
             android:text="@string/number_of_tracks_placeholder"
+            android:textColor="@color/darkest_grey"
             android:textSize="@dimen/text_18"
             app:layout_constraintStart_toEndOf="@id/dot"
             app:layout_constraintTop_toBottomOf="@id/playlist_description" />
@@ -96,7 +101,7 @@
             app:layout_constraintEnd_toStartOf="@id/context_menu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/playlist_duration"
-            app:tint="@color/regular_text" />
+            app:tint="@color/darkest_grey" />
 
         <ImageView
             android:id="@+id/context_menu"
@@ -108,7 +113,7 @@
             app:layout_constraintBottom_toTopOf="@id/share"
             app:layout_constraintStart_toEndOf="@id/share"
             app:layout_constraintTop_toBottomOf="@id/share"
-            app:tint="@color/regular_text" />
+            app:tint="@color/darkest_grey" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -136,6 +141,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/indent_4"
             tools:listitem="@layout/item_track" />
+
+        <TextView
+            android:id="@+id/label_no_tracks"
+            style="@style/RegularTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_marginVertical="@dimen/indent_24"
+            android:gravity="center_horizontal"
+            android:text="@string/playlist_no_tracks"
+            android:textSize="@dimen/text_18"
+            android:visibility="gone" />
     </LinearLayout>
 
     <View

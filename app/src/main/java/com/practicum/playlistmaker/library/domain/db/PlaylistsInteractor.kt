@@ -20,4 +20,6 @@ interface PlaylistsInteractor {
 
     suspend fun removePlaylist(playlistId: Int)
 
+    suspend fun editPlaylist(playlistId: Int, title: String, description: String, coverPath: String)
+
 }

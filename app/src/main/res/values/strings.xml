@@ -64,4 +64,6 @@
     <string name="context_menu_delete">Удалить плейлист</string>
     <string name="playlist_remove_confirmation">Хотите удалить плейлист «%s»?</string>
     <string name="playlist_remove_complete">Плейлист «%s» удалён</string>
+    <string name="playlist_edit_save">Сохранить</string>
+    <string name="playlist_no_tracks">В этом плейлисте нет треков</string>
 </resources>

@@ -25,6 +25,7 @@ import com.practicum.playlistmaker.library.presentation.models.PlaylistItemScree
 import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
 import com.practicum.playlistmaker.search.track_search.ui.SearchAdapter
+import com.practicum.playlistmaker.util.Utils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsItemFragment : Fragment() {
@@ -152,19 +153,27 @@ class PlaylistsItemFragment : Fragment() {
                 }
             }
 
-        binding.tracks.layoutManager = LinearLayoutManager(
-            requireActivity(),
-            LinearLayoutManager.VERTICAL,
-            false
-        )
-        val tracksAdapter = SearchAdapter({ track ->
-            trackViewModel.openTrackWithDebounce(track)
-        }, { track ->
-            removeFromPlaylist(track.trackId, playlistInfo.id)
-            true
-        })
-        tracksAdapter.updateTrackList(playlistInfo.tracks)
-        binding.tracks.adapter = tracksAdapter
+        binding.run {
+            if (playlistInfo.tracks.isNotEmpty()) {
+                labelNoTracks.isVisible = false
+                tracks.layoutManager = LinearLayoutManager(
+                    requireActivity(),
+                    LinearLayoutManager.VERTICAL,
+                    false
+                )
+                val tracksAdapter = SearchAdapter({ track ->
+                    trackViewModel.openTrackWithDebounce(track)
+                }, { track ->
+                    removeFromPlaylist(track.trackId, playlistInfo.id)
+                    true
+                })
+                tracksAdapter.updateTrackList(playlistInfo.tracks)
+                tracks.adapter = tracksAdapter
+            } else {
+                labelNoTracks.isVisible = true
+                tracks.isVisible = false
+            }
+        }
 
         viewModel.setPlural(
             resources.getQuantityString(
@@ -197,7 +206,12 @@ class PlaylistsItemFragment : Fragment() {
             }
 
             contextMenuEdit.setOnClickListener {
-                //Todo next
+                findNavController().navigate(
+                    R.id.action_playlistsItemFragment_to_playlistAddFragment,
+                    PlaylistAddFragment.createArgs(
+                        playlistInfo = Utils().serializeToJson(playlistInfo)
+                    )
+                )
             }
 
             contextMenuDelete.setOnClickListener {

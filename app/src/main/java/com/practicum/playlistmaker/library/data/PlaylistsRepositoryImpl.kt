@@ -67,6 +67,18 @@ class PlaylistsRepositoryImpl(
         }
     }
 
+    override suspend fun editPlaylist(
+        playlistId: Int,
+        title: String,
+        description: String,
+        coverPath: String
+    ) {
+        val playlist = getPlaylist(playlistId)
+        val updatedPlaylist =
+            playlist.copy(name = title, description = description, coverPath = coverPath)
+        database.playlistDao().updatePlaylist(converter.mapPlaylistToEntity(updatedPlaylist))
+    }
+
     private suspend fun getAllPlaylists(): List<Playlist> =
         database.playlistDao()
             .getPlaylists()
