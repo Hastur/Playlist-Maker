@@ -1,15 +1,14 @@
 package com.practicum.playlistmaker.library.ui
 
-import android.graphics.Insets
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -58,7 +57,7 @@ class PlaylistsItemFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         playlistId = arguments?.getInt(PLAYLIST)
-        if (playlistId != null) viewModel.getPlaylistById(playlistId!!)
+        if (playlistId != null) playlistId?.let { viewModel.getPlaylistById(it) }
 
         viewModel.getPlaylistWithTracksLiveData().observe(viewLifecycleOwner) { screenState ->
             when (screenState) {
@@ -136,12 +135,8 @@ class PlaylistsItemFragment : Fragment() {
     private fun setupBottomSheet(playlistInfo: PlaylistInfo) {
         bottomSheetBehavior =
             BottomSheetBehavior.from(binding.playlistBottomSheet).apply {
-                var insets: Insets? = null
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    insets =
-                        requireActivity().windowManager.currentWindowMetrics.windowInsets
-                            .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-                }
+                val insets = ViewCompat.getRootWindowInsets(binding.root)
+                    ?.getInsets(WindowInsetsCompat.Type.systemBars())
                 binding.share.post {
                     val targetElement = binding.share.bottom
                     val screenHeight = resources.displayMetrics.heightPixels
@@ -153,6 +148,18 @@ class PlaylistsItemFragment : Fragment() {
                 }
             }
 
+        setBottomSheetContent(playlistInfo)
+
+        viewModel.setPlural(
+            resources.getQuantityString(
+                R.plurals.numberOfTracks,
+                playlistInfo.tracks.size,
+                playlistInfo.tracks.size
+            )
+        )
+    }
+
+    private fun setBottomSheetContent(playlistInfo: PlaylistInfo) {
         binding.run {
             if (playlistInfo.tracks.isNotEmpty()) {
                 labelNoTracks.isVisible = false
@@ -174,14 +181,6 @@ class PlaylistsItemFragment : Fragment() {
                 tracks.isVisible = false
             }
         }
-
-        viewModel.setPlural(
-            resources.getQuantityString(
-                R.plurals.numberOfTracks,
-                playlistInfo.tracks.size,
-                playlistInfo.tracks.size
-            )
-        )
     }
 
     private fun setupContextMenuBottomSheet(playlistInfo: PlaylistInfo) {
@@ -189,6 +188,13 @@ class PlaylistsItemFragment : Fragment() {
             BottomSheetBehavior.from(binding.contextMenuBottomSheet).apply {
                 state = BottomSheetBehavior.STATE_HIDDEN
             }
+
+        setContextMenuBottomSheetContent(playlistInfo)
+
+        setContextMenuBottomSheetCallback()
+    }
+
+    private fun setContextMenuBottomSheetContent(playlistInfo: PlaylistInfo) {
         binding.run {
             Glide.with(root)
                 .load(playlistInfo.coverPath)
@@ -219,8 +225,6 @@ class PlaylistsItemFragment : Fragment() {
                 removePlaylist(playlistInfo)
             }
         }
-
-        setContextMenuBottomSheetCallback()
     }
 
     private fun setContextMenuBottomSheetCallback() {
