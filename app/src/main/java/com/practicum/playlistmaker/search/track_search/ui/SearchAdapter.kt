@@ -11,7 +11,10 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ItemTrackBinding
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 
-class SearchAdapter(private val clickListener: (Track) -> Unit) :
+class SearchAdapter(
+    private val clickListener: (Track) -> Unit,
+    private val longClickListener: (Track) -> Boolean
+) :
     RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     private var trackList = listOf<Track>()
@@ -55,6 +58,7 @@ class SearchAdapter(private val clickListener: (Track) -> Unit) :
                 trackTime.text = model.trackTime
 
                 root.setOnClickListener { clickListener(model) }
+                root.setOnLongClickListener { longClickListener(model) }
             }
         }
     }

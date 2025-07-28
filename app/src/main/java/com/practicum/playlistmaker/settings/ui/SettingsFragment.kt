@@ -35,7 +35,7 @@ class SettingsFragment : Fragment() {
             }
 
             settingsShare.setOnClickListener {
-                viewModel.shareApp()
+                viewModel.shareApp(requireActivity().getString(R.string.share_url))
             }
 
             settingsSupport.setOnClickListener {

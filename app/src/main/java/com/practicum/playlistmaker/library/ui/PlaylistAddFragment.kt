@@ -28,7 +28,9 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistAddBinding
+import com.practicum.playlistmaker.library.domain.models.PlaylistInfo
 import com.practicum.playlistmaker.library.presentation.PlaylistsViewModel
+import com.practicum.playlistmaker.util.Utils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -38,11 +40,14 @@ class PlaylistAddFragment : Fragment() {
     companion object {
         private const val DIRECTORY_NAME = "playlists"
         private const val WITH_FRAGMENT_MANAGER = "WITH_FRAGMENT_MANAGER"
+        private const val PLAYLIST_INFO = "PLAYLIST_INFO"
 
         fun newInstance(withFragmentManager: Boolean): PlaylistAddFragment =
             PlaylistAddFragment().apply {
                 arguments = bundleOf(WITH_FRAGMENT_MANAGER to withFragmentManager)
             }
+
+        fun createArgs(playlistInfo: String): Bundle = bundleOf(PLAYLIST_INFO to playlistInfo)
     }
 
     private var _binding: FragmentPlaylistAddBinding? = null
@@ -53,6 +58,8 @@ class PlaylistAddFragment : Fragment() {
     private var coverUri: Uri? = null
     private lateinit var confirmDialog: MaterialAlertDialogBuilder
     private lateinit var permissionDialog: MaterialAlertDialogBuilder
+    private var playlistInfo: PlaylistInfo? = null
+    private var inUpdateMode = false
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -74,8 +81,29 @@ class PlaylistAddFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.run {
+            val serializedData = arguments?.getString(PLAYLIST_INFO)
+            if (serializedData != null) {
+                inUpdateMode = true
+                playlistInfo = Utils().createFromJson(serializedData, PlaylistInfo::class.java)
+                binding.run {
+                    coverUri = playlistInfo?.coverPath?.toUri()
+                    playlistCover.run {
+                        if (coverUri != "".toUri()) setImageURI(coverUri)
+                        else setImageResource(R.drawable.ic_track_placeholder)
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                    }
+                    inputName.editText?.setText(playlistInfo?.title)
+                    inputDescription.editText?.setText(playlistInfo?.description ?: "")
+                    buttonCreate.run {
+                        setText(R.string.playlist_edit_save)
+                        toggleButton(playlistInfo?.title?.isEmpty() ?: true)
+                    }
+                }
+            }
+
             toolbarAddPlaylist.setNavigationOnClickListener {
-                checkIsEditing()
+                if (inUpdateMode) closeFragment()
+                else checkIsEditing()
             }
 
             fun checkPermission(permission: String): Boolean {
@@ -112,22 +140,7 @@ class PlaylistAddFragment : Fragment() {
 
             inputName.editText?.doOnTextChanged { text, _, _, _ ->
                 binding.run {
-                    if (text?.trim().isNullOrEmpty()) {
-                        buttonCreate.run {
-                            isEnabled = false
-                            backgroundTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(requireActivity(), R.color.grey)
-                            )
-                        }
-                    } else {
-                        buttonCreate.run {
-                            isEnabled = true
-                            backgroundTintList = ColorStateList.valueOf(
-                                ContextCompat.getColor(requireActivity(), R.color.blue)
-                            )
-                            setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
-                        }
-                    }
+                    toggleButton(text?.trim().isNullOrEmpty())
                 }
             }
 
@@ -135,18 +148,30 @@ class PlaylistAddFragment : Fragment() {
                 val storedCoverUri = if (coverUri != null) saveCoverToStorage()
                 else ""
 
-                viewModel.addPlaylist(
-                    name = binding.inputName.editText?.text.toString().trim(),
-                    description = binding.inputDescription.editText?.text.toString().trim(),
-                    coverPath = storedCoverUri.toString()
-                )
+                if (inUpdateMode) {
+                    viewModel.editPlaylist(
+                        name = binding.inputName.editText?.text.toString().trim(),
+                        description = binding.inputDescription.editText?.text.toString().trim(),
+                        coverPath = storedCoverUri.toString(),
+                        playlistInfo = playlistInfo
+                    )
+                } else {
+                    viewModel.addPlaylist(
+                        name = binding.inputName.editText?.text.toString().trim(),
+                        description = binding.inputDescription.editText?.text.toString().trim(),
+                        coverPath = storedCoverUri.toString()
+                    )
+                }
             }
         }
 
-        viewModel.getAddPlaylistSingle().observe(viewLifecycleOwner) { isAdded ->
-            if (isAdded) {
-                val text = getString(R.string.playlist_finished, binding.inputName.editText?.text)
-                Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
+        viewModel.getPlaylistChangedSingle().observe(viewLifecycleOwner) { isChanged ->
+            if (isChanged) {
+                if (!inUpdateMode) {
+                    val text =
+                        getString(R.string.playlist_finished, binding.inputName.editText?.text)
+                    Toast.makeText(requireActivity(), text, Toast.LENGTH_SHORT).show()
+                }
                 closeFragment()
             }
         }
@@ -176,7 +201,8 @@ class PlaylistAddFragment : Fragment() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    checkIsEditing()
+                    if (inUpdateMode) closeFragment()
+                    else checkIsEditing()
                 }
             })
     }
@@ -204,6 +230,22 @@ class PlaylistAddFragment : Fragment() {
             || !binding.inputDescription.editText?.text.isNullOrEmpty()
         ) confirmDialog.show()
         else closeFragment()
+    }
+
+    private fun toggleButton(emptyText: Boolean) {
+        binding.buttonCreate.run {
+            isEnabled = !emptyText
+            if (emptyText) {
+                backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(requireActivity(), R.color.grey)
+                )
+            } else {
+                backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(requireActivity(), R.color.blue)
+                )
+                setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+            }
+        }
     }
 
     private fun closeFragment() {

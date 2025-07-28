@@ -12,7 +12,8 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ItemPlaylistBinding
 import com.practicum.playlistmaker.library.domain.models.Playlist
 
-class PlaylistsAdapter : RecyclerView.Adapter<PlaylistsAdapter.PlaylistsViewHolder>() {
+class PlaylistsAdapter(private val clickListener: (Playlist) -> Unit) :
+    RecyclerView.Adapter<PlaylistsAdapter.PlaylistsViewHolder>() {
 
     private var playlists = listOf<Playlist>()
 
@@ -55,6 +56,8 @@ class PlaylistsAdapter : RecyclerView.Adapter<PlaylistsAdapter.PlaylistsViewHold
                     model.tracksIds.size,
                     model.tracksIds.size
                 )
+
+                root.setOnClickListener { clickListener(model) }
             }
         }
     }

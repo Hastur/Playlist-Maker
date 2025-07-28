@@ -85,9 +85,11 @@ class FavoritesFragment : Fragment() {
             binding.run {
                 favoritesList.layoutManager =
                     LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-                val favoritesAdapter = SearchAdapter { track ->
-                    trackViewModel.openTrackWithDebounce(track.copy(isFavorite = true))
-                }
+                val favoritesAdapter = SearchAdapter(
+                    { track ->
+                        trackViewModel.openTrackWithDebounce(track.copy(isFavorite = true))
+                    },
+                    { false })
                 favoritesAdapter.updateTrackList(content)
                 favoritesList.adapter = favoritesAdapter
                 favoritesList.isVisible = true

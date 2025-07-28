@@ -34,6 +34,7 @@
     <string name="playlist_dialog_finish">Finish</string>
     <string name="playlist_dialog_cancel">Cancel</string>
     <string name="playlist_finished">Playlist %1$s created</string>
+    <string name="number_of_tracks_placeholder">777 tracks</string>
     <plurals name="numberOfTracks">
         <item quantity="one">%d track</item>
         <item quantity="other">%d tracks</item>
@@ -44,4 +45,19 @@
     <string name="permission_dialog_title">Access to images</string>
     <string name="permission_dialog_message">You can grant permission in the settings</string>
     <string name="permission_dialog_settings">Settings</string>
+    <plurals name="playlistDuration">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <string name="track_remove_confirmation">Do you want to remove track?</string>
+    <string name="remove_accept">Yes</string>
+    <string name="remove_reject">No</string>
+    <string name="playlist_share_no_tracks">Playlist have no tracks for sharing</string>
+    <string name="context_menu_share">Share</string>
+    <string name="context_menu_edit">Edit info</string>
+    <string name="context_menu_delete">Delete playlist</string>
+    <string name="playlist_remove_confirmation">Do you want to remove playlist «%s»?</string>
+    <string name="playlist_remove_complete">Playlist «%s» removed</string>
+    <string name="playlist_edit_save">Save</string>
+    <string name="playlist_no_tracks">No tracks in this playlist</string>
 </resources>
