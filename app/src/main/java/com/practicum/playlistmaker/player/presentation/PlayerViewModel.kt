@@ -52,6 +52,7 @@ class PlayerViewModel(
                     screenStateLiveData.postValue(
                         PlayerScreenState.Playing("00:00", false)
                     )
+                    playerInteractor.stopPlayer()
                 }
             )
         } else screenStateLiveData.postValue(PlayerScreenState.Error)

@@ -83,21 +83,17 @@
             app:layout_constraintStart_toEndOf="@id/start_guideline"
             app:layout_constraintTop_toTopOf="@id/button_play" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.practicum.playlistmaker.player.ui.PlaybackButtonView
             android:id="@+id/button_play"
-            style="@style/ButtonBase"
             android:layout_width="@dimen/play_button_size"
             android:layout_height="@dimen/play_button_size"
             android:layout_marginTop="@dimen/indent_30"
-            android:backgroundTint="@color/button_play"
-            app:cornerRadius="@dimen/play_button_size"
-            app:icon="@drawable/ic_play"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/indent_0"
             app:layout_constraintBottom_toTopOf="@id/playing_time"
             app:layout_constraintEnd_toStartOf="@id/button_like"
             app:layout_constraintStart_toEndOf="@id/button_add_to_playlist"
-            app:layout_constraintTop_toBottomOf="@id/artist_name" />
+            app:layout_constraintTop_toBottomOf="@id/artist_name"
+            app:pauseButtonResId="@drawable/ic_pause"
+            app:playButtonResId="@drawable/ic_play" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_like"
@@ -247,8 +243,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/overlay"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/playlists_bottom_sheet"
@@ -259,7 +254,8 @@
         android:paddingHorizontal="@dimen/indent_12"
         app:behavior_hideable="true"
         app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="gone">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:layout_width="@dimen/bottom_sheet_line_width"

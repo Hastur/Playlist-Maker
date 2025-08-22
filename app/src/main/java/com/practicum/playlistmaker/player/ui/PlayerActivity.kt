@@ -82,7 +82,12 @@ class PlayerActivity : AppCompatActivity() {
                     setContent(screenState.trackModel)
                 }
 
-                is PlayerScreenState.Playing -> changeControlElementsStyle(screenState)
+                is PlayerScreenState.Playing -> {
+                    binding.run {
+                        playingTime.text = screenState.playingTime
+                        if (!screenState.isPlaying) buttonPlay.setPlayingState(false)
+                    }
+                }
             }
         }
 
@@ -167,16 +172,6 @@ class PlayerActivity : AppCompatActivity() {
         binding.run {
             progressBar.isVisible = loading
             allVisibleElements.isVisible = !loading
-        }
-    }
-
-    private fun changeControlElementsStyle(playingStatus: PlayerScreenState.Playing) {
-        binding.run {
-            buttonPlay.setIconResource(
-                if (playingStatus.isPlaying) R.drawable.ic_pause
-                else R.drawable.ic_play
-            )
-            playingTime.text = playingStatus.playingTime
         }
     }
 
