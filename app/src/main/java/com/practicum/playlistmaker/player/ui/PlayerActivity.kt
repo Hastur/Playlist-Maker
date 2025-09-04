@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -7,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -23,6 +26,7 @@ import com.practicum.playlistmaker.library.ui.PlaylistAddFragment
 import com.practicum.playlistmaker.player.presentation.PlayerViewModel
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
+import com.practicum.playlistmaker.util.NetworkBroadcastReceiver
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -39,6 +43,7 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel> {
         parametersOf(serializedTrack)
     }
+    private val networkBroadcastReceiver = NetworkBroadcastReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,6 +145,18 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        @Suppress("DEPRECATION")
+        ContextCompat.registerReceiver(
+            this,
+            networkBroadcastReceiver,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
     private fun setContent(trackModel: Track) {
         val cornerRadiusToDp =
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8F, resources.displayMetrics)
@@ -178,6 +195,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.pause()
+        unregisterReceiver(networkBroadcastReceiver)
     }
 
     private fun setBottomSheet(playlists: List<Playlist>) {

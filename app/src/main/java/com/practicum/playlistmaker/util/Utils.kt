@@ -1,5 +1,8 @@
 package com.practicum.playlistmaker.util
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -24,4 +27,18 @@ class Utils {
 
     fun formatYearAsString(date: Date?): String? =
         date?.let { SimpleDateFormat("yyyy", Locale.getDefault()).format(it) }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        val manager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = manager.activeNetwork ?: return false
+        val activeNetwork = manager.getNetworkCapabilities(capabilities) ?: return false
+        val connected = when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+        return connected
+    }
 }
