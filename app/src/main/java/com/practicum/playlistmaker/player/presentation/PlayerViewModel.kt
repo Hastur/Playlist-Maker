@@ -7,24 +7,17 @@ import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.library.domain.db.FavoritesInteractor
 import com.practicum.playlistmaker.library.domain.db.PlaylistsInteractor
 import com.practicum.playlistmaker.library.domain.models.Playlist
-import com.practicum.playlistmaker.player.domain.api.PlayerInteractor
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
+import com.practicum.playlistmaker.player.services.PlayerControl
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.util.SingleLiveEvent
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val track: Track,
-    private val playerInteractor: PlayerInteractor,
     private val favoritesInteractor: FavoritesInteractor,
     private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
-
-    companion object {
-        private const val TIMER_UPDATE_DELAY = 300L
-    }
 
     private var screenStateLiveData = MutableLiveData<PlayerScreenState>(PlayerScreenState.Loading)
     fun getScreenStateLiveData(): LiveData<PlayerScreenState> = screenStateLiveData
@@ -38,66 +31,45 @@ class PlayerViewModel(
     private var addingResultSingleEvent = SingleLiveEvent<Boolean>()
     fun getAddingResultSingleEvent(): SingleLiveEvent<Boolean> = addingResultSingleEvent
 
-    private var timerJob: Job? = null
+    private var playerControl: PlayerControl? = null
 
-    init {
-        if (track.previewUrl != null) {
-            playerInteractor.preparePlayer(
-                source = track.previewUrl,
-                onPrepared = {
-                    screenStateLiveData.postValue(PlayerScreenState.Prepared(track))
-                },
-                onComplete = {
-                    timerJob?.cancel()
-                    screenStateLiveData.postValue(
-                        PlayerScreenState.Playing("00:00", false)
-                    )
-                    playerInteractor.stopPlayer()
-                }
-            )
-        } else screenStateLiveData.postValue(PlayerScreenState.Error)
+    fun setPlayerControl(audioPlayerControl: PlayerControl) {
+        playerControl = audioPlayerControl
 
-        favoriteStateSingleEvent.value = track.isFavorite
+        viewModelScope.launch {
+            audioPlayerControl.getPlayerState().collect {
+                screenStateLiveData.postValue(it)
+            }
+        }
     }
 
     fun playOrPause() {
-        playerInteractor.controlPlayer(
-            onStart = {
-                screenStateLiveData.postValue(
-                    PlayerScreenState.Playing(playerInteractor.getPlayingTime(), true)
-                )
-                startTimer()
-            },
-            onPause = {
-                screenStateLiveData.postValue(
-                    PlayerScreenState.Playing(playerInteractor.getPlayingTime(), false)
-                )
-                timerJob?.cancel()
+        when (screenStateLiveData.value) {
+            is PlayerScreenState.Prepared -> {
+                playerControl?.startPlayer()
             }
-        )
-    }
 
-    fun pause() {
-        playerInteractor.pausePlayer(
-            onPause = {
-                screenStateLiveData.postValue(
-                    PlayerScreenState.Playing(playerInteractor.getPlayingTime(), false)
-                )
-                timerJob?.cancel()
+            is PlayerScreenState.Playing -> {
+                if ((screenStateLiveData.value as PlayerScreenState.Playing).isPlaying) playerControl?.pausePlayer()
+                else playerControl?.startPlayer()
             }
-        )
-    }
 
-    private fun startTimer() {
-        timerJob?.cancel()
-        timerJob = viewModelScope.launch {
-            while (true) {
-                delay(TIMER_UPDATE_DELAY)
-                screenStateLiveData.postValue(
-                    PlayerScreenState.Playing(playerInteractor.getPlayingTime(), true)
-                )
-            }
+            else -> {}
         }
+    }
+
+    fun showServiceNotification() {
+        if (screenStateLiveData.value is PlayerScreenState.Playing) {
+            if ((screenStateLiveData.value as PlayerScreenState.Playing).isPlaying) playerControl?.startForeground()
+        }
+    }
+
+    fun hideServiceNotification() {
+        playerControl?.stopForeground()
+    }
+
+    fun removeAudioPlayerControl() {
+        playerControl = null
     }
 
     fun onFavoriteClick() {
@@ -127,6 +99,7 @@ class PlayerViewModel(
     }
 
     override fun onCleared() {
-        playerInteractor.releasePlayer()
+        super.onCleared()
+        playerControl = null
     }
 }

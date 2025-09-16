@@ -1,13 +1,20 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Intent
 import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.TypedValue
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -25,6 +32,8 @@ import com.practicum.playlistmaker.library.domain.models.Playlist
 import com.practicum.playlistmaker.library.ui.PlaylistAddFragment
 import com.practicum.playlistmaker.player.presentation.PlayerViewModel
 import com.practicum.playlistmaker.player.presentation.models.PlayerScreenState
+import com.practicum.playlistmaker.player.services.PlayerService
+import com.practicum.playlistmaker.player.services.PlayerService.Companion.SERIALIZED_TRACK
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.util.NetworkBroadcastReceiver
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -43,7 +52,29 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel by viewModel<PlayerViewModel> {
         parametersOf(serializedTrack)
     }
+
     private val networkBroadcastReceiver = NetworkBroadcastReceiver()
+    private var playerServiceIntent: Intent? = null
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as PlayerService.PlayerServiceBinder
+            viewModel.setPlayerControl(binder.getService())
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            viewModel.removeAudioPlayerControl()
+        }
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                bindPlayerService()
+            } else {
+                Toast.makeText(this, R.string.no_player_permission, Toast.LENGTH_LONG).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +90,15 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         serializedTrack = this.intent.getStringExtra(TRACK) ?: ""
+
+        playerServiceIntent = Intent(this, PlayerService::class.java).apply {
+            putExtra(SERIALIZED_TRACK, serializedTrack)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            bindPlayerService()
+        }
 
         binding.run {
             toolbarPlayer.setNavigationOnClickListener {
@@ -85,6 +125,10 @@ class PlayerActivity : AppCompatActivity() {
                 is PlayerScreenState.Prepared -> {
                     changeContentVisibility(loading = false)
                     setContent(screenState.trackModel)
+                    binding.run {
+                        playingTime.text = getString(R.string.track_start_time)
+                        buttonPlay.setPlayingState(false)
+                    }
                 }
 
                 is PlayerScreenState.Playing -> {
@@ -148,6 +192,8 @@ class PlayerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        viewModel.hideServiceNotification()
+
         @Suppress("DEPRECATION")
         ContextCompat.registerReceiver(
             this,
@@ -194,8 +240,15 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.pause()
+
+        viewModel.showServiceNotification()
+
         unregisterReceiver(networkBroadcastReceiver)
+    }
+
+    override fun onDestroy() {
+        unbindPlayerService()
+        super.onDestroy()
     }
 
     private fun setBottomSheet(playlists: List<Playlist>) {
@@ -227,5 +280,13 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun bindPlayerService() {
+        playerServiceIntent?.let { bindService(it, serviceConnection, BIND_AUTO_CREATE) }
+    }
+
+    private fun unbindPlayerService() {
+        unbindService(serviceConnection)
     }
 }
