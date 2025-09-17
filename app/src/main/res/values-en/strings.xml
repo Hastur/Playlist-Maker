@@ -60,4 +60,7 @@
     <string name="playlist_remove_complete">Playlist «%s» removed</string>
     <string name="playlist_edit_save">Save</string>
     <string name="playlist_no_tracks">No tracks in this playlist</string>
+    <string name="internet_connection_lost">Internet connection lost</string>
+    <string name="no_player_permission">Without permission to send notifications playback problems may occur</string>
+    <string name="player_service_description">Service for playing music</string>
 </resources>

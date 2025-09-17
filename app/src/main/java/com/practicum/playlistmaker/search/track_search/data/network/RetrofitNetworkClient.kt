@@ -1,11 +1,10 @@
 package com.practicum.playlistmaker.search.track_search.data.network
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import com.practicum.playlistmaker.search.track_search.data.NetworkClient
 import com.practicum.playlistmaker.search.track_search.data.dto.Response
 import com.practicum.playlistmaker.search.track_search.data.dto.TrackSearchRequest
+import com.practicum.playlistmaker.util.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -13,23 +12,8 @@ class RetrofitNetworkClient(
     private val searchService: TrackSearchApi,
     private val context: Context
 ) : NetworkClient {
-
-    private fun isNetworkAvailable(): Boolean {
-        val manager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities = manager.activeNetwork ?: return false
-        val activeNetwork = manager.getNetworkCapabilities(capabilities) ?: return false
-        val connected = when {
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-            else -> false
-        }
-        return connected
-    }
-
     override suspend fun makeRequest(dto: Any): Response {
-        return if (isNetworkAvailable()) {
+        return if (Utils().isNetworkAvailable(context)) {
             if (dto is TrackSearchRequest) {
                 withContext(Dispatchers.IO) {
                     try {

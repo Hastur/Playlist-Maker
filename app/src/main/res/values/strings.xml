@@ -66,4 +66,7 @@
     <string name="playlist_remove_complete">Плейлист «%s» удалён</string>
     <string name="playlist_edit_save">Сохранить</string>
     <string name="playlist_no_tracks">В этом плейлисте нет треков</string>
+    <string name="internet_connection_lost">Отсутствует подключение к интернету</string>
+    <string name="no_player_permission">Без разрешения на отправку уведомлений возможны проблемы при воспроизведении</string>
+    <string name="player_service_description">Музыкальный сервис</string>
 </resources>
