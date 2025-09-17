@@ -70,7 +70,7 @@ class PlayerActivity : AppCompatActivity() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                bindPlayerService()
+                viewModel.showServiceNotification()
             } else {
                 Toast.makeText(this, R.string.no_player_permission, Toast.LENGTH_LONG).show()
             }
@@ -94,11 +94,8 @@ class PlayerActivity : AppCompatActivity() {
         playerServiceIntent = Intent(this, PlayerService::class.java).apply {
             putExtra(SERIALIZED_TRACK, serializedTrack)
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            bindPlayerService()
-        }
+
+        bindPlayerService()
 
         binding.run {
             toolbarPlayer.setNavigationOnClickListener {
@@ -241,7 +238,11 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
 
-        viewModel.showServiceNotification()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            viewModel.showServiceNotification()
+        }
 
         unregisterReceiver(networkBroadcastReceiver)
     }
