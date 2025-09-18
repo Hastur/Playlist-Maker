@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlinKsp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -37,9 +38,13 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
     }
     room {
         schemaDirectory("$projectDir/schemas")
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 }
 
@@ -61,6 +66,12 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.room)
     implementation(libs.room.ktx)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material3)
+    debugImplementation(libs.compose.preview)
+    implementation(libs.compose.material)
+    implementation(libs.compose.activity)
+    implementation(libs.compose.koin)
     ksp(libs.room.compiler)
     annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)

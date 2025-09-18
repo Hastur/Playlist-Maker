@@ -11,6 +11,7 @@
     <style name="Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/indent_4</item>
         <item name="android:layout_marginBottom">@dimen/indent_24</item>
         <item name="navigationIconTint">@color/title_text</item>
         <item name="titleTextAppearance">@style/TextBase</item>
