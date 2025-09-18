@@ -17,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,13 +31,23 @@ import androidx.compose.ui.unit.sp
 import com.practicum.playlistmaker.R
 
 @Composable
-fun SearchText() {
+fun SearchText(
+    onFocusChanged: (Boolean) -> Unit,
+    onTextChanged: (String) -> Unit
+) {
     var text by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
 
     BasicTextField(
         value = text,
-        onValueChange = { text = it },
+        onValueChange = {
+            text = it
+            onTextChanged(text)
+        },
         singleLine = true,
+        modifier = Modifier.onFocusChanged {
+            onFocusChanged(it.isFocused)
+        },
         textStyle = TextStyle(
             fontFamily = FontFamily(Font(R.font.ys_display_regular)),
             fontSize = 16.sp
@@ -91,6 +103,8 @@ fun SearchText() {
                                 indication = null
                             ) {
                                 text = ""
+                                onTextChanged(text)
+                                focusManager.clearFocus()
                             }
                     )
                 }
@@ -102,5 +116,5 @@ fun SearchText() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewSearchText() {
-    SearchText()
+    SearchText(onFocusChanged = {}, onTextChanged = {})
 }
