@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.compose_resources.PlaylistMakerTheme
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.track_search.domain.models.ErrorType
@@ -48,7 +49,7 @@ class SearchFragment : Fragment() {
         //return binding.root
         return ComposeView(requireContext()).apply {
             setContent {
-                SearchScreen()
+                PlaylistMakerTheme { SearchScreen() }
             }
         }
     }
