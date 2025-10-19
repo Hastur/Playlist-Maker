@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -48,10 +48,11 @@ fun SearchText(
         modifier = Modifier.onFocusChanged {
             onFocusChanged(it.isFocused)
         },
-        textStyle = TextStyle(
+        textStyle = MaterialTheme.typography.titleLarge,
+        /*textStyle = TextStyle(
             fontFamily = FontFamily(Font(R.font.ys_display_regular)),
             fontSize = 16.sp
-        ),
+        ),*/
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
@@ -60,7 +61,7 @@ fun SearchText(
                     .padding(horizontal = 16.dp)
                     .height(36.dp)
                     .background(
-                        colorResource(R.color.search_background),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(8.dp)
                     ),
                 verticalAlignment = Alignment.CenterVertically
@@ -68,7 +69,7 @@ fun SearchText(
                 Icon(
                     painterResource(R.drawable.ic_search),
                     contentDescription = null,
-                    tint = colorResource(R.color.search_hint),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .size(42.dp)
                         .padding(start = 16.dp)
@@ -83,7 +84,7 @@ fun SearchText(
                         Text(
                             text = stringResource(R.string.search),
                             fontSize = 16.sp,
-                            color = colorResource(R.color.search_hint)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     innerTextField()
@@ -93,7 +94,7 @@ fun SearchText(
                     Icon(
                         painterResource(R.drawable.ic_search_clear),
                         contentDescription = null,
-                        tint = colorResource(R.color.search_hint),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .size(34.dp)
                             .padding(start = 8.dp)
