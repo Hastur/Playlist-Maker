@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
+    implementation(libs.coil)
     debugImplementation(libs.compose.preview)
     implementation(libs.compose.material)
     implementation(libs.compose.activity)

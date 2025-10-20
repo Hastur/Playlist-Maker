@@ -22,9 +22,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,11 +45,7 @@ fun SearchText(
         modifier = Modifier.onFocusChanged {
             onFocusChanged(it.isFocused)
         },
-        textStyle = MaterialTheme.typography.titleLarge,
-        /*textStyle = TextStyle(
-            fontFamily = FontFamily(Font(R.font.ys_display_regular)),
-            fontSize = 16.sp
-        ),*/
+        textStyle = MaterialTheme.typography.labelMedium,
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier

@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.compose_resources.components.Toolbar
+import com.practicum.playlistmaker.compose_resources.components.TrackList
 import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
 import com.practicum.playlistmaker.search.track_search.presentation.models.SearchScreenState
 import org.koin.androidx.compose.koinViewModel
@@ -37,8 +38,7 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .background(color = MaterialTheme.colorScheme.secondary)
-            //.background(colorResource(R.color.background))
+                .background(color = MaterialTheme.colorScheme.primary)
         ) {
             SearchText(
                 onFocusChanged = { focused -> if (focused) viewModel.setFocusedState() },
@@ -50,7 +50,7 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.error)
+                    .background(color = MaterialTheme.colorScheme.primary)
             ) {
                 when (screenState) {
                     is SearchScreenState.Initial -> {
@@ -62,14 +62,19 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
                     }
 
                     is SearchScreenState.Content -> {
-                        //TODO()
+                        TrackList(
+                            tracks = (screenState as SearchScreenState.Content).trackList,
+                            clickListener = viewModel::openTrackWithDebounce
+                        )
                     }
 
-                    is SearchScreenState.Focused -> if ((screenState as SearchScreenState.Focused).isHistoryAvailable) Toast.makeText(
-                        context,
-                        (screenState as SearchScreenState.Focused).isHistoryAvailable.toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    is SearchScreenState.Focused -> if ((screenState as SearchScreenState.Focused).isHistoryAvailable) {
+                        Toast.makeText(
+                            context,
+                            (screenState as SearchScreenState.Focused).isHistoryAvailable.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
                     is SearchScreenState.Error -> {
                         //TODO()

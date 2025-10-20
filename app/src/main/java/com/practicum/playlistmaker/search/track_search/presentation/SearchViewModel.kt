@@ -67,9 +67,12 @@ class SearchViewModel(
                 .searchTrack(searchInput)
                 .collect { pair ->
                     when {
-                        pair.first != null -> screenStateLiveData.postValue(
-                            SearchScreenState.Content(pair.first!!)
-                        )
+                        pair.first != null -> {
+                            screenStateLiveData.postValue(
+                                SearchScreenState.Content(pair.first!!)
+                            )
+                            _screenStateFlow.update { SearchScreenState.Content(pair.first!!) }
+                        }
 
                         pair.second != null -> screenStateLiveData.postValue(
                             SearchScreenState.Error(pair.second!!)
@@ -92,7 +95,12 @@ class SearchViewModel(
     }
 
     fun setFocusedState() {
-        _screenStateFlow.update { SearchScreenState.Focused(!historyLiveData.value.isNullOrEmpty()) }
+        if (!historyLiveData.value.isNullOrEmpty()) {
+            _screenStateFlow.update {
+                SearchScreenState.Content(historyLiveData.value!!)
+            }
+        }
+        //_screenStateFlow.update { SearchScreenState.Focused(!historyLiveData.value.isNullOrEmpty()) }
         screenStateLiveData.value =
             SearchScreenState.Focused(!historyLiveData.value.isNullOrEmpty())
     }

@@ -7,10 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.sp
-import com.practicum.playlistmaker.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -19,13 +15,12 @@ fun Toolbar(title: String) {
         title = {
             Text(
                 text = title,
-                fontFamily = FontFamily(Font(R.font.ys_display_medium)),
-                fontSize = 22.sp
+                style = MaterialTheme.typography.titleLarge
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            scrolledContainerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.primary
         ),
         windowInsets = WindowInsets(0)
     )
