@@ -36,7 +36,6 @@ import com.practicum.playlistmaker.player.services.PlayerService
 import com.practicum.playlistmaker.player.services.PlayerService.Companion.SERIALIZED_TRACK
 import com.practicum.playlistmaker.search.track_search.domain.models.Track
 import com.practicum.playlistmaker.util.NetworkBroadcastReceiver
-import com.practicum.playlistmaker.util.Utils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -105,14 +104,7 @@ class PlayerActivity : AppCompatActivity() {
             buttonPlay.setOnClickListener {
                 viewModel.playOrPause()
             }
-            buttonLike.run {
-                setOnClickListener { viewModel.onFavoriteClick() }
-                val track = Utils().createFromJson(serializedTrack, Track::class.java)
-                if (track.isFavorite) {
-                    setIconResource(R.drawable.ic_like_filled)
-                    setIconTintResource(R.color.like_filled)
-                }
-            }
+            buttonLike.setOnClickListener { viewModel.onFavoriteClick() }
         }
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->

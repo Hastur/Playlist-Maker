@@ -13,42 +13,44 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.compose_resources.components.LibraryEmptyScreen
+import com.practicum.playlistmaker.compose_resources.components.PlaylistsGrid
 import com.practicum.playlistmaker.compose_resources.components.ProgressBar
-import com.practicum.playlistmaker.compose_resources.components.TrackList
-import com.practicum.playlistmaker.library.presentation.FavoritesViewModel
-import com.practicum.playlistmaker.library.presentation.models.FavoritesScreenState
-import com.practicum.playlistmaker.search.track_search.presentation.SearchViewModel
+import com.practicum.playlistmaker.compose_resources.components.RoundedButton
+import com.practicum.playlistmaker.library.presentation.PlaylistsViewModel
+import com.practicum.playlistmaker.library.presentation.models.PlaylistsScreenState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FavoritesScreen(
-    viewModel: FavoritesViewModel = koinViewModel(),
-    trackViewModel: SearchViewModel = koinViewModel()
-) {
+fun PlaylistsScreen(viewModel: PlaylistsViewModel = koinViewModel()) {
     val screenState by viewModel.getScreenStateFlow().collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 12.dp)
             .padding(top = 16.dp)
             .background(color = MaterialTheme.colorScheme.primary)
     ) {
+        RoundedButton(
+            text = stringResource(R.string.new_playlist),
+            clickListener = { viewModel.onButtonAddClicked() }
+        )
         when (screenState) {
-            is FavoritesScreenState.Loading -> {
+            is PlaylistsScreenState.Loading -> {
                 ProgressBar()
             }
 
-            is FavoritesScreenState.Content -> {
-                TrackList(
-                    tracks = (screenState as FavoritesScreenState.Content).favoriteTracks,
-                    clickListener = { track ->
-                        trackViewModel.openTrackWithDebounce(track.copy(isFavorite = true))
+            is PlaylistsScreenState.Content -> {
+                PlaylistsGrid(
+                    playlists = (screenState as PlaylistsScreenState.Content).playlists,
+                    clickListener = { playlist ->
+                        viewModel.onPlaylistClicked(playlist)
                     }
                 )
             }
 
-            is FavoritesScreenState.Empty -> {
-                LibraryEmptyScreen(stringResource(R.string.library_empty))
+            is PlaylistsScreenState.Empty -> {
+                LibraryEmptyScreen(stringResource(R.string.no_playlists))
             }
         }
     }

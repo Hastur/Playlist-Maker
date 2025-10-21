@@ -21,6 +21,11 @@ fun PlaylistMakerTheme(
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     val playlistMakerTypography = Typography(
+        headlineSmall = TextStyle(
+            color = colorScheme.onPrimary,
+            fontSize = 12.sp,
+            fontFamily = FontFamily(Font(R.font.ys_display_regular))
+        ),
         titleLarge = TextStyle(
             color = colorScheme.onPrimary,
             fontSize = 22.sp,

@@ -100,7 +100,6 @@ fun LibraryScreen(fragmentManager: FragmentManager) {
                     }
 
                     1 -> {
-                        //TODO: Second fragment
                         val fragmentId = remember { View.generateViewId() }
 
                         AndroidView(
@@ -114,7 +113,7 @@ fun LibraryScreen(fragmentManager: FragmentManager) {
                             update = {
                                 if (fragmentManager.findFragmentById(fragmentId) == null) {
                                     fragmentManager.commit {
-                                        replace(fragmentId, FavoritesFragment())
+                                        replace(fragmentId, PlaylistsFragment())
                                     }
                                 }
                             }
