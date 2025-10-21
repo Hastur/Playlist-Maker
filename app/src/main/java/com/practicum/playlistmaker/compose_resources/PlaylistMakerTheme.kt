@@ -22,7 +22,23 @@ fun PlaylistMakerTheme(
 
     val playlistMakerTypography = Typography(
         titleLarge = TextStyle(
+            color = colorScheme.onPrimary,
             fontSize = 22.sp,
+            fontFamily = FontFamily(Font(R.font.ys_display_medium))
+        ),
+        titleMedium = TextStyle(
+            color = colorScheme.onPrimary,
+            fontSize = 19.sp,
+            fontFamily = FontFamily(Font(R.font.ys_display_medium))
+        ),
+        bodyMedium = TextStyle(
+            color = black,
+            fontSize = 16.sp,
+            fontFamily = FontFamily(Font(R.font.ys_display_regular))
+        ),
+        bodySmall = TextStyle(
+            color = colorScheme.primary,
+            fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.ys_display_medium))
         ),
         labelMedium = TextStyle(
@@ -53,15 +69,17 @@ val lightGrey = Color(0xFFE6E8EB)
 
 val LightColorScheme = lightColorScheme(
     primary = white,
-    onPrimary = black,
+    onPrimary = darkestGrey,
     onSecondary = grey,
+    tertiary = blue,
     surfaceVariant = lightGrey,
-    onSurfaceVariant = grey,
+    onSurfaceVariant = grey
 )
 val DarkColorScheme = darkColorScheme(
     primary = darkestGrey,
     onPrimary = white,
     onSecondary = white,
+    tertiary = blue,
     surfaceVariant = white,
     onSurfaceVariant = darkestGrey
 )

@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.track_search.presentation
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,14 +25,12 @@ class SearchViewModel(
         private const val DEBOUNCE_DELAY = 2000L
     }
 
-    private val _screenStateFlow = MutableStateFlow<SearchScreenState>(SearchScreenState.Initial)
+    private val _screenStateFlow =
+        MutableStateFlow<SearchScreenState>(SearchScreenState.Content(listOf()))
+
     fun getScreenStateFlow(): StateFlow<SearchScreenState> = _screenStateFlow.asStateFlow()
 
-    private var screenStateLiveData = MutableLiveData<SearchScreenState>()
-    fun getScreenStateLiveData(): LiveData<SearchScreenState> = screenStateLiveData
-
     private var historyLiveData = MutableLiveData<List<Track>>()
-    fun getHistoryLiveData(): LiveData<List<Track>> = historyLiveData
 
     private var selectedTrackSingleEvent = SingleLiveEvent<String>()
     fun getSelectedTrackSingleEvent(): SingleLiveEvent<String> = selectedTrackSingleEvent
@@ -55,12 +52,12 @@ class SearchViewModel(
     }
 
     fun searchWithDebounce(searchInput: String) {
-        _screenStateFlow.update { SearchScreenState.Typing }
+        _screenStateFlow.update { SearchScreenState.Initial }
         searchDebounce(searchInput)
     }
 
     private fun searchTrack(searchInput: String) {
-        screenStateLiveData.value = SearchScreenState.Loading
+        _screenStateFlow.update { SearchScreenState.Loading }
 
         viewModelScope.launch {
             searchInteractor
@@ -68,15 +65,12 @@ class SearchViewModel(
                 .collect { pair ->
                     when {
                         pair.first != null -> {
-                            screenStateLiveData.postValue(
-                                SearchScreenState.Content(pair.first!!)
-                            )
                             _screenStateFlow.update { SearchScreenState.Content(pair.first!!) }
                         }
 
-                        pair.second != null -> screenStateLiveData.postValue(
-                            SearchScreenState.Error(pair.second!!)
-                        )
+                        pair.second != null -> {
+                            _screenStateFlow.update { SearchScreenState.Error(pair.second!!) }
+                        }
                     }
                 }
         }
@@ -91,22 +85,15 @@ class SearchViewModel(
     }
 
     fun setInitialState() {
-        screenStateLiveData.value = SearchScreenState.Initial
+        _screenStateFlow.update { SearchScreenState.Initial }
     }
 
-    fun setFocusedState() {
+    fun setFocused() {
         if (!historyLiveData.value.isNullOrEmpty()) {
             _screenStateFlow.update {
-                SearchScreenState.Content(historyLiveData.value!!)
+                SearchScreenState.Content(historyLiveData.value!!, true)
             }
         }
-        //_screenStateFlow.update { SearchScreenState.Focused(!historyLiveData.value.isNullOrEmpty()) }
-        screenStateLiveData.value =
-            SearchScreenState.Focused(!historyLiveData.value.isNullOrEmpty())
-    }
-
-    fun setTypingState() {
-        screenStateLiveData.value = SearchScreenState.Typing
     }
 
     private fun getHistory() {
@@ -123,6 +110,7 @@ class SearchViewModel(
 
     fun clearHistory() {
         searchHistoryInteractor.clearHistory()
+        setInitialState()
         historyLiveData.value = listOf()
     }
 }
