@@ -42,9 +42,7 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
     var searchQuery by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = {
-            Toolbar(stringResource(R.string.search))
-        },
+        topBar = { Toolbar(stringResource(R.string.search)) },
         contentWindowInsets = WindowInsets(0)
     ) { innerPadding ->
         Column(

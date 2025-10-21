@@ -31,6 +31,11 @@ fun PlaylistMakerTheme(
             fontSize = 19.sp,
             fontFamily = FontFamily(Font(R.font.ys_display_medium))
         ),
+        titleSmall = TextStyle(
+            color = colorScheme.onPrimary,
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.ys_display_medium))
+        ),
         bodyMedium = TextStyle(
             color = black,
             fontSize = 16.sp,
