@@ -13,11 +13,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -61,10 +66,17 @@ fun TrackItem(track: Track, clickListener: (Track) -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
             Row(horizontalArrangement = Arrangement.Start) {
+                var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+                val isEllipsized = textLayoutResult?.hasVisualOverflow ?: false
                 Text(
-                    text = track.artistName, style = MaterialTheme.typography.labelSmall,
+                    text = track.artistName,
+                    style = MaterialTheme.typography.labelSmall,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    onTextLayout = { result ->
+                        textLayoutResult = result
+                    },
+                    modifier = Modifier.then(if (isEllipsized) Modifier.weight(1f) else Modifier)
                 )
                 Icon(
                     painter = painterResource(R.drawable.ic_bullet_point),
@@ -73,7 +85,9 @@ fun TrackItem(track: Track, clickListener: (Track) -> Unit) {
                 )
                 Text(
                     text = track.trackTime,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
