@@ -104,9 +104,7 @@ class PlayerActivity : AppCompatActivity() {
             buttonPlay.setOnClickListener {
                 viewModel.playOrPause()
             }
-            buttonLike.setOnClickListener {
-                viewModel.onFavoriteClick()
-            }
+            buttonLike.setOnClickListener { viewModel.onFavoriteClick() }
         }
 
         viewModel.getScreenStateLiveData().observe(this) { screenState ->

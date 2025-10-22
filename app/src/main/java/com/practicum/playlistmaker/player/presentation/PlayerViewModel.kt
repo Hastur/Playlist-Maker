@@ -33,6 +33,15 @@ class PlayerViewModel(
 
     private var playerControl: PlayerControl? = null
 
+    init {
+        viewModelScope.launch {
+            if (track.isFavorite) {
+                favoritesInteractor.addToFavorites(track)
+                favoriteStateSingleEvent.value = track.isFavorite
+            }
+        }
+    }
+
     fun setPlayerControl(audioPlayerControl: PlayerControl) {
         playerControl = audioPlayerControl
 
