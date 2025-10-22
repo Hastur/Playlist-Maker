@@ -30,10 +30,10 @@ fun TrackItem(track: Track, clickListener: (Track) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .padding(horizontal = 13.dp)
             .clickable {
                 clickListener(track)
-            },
+            }
+            .padding(horizontal = 13.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {

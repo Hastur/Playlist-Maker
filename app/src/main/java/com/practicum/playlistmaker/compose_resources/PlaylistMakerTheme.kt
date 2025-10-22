@@ -83,7 +83,8 @@ val LightColorScheme = lightColorScheme(
     onSecondary = grey,
     tertiary = blue,
     surfaceVariant = lightGrey,
-    onSurfaceVariant = grey
+    onSurfaceVariant = grey,
+    scrim = lightGrey
 )
 val DarkColorScheme = darkColorScheme(
     primary = darkestGrey,
@@ -91,5 +92,6 @@ val DarkColorScheme = darkColorScheme(
     onSecondary = white,
     tertiary = blue,
     surfaceVariant = white,
-    onSurfaceVariant = darkestGrey
+    onSurfaceVariant = darkestGrey,
+    scrim = lightGrey
 )
